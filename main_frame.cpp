@@ -16,11 +16,9 @@
 #endif //__BORLANDC__
 
 #include "main_frame.h"
-#include "bytestuff.hpp"
-#include "cobs.hpp"
+
 #include "document.hpp"
 #include "sp_in_thread.hpp"
-#include "aircraft.hpp"
 
 #include "app.h"
 #include "splitter.hpp"

@@ -1,7 +1,6 @@
 #include <cctype>
 #include "view.hpp"
 #include "panel.hpp"
-#include "frsky.hpp"
 #include "events.hpp"
 #include "window_ids.hpp"
 #include "document.hpp"

@@ -42,24 +42,15 @@
 		<Unit filename="LICENSE.txt" />
 		<Unit filename="Makefile" />
 		<Unit filename="README" />
-		<Unit filename="aircraft.cpp" />
-		<Unit filename="aircraft.hpp" />
-		<Unit filename="aircraft_symbol.cpp" />
-		<Unit filename="aircraft_symbol.hpp" />
 		<Unit filename="app.cpp" />
 		<Unit filename="app.h" />
-		<Unit filename="bytestuff.cpp" />
-		<Unit filename="bytestuff.hpp" />
 		<Unit filename="changes.txt" />
-		<Unit filename="cobs.cpp" />
-		<Unit filename="cobs.hpp" />
 		<Unit filename="document.cpp" />
 		<Unit filename="document.hpp" />
 		<Unit filename="drawing.cpp" />
 		<Unit filename="drawing.hpp" />
 		<Unit filename="events.cpp" />
 		<Unit filename="events.hpp" />
-		<Unit filename="frsky.hpp" />
 		<Unit filename="main_frame.cpp" />
 		<Unit filename="main_frame.h" />
 		<Unit filename="notes.txt" />
@@ -84,15 +75,10 @@
 		<Unit filename="../../../website/quan-trunk/quan_matters/src/serial_port.cpp" />
 		<Unit filename="../../../website/quan-trunk/quan_matters/src/wxwidgets/draw_box.cpp" />
 		<Unit filename="../../../website/quan-trunk/quan_matters/src/wxwidgets/draw_circle.cpp" />
+		<Unit filename="../../../website/quan-trunk/quan_matters/src/wxwidgets/draw_filled_box.cpp" />
 		<Unit filename="../../../website/quan-trunk/quan_matters/src/wxwidgets/draw_line.cpp" />
 		<Unit filename="../../../website/quan-trunk/quan_matters/src/wxwidgets/draw_poly_line.cpp" />
 		<Unit filename="../../../website/quan-trunk/quan_matters/src/wxwidgets/graphics_context.cpp" />
-		<Unit filename="../../../website_src/fpv/antenna_tracker/telemetry/protocol.txt">
-			<Option target="&lt;{~None~}&gt;" />
-		</Unit>
-		<Unit filename="../../../website_src/fpv/links.txt">
-			<Option target="&lt;{~None~}&gt;" />
-		</Unit>
 		<Extensions>
 			<code_completion />
 			<debugger />
