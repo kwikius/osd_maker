@@ -31,8 +31,8 @@ view::view(wxWindow* parent)
     this->SetScrollbar(wxVERTICAL,50,10,110);
     this->SetScrollbar(wxHORIZONTAL,50,10,110);
     this->m_drawing_view.set_scale(1);
-    this->Refresh();
-
+    //this->Refresh();
+this->SetFocus();
 }
 
 void view::set_scale(double const & v)
