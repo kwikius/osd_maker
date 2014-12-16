@@ -27,11 +27,8 @@ IMPLEMENT_APP(OsdBmpApp);
 
 bool OsdBmpApp::OnInit()
 {
-   
-    m_frame = new main_frame(0L, _("Quantracker Sim"));
-
+    m_frame = new main_frame(0L, _("OSD BitmapMaker"));
     m_frame->Show();
-    
     return true;
 }
 

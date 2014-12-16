@@ -1,18 +1,27 @@
 #ifndef QUANTRACKER_SIM_DOCUMENT_HPP_INCLUDED
 #define QUANTRACKER_SIM_DOCUMENT_HPP_INCLUDED
 
+#include <vector>
+
+#include <wx/wx.h>
+#include <wx/image.h>
+
 #include <quan/two_d/vect.hpp>
 #include <quan/three_d/vect.hpp>
 #include <quan/length.hpp>
-#include <vector>
+
+/*
+ Fontlib
+ BitmapLib
+ FontMode or BitmapMode
+*/
 
 struct document{
+   // start with a bitmap
+   // load 
    document();
-
-  // quan::uav::position const & get_aircraft_position()const { return m_aircraft_position;}
    quan::two_d::vect<quan::length::mm> const & 
    get_map_size() const {return m_map_size;}
-  // void  set_aircraft_position(quan::uav::position const & pos){ m_aircraft_position = pos;}
    void set_map_size( quan::two_d::vect<quan::length::mm> const & size)
    { m_map_size = size;}
 
@@ -54,8 +63,12 @@ struct document{
          && (static_cast<uint32_t>(pos.y) < m_bitmap_size.y)
       ){
          uint32_t ar_pos = pos.y * m_bitmap_size.x + pos.x;
-         pixel_array.at(ar_pos) = colour;
-         return true;
+         if ( ar_pos < pixel_array.size()){
+            pixel_array.at(ar_pos) = colour;
+            return true;
+         }else{
+            return false;
+         }
       }else{
          return false;
       }
@@ -64,6 +77,9 @@ struct document{
    static constexpr uint8_t black = 1;
    static constexpr uint8_t white = 2;
    static constexpr uint8_t transparent = 3;
+   
+   bool have_image(){ return m_have_image;}
+   bool upload_mcm_font_file (std::istream & in);
    private:
 
    quan::two_d::vect<quan::length::mm> m_map_size;
@@ -72,6 +88,10 @@ struct document{
    quan::two_d::vect<quan::length::mm> m_pixel_size; // {mm{10},mm{10}};
 
    std::vector<uint8_t> pixel_array;
+   wxImage image;
+   bool m_have_image;
+   bool m_have_font;
+      
 };
 
 #endif // QUANTRACKER_SIM_DOCUMENT_HPP_INCLUDED

@@ -34,7 +34,9 @@ class main_frame: public wxFrame
         void OnClose(wxCloseEvent& event);
         void OnQuit(wxCommandEvent& event);
         void OnAbout(wxCommandEvent& event);
+        void OnFileOpen(wxCommandEvent & event);
         void OnTimer(wxTimerEvent& event);
+        
         DECLARE_EVENT_TABLE()
 
         splitter* m_splitter;
@@ -43,6 +45,8 @@ class main_frame: public wxFrame
         sp_in_thread* m_sp_in_thread;
        
        void start_sp_thread();
+       void create_menus();
+       void create_statusbar();
        friend class OsdBmpApp;
        friend class sp_in_thread;
        friend class panel;

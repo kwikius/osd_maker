@@ -39,8 +39,8 @@ namespace {
      switch (buffer[0]){
          case 'd':{
             if (strncmp(buffer,"distance = ",11) ==0){
-               float v = quan::convert<float>(&buffer[11]);
-               auto & app = wxGetApp();
+             //  float v = quan::convert<float>(&buffer[11]);
+              // auto & app = wxGetApp();
              //  app.get_document()->m_remote_tracker_params.distance = quan::length::m{v};
              //  QuanTrackerSimEvent x{wxEvent_RemoteDistanceChanged};
               // app.get_panel()->AddPendingEvent(x);
@@ -50,8 +50,8 @@ namespace {
          case 'b' :{
             if (strncmp(buffer,"bearing = ",10) ==0){
                
-               float v = quan::convert<float>(&buffer[10]);
-               auto & app = wxGetApp();
+            //   float v = quan::convert<float>(&buffer[10]);
+            //   auto & app = wxGetApp();
               // app.get_document()->m_remote_tracker_params.bearing = quan::angle::deg{v};
               // QuanTrackerSimEvent x{wxEvent_RemoteBearingChanged};
               // app.get_panel()->AddPendingEvent(x);
@@ -60,8 +60,8 @@ namespace {
          break;
          case 'e':{
             if (strncmp(buffer,"elevation = ",12) ==0){
-               float v = quan::convert<float>(&buffer[12]);
-               auto & app = wxGetApp();
+              // float v = quan::convert<float>(&buffer[12]);
+              // auto & app = wxGetApp();
              //  app.get_document()->m_remote_tracker_params.elevation = quan::angle::deg{v};
              //  QuanTrackerSimEvent x{wxEvent_RemoteElevationChanged};
               // app.get_panel()->AddPendingEvent(x);

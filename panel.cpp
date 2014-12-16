@@ -8,56 +8,117 @@
 #include "document.hpp"
 #include "main_frame.h"
 #include "view.hpp"
+#include <quan/length.hpp>
+#include <quan/reciprocal_length.hpp>
 
-panel::panel (wxWindow* parent)
-:  wxScrolledWindow {parent}
-,BtnConnect {nullptr}
-,PortText {nullptr}
-
+namespace {
+quan::two_d::vect<int> vect_mm_to_px(quan::two_d::vect<quan::length::mm> const & in)
 {
-   // add scrolling
-   window_ids::panel = this->GetId();
-   
-   auto vert_sizer = new wxBoxSizer (wxVERTICAL);
-   
-   auto sp_sizer =  new wxFlexGridSizer (2,2,4,4);
-   auto port_label = new wxStaticText{this,wxID_ANY, wxT ("serial port"),wxDefaultPosition, wxDefaultSize, 0};
-   sp_sizer->Add (port_label,0,wxALL,5);
-   PortText = new wxTextCtrl{this,wxID_ANY, wxT ("/dev/ttyUSB0"), wxDefaultPosition,wxSize (200,wxDefaultSize.GetHeight()) };
-   sp_sizer->Add (PortText,0,wxALL,5);
+  wxSize dsmm = wxGetDisplaySizeMM();
+  wxSize dspx = wxGetDisplaySize();
+  quan::two_d::vect<quan::reciprocal_length::per_mm> 
+  mm_to_px{dspx.x/quan::length::mm{dsmm.x},dspx.y/quan::length::mm{dsmm.y}};
+  quan::two_d::vect<int> result{
+     quan::arithmetic_convert<int>(in.x * mm_to_px.x)
+   , quan::arithmetic_convert<int>(in.y * mm_to_px.y)
+  };
+   return result;
+}
+}
+//return y pos
+int panel::make_port_controls(wxBoxSizer* vert_sizer)
+{
+   quan::two_d::vect<int> const bd = vect_mm_to_px({quan::length::mm{6},quan::length::mm{6}});
 
-   BtnConnect = new wxButton (this, idBtnConnect, wxT ("Connect"), wxDefaultPosition, wxSize (100,wxDefaultSize.GetHeight()), 0);
-   sp_sizer->Add (BtnConnect,0,wxALL,5);
-   vert_sizer->Add (sp_sizer);
+   auto sizer = new wxStaticBoxSizer(wxVERTICAL,this,wxT("Serial Port"));
+
+   wxClientDC dc(this);
+   wxSize te = dc.GetTextExtent(wxT("-------------------------------"));
+   PortText = new wxTextCtrl{this,wxID_ANY, wxT ("/dev/ttyUSB0"),wxDefaultPosition,{te.x + 2 * bd.x,wxDefaultSize.y}};
+   sizer->Add(PortText,0,wxLEFT| wxTOP | wxRIGHT | wxBOTTOM,bd.x);
+
+   BtnConnect = new wxButton {this, idBtnConnect, wxT ("Connect")};   
+   sizer->Add(BtnConnect,0,wxLEFT| wxRIGHT | wxBOTTOM | wxALIGN_CENTRE,bd.x);
+
+   vert_sizer->Add (sizer,0,wxALL,5);
+   return 0;
    
-   auto vert_spacer1 =  new wxPanel{this,0,0, 1, 1, 0,  wxT ("") };
-   vert_sizer->Add (vert_spacer1,0,wxALL,10);
-  
-   auto scale_sizer = new wxFlexGridSizer (2,2,4,4);
-   auto scale_spacer =  new wxPanel{this,0,0, 1, 1, 0,  wxT ("") };
-   scale_sizer->Add (scale_spacer,0,wxALL,5);
-   
-   ScaleText =new wxTextCtrl{
-      this,wxID_ANY,
-      wxT ("1.0"),
-      wxDefaultPosition,wxSize (100,wxDefaultSize.GetHeight())
-   };
+}
+
+int panel::make_scale_controls(wxBoxSizer* vert_sizer, int y_in)
+{
+   int y = y_in;
+   quan::two_d::vect<int> const bd = vect_mm_to_px({quan::length::mm{6},quan::length::mm{6}});
+
+   auto sizer = new wxStaticBoxSizer(wxVERTICAL,this,wxT("Bitmap Scale"));
+   wxClientDC dc(this);
+   wxSize te = dc.GetTextExtent(wxT("-------------------------------"));
+   ScaleText = new wxTextCtrl{this,wxID_ANY,wxT ("1.0"),wxDefaultPosition,{te.x + 2 * bd.x,wxDefaultSize.y} };
+   sizer->Add(ScaleText,0,wxLEFT| wxTOP | wxRIGHT | wxBOTTOM,bd.x);
 
    auto min_scale = 1;
    auto max_scale = 100;
    ScaleSlider = new wxSlider (this,idScaleSlider,100,min_scale,max_scale, wxDefaultPosition,wxSize (200,wxDefaultSize.y),
                                wxSL_HORIZONTAL ,wxDefaultValidator,wxT ("Scale"));
-                               
-   scale_sizer->Add (ScaleText,0,wxALL,5);
+   sizer->Add(ScaleSlider,0,wxLEFT| wxRIGHT | wxBOTTOM,bd.x);
+
+   vert_sizer->Add (sizer,0,wxALL,5);
+   return y;
+  
+}
+int panel::make_bitmap_info_controls(wxBoxSizer* vert_sizer,int y_in)
+{
+   quan::two_d::vect<int> const bd = vect_mm_to_px({quan::length::mm{6},quan::length::mm{6}});
+
+   auto sizer = new wxStaticBoxSizer(wxVERTICAL,this,wxT("Bitmap Info"));
    
-   auto scale_label = new wxStaticText{this,wxID_ANY, wxT ("map scale"),wxDefaultPosition, wxDefaultSize, 0};
-   scale_sizer->Add (scale_label,0,wxALL,5);
+   wxClientDC dc(this);
+
+   wxSize te = dc.GetTextExtent(wxT("100000"));
+
+   auto xbox = new wxBoxSizer(wxHORIZONTAL);
+   auto xtext = new wxStaticText(this,-1,wxT("X"));
+   XsizeText = new wxTextCtrl{
+      this,wxID_ANY,
+      wxT ("X size"),
+      wxDefaultPosition,wxSize (te.x,wxDefaultSize.GetHeight())
+   };
+   xbox->Add(xtext,0,wxLEFT| wxTOP | wxBOTTOM,bd.x);
+   xbox->Add(XsizeText,0,wxLEFT| wxTOP | wxRIGHT | wxBOTTOM,bd.x);
+   sizer->Add(xbox,0,wxALL,5);
+  
+   auto ybox = new wxBoxSizer(wxHORIZONTAL);
+   auto ytext = new wxStaticText(this,-1,wxT("Y"));
+   YsizeText=new wxTextCtrl{
+      this,wxID_ANY,
+      wxT ("Y size"),
+      wxDefaultPosition,wxSize (te.x,wxDefaultSize.GetHeight())
+   };
+   ybox->Add(ytext,0,wxLEFT| wxBOTTOM,bd.x);
+   ybox->Add(YsizeText,0, wxLEFT| wxRIGHT | wxBOTTOM,bd.x);
+   sizer->Add(ybox,0,wxALL,5);
+
+   vert_sizer->Add (sizer,0,wxALL,5);
+   return y_in;
+}
+
+panel::panel (wxWindow* parent)
+:  wxScrolledWindow {parent}
+,BtnConnect {nullptr}
+,PortText {nullptr}
+{
+   // add scrolling
+   window_ids::panel = this->GetId();
+   SetBackgroundColour(*wxLIGHT_GREY);
+   //Refresh();
    
-   scale_sizer->Add (ScaleSlider,0,wxALL,5);
-   vert_sizer->Add (scale_sizer);
-   
-   auto & app = wxGetApp();
-   auto doc = app.get_document();
+   auto vert_sizer = new wxBoxSizer (wxVERTICAL);
+  
+   int y = make_port_controls(vert_sizer);
+   y = make_scale_controls(vert_sizer,y);
+   make_bitmap_info_controls(vert_sizer,y);
+  // auto & app = wxGetApp();
+ //  auto doc = app.get_document();
 
    auto horz_sizer = new wxBoxSizer (wxHORIZONTAL);
 
@@ -65,7 +126,6 @@ panel::panel (wxWindow* parent)
    this->SetSizer (horz_sizer);
    this->Layout();
    horz_sizer->Fit (this);
-   
    // this makes the scrollbars show up
    this->FitInside(); // ask the sizer about the needed size
    this->SetScrollRate (5, 5);
@@ -73,13 +133,7 @@ panel::panel (wxWindow* parent)
 
 BEGIN_EVENT_TABLE (panel, wxPanel)
    EVT_BUTTON (idBtnConnect, panel::OnConnectDisconnect)
-  // EVT_CUSTOM (wxEvent_AircraftPositionChanged,wxID_ANY,panel::OnAircraftPositionChanged)
-  // EVT_CUSTOM (wxEvent_RemoteDistanceChanged,wxID_ANY,panel::OnRemoteDistanceChanged)
-  // EVT_CUSTOM (wxEvent_RemoteBearingChanged,wxID_ANY,panel::OnRemoteBearingChanged)
-  // EVT_CUSTOM (wxEvent_RemoteElevationChanged,wxID_ANY,panel::OnRemoteElevationChanged)
- //  EVT_COMMAND_SCROLL (idAltitudeSlider,panel::OnAltitudeSlider)
    EVT_COMMAND_SCROLL (idScaleSlider,panel::OnScaleSlider)
- //  EVT_RADIOBOX (idProtocolChooser,panel::OnProtocolChanged)
 END_EVENT_TABLE()
 
 void panel::OnScaleSlider (wxScrollEvent & event)
@@ -104,13 +158,9 @@ void panel::OnConnectDisconnect (wxCommandEvent &event)
       if (testsp->good()) {
          app.m_sp_CS.Enter();
          wxGetApp().set_sp (testsp);
-//         OnProtocolChanged();
          app.m_sp_CS.Leave();
          testsp =0;
          BtnConnect->SetLabel (wxT ("Disconnect"));
-         // grey ProtocolChooser
-    //     ProtocolChooser->Enable(0,false);
-     //    ProtocolChooser->Enable(1,false);
          return;
       }
       else {
@@ -124,9 +174,6 @@ void panel::OnConnectDisconnect (wxCommandEvent &event)
          app.close_sp();
          app.m_sp_CS.Leave();
       }
-      // ungrey ProtocolChooser
-    //  ProtocolChooser->Enable(0,true);
-    //  ProtocolChooser->Enable(1,true);
       BtnConnect->SetLabel (wxT ("Connect"));
    }
 }

@@ -16,12 +16,7 @@
 struct panel : wxScrolledWindow// wxPanel
 {
   panel (wxWindow * parent); 
-#if 0
-  bool want_cobs_protocol() const
-  {
-      return ProtocolChooser->GetSelection() ==0;
-  }
-#endif
+
 private:
    enum
    {
@@ -29,44 +24,33 @@ private:
       idMenuAbout,
       idTimer,
       idBtnConnect,
-    //  idAltitudeSlider,
-      idScaleSlider,
-   //   idProtocolChooser
+      idScaleSlider
    };
 
    DECLARE_EVENT_TABLE()
 
    void OnConnectDisconnect(wxCommandEvent& event);
  //  void OnAircraftPositionChanged(wxEvent& event);
- //  void OnRemoteDistanceChanged(wxEvent& event);
-  // void OnRemoteElevationChanged(wxEvent& event);
-  // void OnRemoteBearingChanged(wxEvent& event);
-  // void OnAltitudeSlider(wxScrollEvent & event);
    void OnScaleSlider(wxScrollEvent & event);
   // void OnProtocolChanged(wxCommandEvent& event);
-  // void OnProtocolChanged();
-   
+
+
    wxButton* BtnConnect;
    wxTextCtrl* PortText;
-  // wxTextCtrl* LatText;
-  // wxTextCtrl* LonText;
-  // wxTextCtrl* AltText;
 
-  // wxTextCtrl* LocalDistanceText;
-  // wxTextCtrl* LocalBearingText;
- //  wxTextCtrl* LocalElevationText;
-  
-  // wxTextCtrl* RemoteDistanceText;
-  // wxTextCtrl* RemoteBearingText;
-  // wxTextCtrl* RemoteElevationText;
 
+//scaling of the view
    wxTextCtrl* ScaleText;
-
    wxSlider* ScaleSlider;  
   // wxSlider* AltitudeSlider;  
+// size of the bitmap
+   wxTextCtrl* XsizeText;
+   wxTextCtrl* YsizeText;
 
   // wxRadioBox* ProtocolChooser;
-
+   int make_port_controls(wxBoxSizer* s);
+   int make_scale_controls(wxBoxSizer* s,int);
+   int make_bitmap_info_controls(wxBoxSizer* s,int);
 };
 
 

@@ -2,20 +2,15 @@
 #define AEROFOIL_GRAPHICS_WINDOW_HPP_INCLUDED
 
 #include <wx/wx.h>
-
 #include <quan/two_d/vect.hpp>
 #include <quan/three_d/vect.hpp>
 #include <quan/length.hpp>
 #include <quan/reciprocal_length.hpp>
-
 #include <quan/gx/wxwidgets/graphics_context.hpp>
-//#include <quan/gx/simple_drawing.hpp>
 #include <quan/gx/simple_drawing_view.hpp>
 #include <quan/gx/simple_device_window.hpp>
 #include "app.h"
 #include "drawing.hpp"
-
-//#include "aerofoilDoc.hpp"
 
    struct view : wxWindow{
 
@@ -45,20 +40,17 @@
 
       bool get_image_pixel(vect2_d const & event_pos, vect2_i & result_pos);
       quan::gx::abc_color::ptr get_colour(uint8_t colour_id);
-      
+      enum view_mode {Bitmap, Test};
    private:
-
-
-    //  quan::gx::simple_drawing<mm> m_drawing ;
+      void paint_bitmap_view(wxPaintEvent & event);
+      void paint_test_view(wxPaintEvent & event);
       drawing  m_drawing;
       quan::gx::simple_drawing_view m_drawing_view;
       quan::gx::simple_device_window m_device_window;
-      
-      bool  m_aircraft_selected;
-      vect3_mm  m_last_aircraft_position;
-      DECLARE_EVENT_TABLE()
+      view_mode m_view_mode;
       vect2_d m_cur_mouse_pos;
+      bool m_mouse_is_down;
+      DECLARE_EVENT_TABLE()
    };
-
 
 #endif // AEROFOIL_GRAPHICS_WINDOW_HPP_INCLUDED
