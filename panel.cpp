@@ -76,17 +76,31 @@ int panel::make_bitmap_info_controls(wxBoxSizer* vert_sizer,int y_in)
 
    wxSize te = dc.GetTextExtent(wxT("100000"));
 
-   auto xbox = new wxBoxSizer(wxHORIZONTAL);
-   auto xtext = new wxStaticText(this,-1,wxT("X"));
-   XsizeText = new wxTextCtrl{
-      this,wxID_ANY,
-      wxT ("X size"),
-      wxDefaultPosition,wxSize (te.x,wxDefaultSize.GetHeight())
-   };
-   xbox->Add(xtext,0,wxLEFT| wxTOP | wxBOTTOM,bd.x);
-   xbox->Add(XsizeText,0,wxLEFT| wxTOP | wxRIGHT | wxBOTTOM,bd.x);
-   sizer->Add(xbox,0,wxALL,5);
-  
+   {
+      auto idx_box = new wxBoxSizer(wxHORIZONTAL);
+      auto idxtext = new wxStaticText(this,-1,wxT("Current index"));
+      CurrentBitmapIndex = new wxTextCtrl{
+         this,wxID_ANY,
+         wxT ("0"),
+         wxDefaultPosition,wxSize (te.x,wxDefaultSize.GetHeight())
+      };
+      idx_box->Add(idxtext,0,wxLEFT| wxTOP | wxBOTTOM,bd.x);
+      idx_box->Add(CurrentBitmapIndex,0,wxLEFT| wxTOP | wxRIGHT | wxBOTTOM,bd.x);
+      sizer->Add(idx_box,0,wxALL,5);
+   }
+   {
+      auto xbox = new wxBoxSizer(wxHORIZONTAL);
+      auto xtext = new wxStaticText(this,-1,wxT("X"));
+      XsizeText = new wxTextCtrl{
+         this,wxID_ANY,
+         wxT ("X size"),
+         wxDefaultPosition,wxSize (te.x,wxDefaultSize.GetHeight())
+      };
+      xbox->Add(xtext,0,wxLEFT| wxTOP | wxBOTTOM,bd.x);
+      xbox->Add(XsizeText,0,wxLEFT| wxTOP | wxRIGHT | wxBOTTOM,bd.x);
+      sizer->Add(xbox,0,wxALL,5);
+   }
+   {
    auto ybox = new wxBoxSizer(wxHORIZONTAL);
    auto ytext = new wxStaticText(this,-1,wxT("Y"));
    YsizeText=new wxTextCtrl{
@@ -97,8 +111,8 @@ int panel::make_bitmap_info_controls(wxBoxSizer* vert_sizer,int y_in)
    ybox->Add(ytext,0,wxLEFT| wxBOTTOM,bd.x);
    ybox->Add(YsizeText,0, wxLEFT| wxRIGHT | wxBOTTOM,bd.x);
    sizer->Add(ybox,0,wxALL,5);
-
    vert_sizer->Add (sizer,0,wxALL,5);
+   } 
    return y_in;
 }
 
@@ -106,6 +120,11 @@ panel::panel (wxWindow* parent)
 :  wxScrolledWindow {parent}
 ,BtnConnect {nullptr}
 ,PortText {nullptr}
+ ,ScaleText{nullptr}
+  ,ScaleSlider{nullptr}
+,CurrentBitmapIndex{nullptr}
+ ,XsizeText{nullptr}
+,YsizeText{nullptr}
 {
    // add scrolling
    window_ids::panel = this->GetId();

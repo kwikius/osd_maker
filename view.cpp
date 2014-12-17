@@ -23,11 +23,10 @@ BEGIN_EVENT_TABLE(view,wxWindow)
 END_EVENT_TABLE()
 
 view::view(wxWindow* parent)
-: wxWindow(parent, wxID_ANY)
-,m_view_mode {view_mode::Bitmap}
-,m_cur_mouse_pos {0,0}
-,m_mouse_is_down{false}
-{
+     : wxWindow(parent, wxID_ANY)
+     ,m_cur_mouse_pos {0,0}
+,m_mouse_is_down {false}
+,m_current_bitmap_lib_index {-1} {
      window_ids::view = this->GetId();
      this->SetWindowStyle(wxVSCROLL | wxHSCROLL);
      this->SetScrollbar(wxVERTICAL,50,10,110);
@@ -43,19 +42,19 @@ void view::set_scale(double const & v)
      this->Refresh();
 }
 
-quan::gx::abc_color::ptr view::get_colour(uint8_t colour_id)
+quan::gx::abc_color::ptr view::get_colour(osd_image::colour colour_id)
 {
      switch( colour_id) {
-     case document::black :
+     case osd_image::colour::black :
           return quan::gx::rgb::colors::black;
           break;
-     case document::white :
+     case osd_image::colour::white :
           return quan::gx::rgb::colors::white;
           break;
-     case document::grey :
+     case osd_image::colour::grey :
           return quan::gx::rgb::colors::gray;
           break;
-     case document::transparent :
+     case osd_image::colour::transparent :
      default:
           return quan::gx::rgb::colors::blue;
           break;
@@ -75,73 +74,75 @@ void view::paint_bitmap_view(wxPaintEvent & event)
           &this->m_device_window
      };
  
-     auto doc = wxGetApp().get_document();
-    
-     vect2_i num_pixels= doc->get_bitmap_size();
-     vect2_mm pixel_size = doc->get_pixel_size_mm();
-     // bitmap always centered
-     vect2_mm bitmap_size {num_pixels.x * pixel_size.x,num_pixels.y * pixel_size.y};
-     quan::two_d::box<mm> frame {
-          -bitmap_size.x, bitmap_size.y,bitmap_size.x, -bitmap_size.y
-     };
-     vect2_mm px_pos {-bitmap_size.x/2,bitmap_size.y/2};
-     vect2_mm cur_px_pos = px_pos;
-     wc.draw_filled_box( {frame,mm{},quan::gx::rgb::colors::blue});
-     for ( int32_t y = 0; y <=num_pixels.y; ++y) {
-          quan::gx::primitives::simple_line<mm> line {
-               {-bitmap_size.x,px_pos.y - pixel_size.y * y},
-               { bitmap_size.x,px_pos.y - pixel_size.y * y},
-               mm{0},
-               quan::gx::rgb::colors::silver
-          };
-          wc.draw_line(line);
-     }
-     for ( int32_t x = 0; x <=num_pixels.x; ++x) {
-          quan::gx::primitives::simple_line<mm> line {
-               {px_pos.x + pixel_size.x * x,bitmap_size.y},
-               {px_pos.x + pixel_size.x * x,-bitmap_size.y},
-               mm{0},
-               quan::gx::rgb::colors::silver
-          };
-          wc.draw_line(line);
-     }
+     auto current_index = this->get_current_bitmap_lib_index();
+     // ok checked for -1
 
-     mm border {1};
-     for ( int32_t y = 0; y <num_pixels.y; ++y) {
- 
-          for ( int32_t x = 0; x <num_pixels.x; ++x) {
-               // add color
-               uint8_t colour;
-               doc->get_pixel_colour(vect2_i {x,y},colour);
-               quan::two_d::box<mm> cur_px_box {
-                    cur_px_pos.x + border,
-                    cur_px_pos.y - border,
-                    cur_px_pos.x + pixel_size.x -border,
-                    cur_px_pos.y - pixel_size.y +border
-               };
- 
-               quan::gx::primitives::box<mm> cur_px {cur_px_box,mm{0},get_colour(colour)};
-               wc.draw_filled_box( {cur_px});
-               cur_px_pos.x += pixel_size.x;
+     if( current_index >=0 ) {
+          auto doc = wxGetApp().get_document();
+          osd_image::size_type num_pixels;
+          if (!doc->get_bitmap_size(current_index,num_pixels)) {
+               return ;
           }
-          cur_px_pos.x = px_pos.x;
-          cur_px_pos.y -= pixel_size.y;
+          // should be view
+          vect2_mm pixel_size = doc->get_pixel_size_mm();
+          // bitmap always centered
+          vect2_mm bitmap_size {num_pixels.x * pixel_size.x,num_pixels.y * pixel_size.y};
+          quan::two_d::box<mm> frame {
+               -bitmap_size.x, bitmap_size.y,bitmap_size.x, -bitmap_size.y
+          };
+          vect2_mm px_pos {-bitmap_size.x/2,bitmap_size.y/2};
+          vect2_mm cur_px_pos = px_pos;
+          wc.draw_filled_box( {frame,mm{},quan::gx::rgb::colors::blue});
+          for ( size_t y = 0; y <=num_pixels.y; ++y) {
+               quan::gx::primitives::simple_line<mm> line {
+                    {-bitmap_size.x,px_pos.y - pixel_size.y * y},
+                    { bitmap_size.x,px_pos.y - pixel_size.y * y},
+                    mm{0},
+                    quan::gx::rgb::colors::silver
+               };
+               wc.draw_line(line);
+          }
+          for ( size_t x = 0; x <=num_pixels.x; ++x) {
+               quan::gx::primitives::simple_line<mm> line {
+                    {px_pos.x + pixel_size.x * x,bitmap_size.y},
+                    {px_pos.x + pixel_size.x * x,-bitmap_size.y},
+                    mm{0},
+                    quan::gx::rgb::colors::silver
+               };
+               wc.draw_line(line);
+          }
+ 
+          mm border {1};
+          for ( size_t y = 0; y <num_pixels.y; ++y) {
+ 
+               for ( size_t x = 0; x <num_pixels.x; ++x) {
+                    // add color
+                    osd_image::colour colour;
+                    doc->get_pixel_colour(current_index,osd_image::pos_type {x,y},colour);
+                    quan::two_d::box<mm> cur_px_box {
+                         cur_px_pos.x + border,
+                         cur_px_pos.y - border,
+                         cur_px_pos.x + pixel_size.x -border,
+                         cur_px_pos.y - pixel_size.y +border
+                    };
+ 
+                    quan::gx::primitives::box<mm> cur_px {cur_px_box,mm{0},get_colour(colour)};
+                    wc.draw_filled_box( {cur_px});
+                    cur_px_pos.x += pixel_size.x;
+               }
+               cur_px_pos.x = px_pos.x;
+               cur_px_pos.y -= pixel_size.y;
+          }
      }
+
 }
-
-void view::paint_test_view(wxPaintEvent & event)
-{}
-
+ 
+ 
 void view::OnPaint(wxPaintEvent & event)
 {
-   if (m_view_mode == view_mode::Bitmap){
-      paint_bitmap_view(event);
-      
-   }else{
-      paint_test_view(event);
-   }
+     paint_bitmap_view(event);
 }
-
+ 
 // update device_window size data when size changes
 void view::OnSize(wxSizeEvent & event)
 {
@@ -191,8 +192,13 @@ void view::OnVScroll(wxScrollWinEvent & event)
    if returns true then event_pos is over a valid image pixel
    The image pixel is put int result_pos
 */
-bool view::get_image_pixel(vect2_d const & event_pos, vect2_i & result_pos)
+bool view::get_image_pixel(vect2_d const & event_pos, osd_image::pos_type & result_pos)
 {
+
+     auto current_index = this->get_current_bitmap_lib_index();
+     if (current_index == -1) {
+          return false;
+     }
      quan::gx::wxwidgets::graphics_info_context ic {
           &this->m_drawing,
           &this->m_drawing_view,
@@ -202,15 +208,17 @@ bool view::get_image_pixel(vect2_d const & event_pos, vect2_i & result_pos)
      // in drawing
      auto drawing_pos = ic.device_to_drawing(event_pos);
      auto doc = wxGetApp().get_document();
-     vect2_i num_pixels= doc->get_bitmap_size();
+ 
+     osd_image::size_type num_pixels;
+     doc->get_bitmap_size(current_index,num_pixels);
      vect2_mm pixel_size = doc->get_pixel_size_mm();
      // bitmap always centered
      vect2_mm bitmap_size {num_pixels.x * pixel_size.x,num_pixels.y * pixel_size.y};
      vect2_mm offset {-bitmap_size.x/2 + pixel_size.x/2,bitmap_size.y/2 -pixel_size.y/2};
-     for ( int32_t y = 0; y <num_pixels.y; ++y) {
+     for ( size_t y = 0; y <num_pixels.y; ++y) {
           mm py = offset.y  - pixel_size.y * y;
           if ( quan::abs( drawing_pos.y - py) < (pixel_size.y /2)) {
-               for ( int32_t x = 0; x <num_pixels.x; ++x) {
+               for ( size_t x = 0; x <num_pixels.x; ++x) {
                     mm px = offset.x + pixel_size.x * x;
                     if ( quan::abs( drawing_pos.x - px) < (pixel_size.x /2)) {
                          result_pos.x = x;
@@ -226,10 +234,10 @@ bool view::get_image_pixel(vect2_d const & event_pos, vect2_i & result_pos)
 void view::OnMouseLeftDown(wxMouseEvent & event)
 {
      event.Skip();
-    m_mouse_is_down=true;
-    // auto doc = wxGetApp().get_document();
-   //  auto p = new fontmap_dialog(this);
-   //  p->Show();
+     m_mouse_is_down=true;
+     // auto doc = wxGetApp().get_document();
+     //  auto p = new fontmap_dialog(this);
+     //  p->Show();
 }
 /*
    get image pixel if any
@@ -237,33 +245,35 @@ void view::OnMouseLeftDown(wxMouseEvent & event)
 void view::OnChar(wxKeyEvent & event)
 {
      event.Skip();
- 
-     vect2_i result_pos;
-     if ( m_mouse_is_down && 
-         (get_image_pixel(m_cur_mouse_pos,result_pos) == true)
-         ) {
-          // wxMessageBox(_T("GotOne"));
+     auto index = this->get_current_bitmap_lib_index();
+     if ( index == -1) {
+          return ;
+     }
+     osd_image::pos_type result_pos;
+     if ( m_mouse_is_down &&
+               (get_image_pixel(m_cur_mouse_pos,result_pos) == true)
+        ) {
           int ch = toupper(event.GetKeyCode());
-          int colour = -1;
+          osd_image::colour colour = osd_image::colour::invalid;
           switch(ch) {
           case 'B':
-               colour = document::black;
+               colour = osd_image::colour::black;
                break;
           case 'W':
-               colour = document::white;
+               colour = osd_image::colour::white;
                break;
           case 'T':
-               colour = document::transparent;
+               colour = osd_image::colour::transparent;
                break;
           case 'G':
-               colour = document::grey;
+               colour = osd_image::colour::grey;
                break;
           default:
                break;
           }
-          if ( colour != -1) {
+          if ( colour != osd_image::colour::invalid) {
                auto doc = wxGetApp().get_document();
-               doc->set_pixel_colour(result_pos, colour);
+               doc->set_pixel_colour(index,result_pos, colour);
                this->Refresh();
           }
      }
@@ -279,6 +289,8 @@ void view::OnMouseMove(wxMouseEvent & event)
      m_cur_mouse_pos.x = event.GetX();
      m_cur_mouse_pos.y = event.GetY();
 }
+ 
+ 
  
  
  

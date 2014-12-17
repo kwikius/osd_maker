@@ -33,17 +33,13 @@ private:
  //  void OnAircraftPositionChanged(wxEvent& event);
    void OnScaleSlider(wxScrollEvent & event);
   // void OnProtocolChanged(wxCommandEvent& event);
-
-
    wxButton* BtnConnect;
    wxTextCtrl* PortText;
-
-
 //scaling of the view
    wxTextCtrl* ScaleText;
    wxSlider* ScaleSlider;  
-  // wxSlider* AltitudeSlider;  
-// size of the bitmap
+
+   wxTextCtrl* CurrentBitmapIndex;
    wxTextCtrl* XsizeText;
    wxTextCtrl* YsizeText;
 

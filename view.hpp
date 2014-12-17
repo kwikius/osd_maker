@@ -10,6 +10,7 @@
 #include <quan/gx/simple_drawing_view.hpp>
 #include <quan/gx/simple_device_window.hpp>
 #include "app.h"
+#include "document.hpp"
 #include "drawing.hpp"
 
    struct view : wxWindow{
@@ -38,18 +39,31 @@
       typedef quan::two_d::vect<per_mm>       vect2_per_mm;
       typedef quan::three_d::vect<mm>             vect3_mm;
 
-      bool get_image_pixel(vect2_d const & event_pos, vect2_i & result_pos);
-      quan::gx::abc_color::ptr get_colour(uint8_t colour_id);
-      enum view_mode {Bitmap, Test};
+      bool get_image_pixel(vect2_d const & event_pos, osd_image::pos_type & result_pos);
+      quan::gx::abc_color::ptr get_colour(osd_image::colour colour_id);
+      int32_t get_current_bitmap_lib_index(){
+          if (wxGetApp().get_document()->have_image_lib()){
+             return m_current_bitmap_lib_index;
+          }else{
+             return -1;
+          }
+      }
+      void  set_current_bitmap_lib_index(int32_t val)
+      {
+         m_current_bitmap_lib_index = val;
+      }
+      
+      //enum view_mode {Bitmap, Test};
    private:
       void paint_bitmap_view(wxPaintEvent & event);
       void paint_test_view(wxPaintEvent & event);
       drawing  m_drawing;
       quan::gx::simple_drawing_view m_drawing_view;
       quan::gx::simple_device_window m_device_window;
-      view_mode m_view_mode;
+     // view_mode m_view_mode;
       vect2_d m_cur_mouse_pos;
       bool m_mouse_is_down;
+      int32_t  m_current_bitmap_lib_index;
       DECLARE_EVENT_TABLE()
    };
 

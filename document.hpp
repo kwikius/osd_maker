@@ -17,73 +17,121 @@
 */
   
 
-
 // either a font element( with fixed image size)
 // or a bitmap_lib allowing images of different sizes
 // have num_img
 // display imag
 
+struct osd_null_bitmap;
 struct osd_image{
     typedef quan::two_d::vect<size_t> pos_type;
     typedef quan::two_d::vect<size_t> size_type;
     enum class colour{
+      invalid = -1,
       grey = 0b00,
       black = 0b01,
       white = 0b10,
       transparent = 0b11
     };
-    virtual size_type get_size()const;
+    virtual size_type get_size()const=0;
     //false if out of range
-    virtual bool get_colour( pos_type const & p, colour & c) const;
+    virtual bool get_pixel_colour( pos_type const & p, colour & c) const=0;
     // false if out of range
-    virtual bool set_colour( pos_type const & p, colour c);
-
+    virtual bool set_pixel_colour( pos_type const & p, colour c)=0;
+    static osd_null_bitmap* get_null_bitmap(){return m_null_bitmap;}
+    // delete usually 
+    virtual void destroy() = 0;
+    osd_image(){}
+protected:
+    virtual ~osd_image(){}
+private:
+   static osd_null_bitmap* m_null_bitmap;
+   friend void create_osd_null_bitmap();
    // convert to wxbitmap or rebuild bitmap from data
    // convert to wximage or rebuild image from
+   // save as ..
+};
 
+// name ?
+struct osd_bitmap : osd_image{
+   
+   osd_bitmap(size_type const & size_in) 
+   : m_size{size_in}, m_data{size_in.x * size_in.y,colour::transparent}
+   {}
+   size_type get_size() const { return m_size;}
+   bool get_pixel_colour( pos_type const & p, colour & c) const;
+   bool set_pixel_colour( pos_type const & p, colour c);
+   void destroy() { delete this;}
+   ~osd_bitmap(){}
+   private:
+   size_type m_size;
+   std::vector<colour> m_data;
+
+};
+/*
+use to fill lib
+*/
+//void create_osd_null_bitmap();
+struct osd_null_bitmap : osd_image{
+   size_type get_size() const { return size_type{0,0};}
+   bool get_pixel_colour( pos_type const & p, colour & c) const { c = colour::transparent; return true;}
+   bool set_pixel_colour( pos_type const & p, colour c) { return false;}
+   void destroy() { }
+   private: 
+      osd_null_bitmap(){}
+   friend void create_osd_null_bitmap();
+   
 };
 
 // virtual base for fonts and bitmap libs
 // in practise either a font or an image_lib
-struct abc_image_container{
-   virtual size_t get_num_elements()const;
-   // at
+ // use map?
+// to look up as a string use index to string
+struct image_container{
+   enum class type { Undefined, Font, ImageLib};
+   virtual size_t get_num_elements()const =0;
+   virtual osd_image * at(size_t pos) const=0;
+   virtual osd_image *& at(size_t pos) =0;
+   virtual ~image_container(){}
 };
+
+ struct bitmap_lib : image_container{
+   size_t get_num_elements() const { return m_elements.size();}
+   osd_image * at(size_t pos)const { return m_elements.at(pos);}
+   osd_image *& at(size_t pos) { return m_elements.at(pos);}
+   // assume p created on heap and takes ownership
+   void push_back(osd_image* p) { m_elements.push_back(p);}
+   bitmap_lib(){}
+   ~bitmap_lib()
+   {
+      for (osd_image* p : m_elements){ p->destroy();}
+   }
+  private:
+   std::vector <osd_image *> m_elements;
+ };
+
 struct document{
-   // start with a bitmap
-   // load 
    document();
    quan::two_d::vect<quan::length::mm> const & 
       get_map_size() const ;
    void set_map_size( quan::two_d::vect<quan::length::mm> const & size);
-   quan::two_d::vect<uint32_t> const & 
-      get_bitmap_size()const;
-   quan::two_d::vect<quan::length::mm> const & 
-      get_pixel_size_mm()const;
-   bool get_pixel_colour(quan::two_d::vect<int> const & pos,  uint8_t & colour);
-   bool set_pixel_colour(quan::two_d::vect<int> const & pos, uint8_t colour);
-   static constexpr uint8_t grey = 0;
-   static constexpr uint8_t black = 1;
-   static constexpr uint8_t white = 2;
-   static constexpr uint8_t transparent = 3;
-   
-   bool have_image(){ return m_have_image;}
+    
+    bool  get_bitmap_size(int32_t idx, osd_image::size_type &)const;
+    quan::two_d::vect<quan::length::mm> const & 
+    get_pixel_size_mm()const;
+   bool get_pixel_colour(int32_t idx,osd_image::pos_type const & pos, osd_image::colour& col);
+   bool set_pixel_colour(int32_t idx,osd_image::pos_type const & pos, osd_image::colour);
+
+   bool have_image_lib(){ return m_image_container != nullptr;}
    bool load_mcm_font_file (std::istream & in);
-   bool load_png_file(wxString const &path);
+   bool load_png_file(int32_t pos,wxString const &path);
+   bool init_bitmap_lib(image_container::type t);
    private:
 
    quan::two_d::vect<quan::length::mm> m_map_size;
-  // quan::length::mm  m_click_bucket;
-   quan::two_d::vect<uint32_t> m_bitmap_size; //{12,18};
-   // size of a single pixel in the view
    quan::two_d::vect<quan::length::mm> m_pixel_size; // {mm{10},mm{10}};
-//
-   std::vector<uint8_t> pixel_array;
-
-
-   wxImage image;
-   bool m_have_image;
-   bool m_have_font;
+   image_container * m_image_container;
+   image_container::type m_container_type;
       
 };
 
