@@ -48,10 +48,8 @@
              return -1;
           }
       }
-      void  set_current_bitmap_lib_index(int32_t val)
-      {
-         m_current_bitmap_lib_index = val;
-      }
+      void  set_current_bitmap_lib_index(int32_t val);
+      void  set_current_bitmap_size(osd_image::size_type const & size);
       
       //enum view_mode {Bitmap, Test};
    private:

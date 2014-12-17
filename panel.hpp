@@ -13,10 +13,12 @@
 #include <wx/textctrl.h>
 #include <wx/radiobox.h>
 
+struct view;
 struct panel : wxScrolledWindow// wxPanel
 {
   panel (wxWindow * parent); 
 
+   
 private:
    enum
    {
@@ -47,6 +49,8 @@ private:
    int make_port_controls(wxBoxSizer* s);
    int make_scale_controls(wxBoxSizer* s,int);
    int make_bitmap_info_controls(wxBoxSizer* s,int);
+
+   friend struct view;
 };
 
 

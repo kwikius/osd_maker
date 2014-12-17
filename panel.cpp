@@ -53,7 +53,8 @@ int panel::make_scale_controls(wxBoxSizer* vert_sizer, int y_in)
    auto sizer = new wxStaticBoxSizer(wxVERTICAL,this,wxT("Bitmap Scale"));
    wxClientDC dc(this);
    wxSize te = dc.GetTextExtent(wxT("-------------------------------"));
-   ScaleText = new wxTextCtrl{this,wxID_ANY,wxT ("1.0"),wxDefaultPosition,{te.x + 2 * bd.x,wxDefaultSize.y} };
+   ScaleText = new wxTextCtrl{this,wxID_ANY,wxT ("1.0"),wxDefaultPosition,{te.x + 2 * bd.x,wxDefaultSize.y}
+   ,wxTE_READONLY | wxTE_RIGHT };
    sizer->Add(ScaleText,0,wxLEFT| wxTOP | wxRIGHT | wxBOTTOM,bd.x);
 
    auto min_scale = 1;
@@ -74,27 +75,29 @@ int panel::make_bitmap_info_controls(wxBoxSizer* vert_sizer,int y_in)
    
    wxClientDC dc(this);
 
-   wxSize te = dc.GetTextExtent(wxT("100000"));
+   wxSize te = dc.GetTextExtent(wxT("10000000"));
 
    {
       auto idx_box = new wxBoxSizer(wxHORIZONTAL);
       auto idxtext = new wxStaticText(this,-1,wxT("Current index"));
       CurrentBitmapIndex = new wxTextCtrl{
          this,wxID_ANY,
-         wxT ("0"),
-         wxDefaultPosition,wxSize (te.x,wxDefaultSize.GetHeight())
+         wxT ("~"),
+         wxDefaultPosition,wxSize {te.x,wxDefaultSize.GetHeight()}
+         ,wxTE_READONLY | wxTE_RIGHT
       };
-      idx_box->Add(idxtext,0,wxLEFT| wxTOP | wxBOTTOM,bd.x);
-      idx_box->Add(CurrentBitmapIndex,0,wxLEFT| wxTOP | wxRIGHT | wxBOTTOM,bd.x);
+      idx_box->Add(idxtext,0,wxLEFT| wxTOP ,bd.x);
+      idx_box->Add(CurrentBitmapIndex,0,wxLEFT| wxTOP | wxRIGHT ,bd.x);
       sizer->Add(idx_box,0,wxALL,5);
    }
    {
       auto xbox = new wxBoxSizer(wxHORIZONTAL);
-      auto xtext = new wxStaticText(this,-1,wxT("X"));
+      auto xtext = new wxStaticText(this,-1,wxT("num pixels X  "));
       XsizeText = new wxTextCtrl{
          this,wxID_ANY,
-         wxT ("X size"),
-         wxDefaultPosition,wxSize (te.x,wxDefaultSize.GetHeight())
+         wxT ("~"),
+         wxDefaultPosition,wxSize{te.x,wxDefaultSize.GetHeight()}
+         ,wxTE_READONLY | wxTE_RIGHT
       };
       xbox->Add(xtext,0,wxLEFT| wxTOP | wxBOTTOM,bd.x);
       xbox->Add(XsizeText,0,wxLEFT| wxTOP | wxRIGHT | wxBOTTOM,bd.x);
@@ -102,11 +105,12 @@ int panel::make_bitmap_info_controls(wxBoxSizer* vert_sizer,int y_in)
    }
    {
    auto ybox = new wxBoxSizer(wxHORIZONTAL);
-   auto ytext = new wxStaticText(this,-1,wxT("Y"));
+   auto ytext = new wxStaticText(this,-1,wxT("num pixels Y  "));
    YsizeText=new wxTextCtrl{
       this,wxID_ANY,
-      wxT ("Y size"),
-      wxDefaultPosition,wxSize (te.x,wxDefaultSize.GetHeight())
+      wxT ("~"),
+      wxDefaultPosition,wxSize {te.x,wxDefaultSize.GetHeight()}
+      ,wxTE_READONLY | wxTE_RIGHT
    };
    ybox->Add(ytext,0,wxLEFT| wxBOTTOM,bd.x);
    ybox->Add(YsizeText,0, wxLEFT| wxRIGHT | wxBOTTOM,bd.x);

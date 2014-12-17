@@ -31,6 +31,7 @@ public:
    document* get_document()const {assert(m_document);return m_document;}
    main_frame* get_main_frame()const{assert(m_frame); return m_frame;}
    view * get_view()const;
+   
    void set_sp(quan::serial_port* sp_in)
    {
       assert(! have_sp());

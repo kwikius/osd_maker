@@ -156,7 +156,7 @@ void main_frame::OnFileOpen(wxCommandEvent &event)
           wxFD_OPEN | wxFD_FILE_MUST_EXIST | wxFD_CHANGE_DIR,
           wxDefaultPosition,
           wxDefaultSize,
-          wxT("Open File Dialog")
+          wxT("Open Bitmap File Dialog")
      };
 
      if ( (fd.ShowModal() == wxID_OK)  ) {
@@ -167,14 +167,16 @@ void main_frame::OnFileOpen(wxCommandEvent &event)
                     if (!app.get_document()->init_bitmap_lib(image_container::type::ImageLib)) {
                          wxMessageBox(wxT("Load bitmap_lib failed"));
                          return;
-                    }
-                    idx = 0;
-                    app.get_view()->set_current_bitmap_lib_index(idx);
+                    }  
                }
                wxString path = fd.GetPath();
-               if (! app.get_document()->load_png_file(idx,path)) {
-                    wxMessageBox(wxT("Load png 1 failed"));
+               if (! app.get_document()->load_png_file(++idx,path)) {
+                    wxMessageBox(wxString::Format(wxT("Load \"%s\" failed"),path.wc_str()));
                }else{
+                  app.get_view()->set_current_bitmap_lib_index(idx);
+                  osd_image::pos_type size;
+                  app.get_document()->get_bitmap_size(idx,size);
+                  app.get_view()->set_current_bitmap_size(size);
                   app.get_view()->Refresh();
                }
           } else {

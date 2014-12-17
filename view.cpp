@@ -42,6 +42,18 @@ void view::set_scale(double const & v)
      this->Refresh();
 }
 
+void  view::set_current_bitmap_lib_index(int32_t val)
+{
+   m_current_bitmap_lib_index = val;
+   wxGetApp().get_panel()->CurrentBitmapIndex->ChangeValue (wxString::Format (wxT ("%d"),val));
+}
+
+void  view::set_current_bitmap_size(osd_image::size_type const & size)
+{
+   wxGetApp().get_panel()->XsizeText->ChangeValue (wxString::Format (wxT ("%d"),size.x));
+   wxGetApp().get_panel()->YsizeText->ChangeValue (wxString::Format (wxT ("%d"),size.y));
+}
+
 quan::gx::abc_color::ptr view::get_colour(osd_image::colour colour_id)
 {
      switch( colour_id) {
