@@ -15,6 +15,7 @@
 
 #include <quan/serial_port.hpp>
 #include <wx/thread.h>
+#include <wx/config.h>
 
 class document;
 class main_frame;
@@ -50,10 +51,13 @@ public:
   }
   panel* get_panel() const;
   wxCriticalSection m_sp_CS;
+  wxConfig* get_config()const {return m_app_config;}
 private:
    main_frame* m_frame;
    document* m_document;
    quan::serial_port* m_sp;
+   wxConfig* m_app_config;
+   void init_mainframe();
 };
 
 DECLARE_APP(OsdBmpApp)

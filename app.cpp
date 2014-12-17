@@ -24,11 +24,18 @@
 
 IMPLEMENT_APP(OsdBmpApp);
 
+void OsdBmpApp::init_mainframe()
+{
+    wxSize frame_size = wxDefaultSize;
+    m_app_config->Read(wxT("/MainFrame/InitialWidth"),&frame_size.x);
+    m_app_config->Read(wxT("/MainFrame/InitialHeight"),&frame_size.y);
+    m_frame = new main_frame(0L, wxT("OSD BitmapMaker"),frame_size);
+    m_frame->Show();
+}
 
 bool OsdBmpApp::OnInit()
 {
-    m_frame = new main_frame(0L, _("OSD BitmapMaker"));
-    m_frame->Show();
+    init_mainframe();
     return true;
 }
 
@@ -39,6 +46,7 @@ OsdBmpApp::OsdBmpApp()
 : m_frame{nullptr}
 , m_document{new document}
 , m_sp{nullptr}
+, m_app_config {new wxConfig(wxT("OSD BitmapMaker"))}
 {} 
 
 panel * OsdBmpApp::get_panel() const
@@ -55,4 +63,5 @@ panel * OsdBmpApp::get_panel() const
 OsdBmpApp::~OsdBmpApp()
 {
    delete m_document;
+   delete m_app_config;
 }

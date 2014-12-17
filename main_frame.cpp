@@ -60,8 +60,8 @@ BEGIN_EVENT_TABLE(main_frame, wxFrame)
     EVT_TIMER(idTimer, main_frame::OnTimer)
 END_EVENT_TABLE()
 
-main_frame::main_frame(wxFrame *frame, const wxString& title)
-    : wxFrame(frame, -1, title)
+main_frame::main_frame(wxFrame *frame, const wxString& title, wxSize const & size)
+    : wxFrame(frame, -1, title, wxDefaultPosition, size )
      , m_splitter{nullptr}
       ,Timer{nullptr}
       ,m_sp_in_thread{nullptr}
@@ -128,11 +128,18 @@ bool main_frame::Destroy()
 
 void main_frame::OnClose(wxCloseEvent &event)
 {
+
+
     Destroy();
 }
 
 void main_frame::OnQuit(wxCommandEvent &event)
 {
+    wxSize frame_size = this->GetSize();
+    auto config = wxGetApp().get_config();
+    config->Write(wxT("/MainFrame/InitialWidth"),frame_size.x);
+    config->Write(wxT("/MainFrame/InitialHeight"),frame_size.y);
+
     Destroy();
 }
 
