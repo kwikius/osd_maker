@@ -7,6 +7,7 @@ struct window_ids{
  
    static wxWindowID view;
    static wxWindowID panel;
+   static wxWindowID bitmap_preview;
 
 };
 

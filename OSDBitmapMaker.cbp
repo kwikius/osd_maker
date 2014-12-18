@@ -44,6 +44,8 @@
 		<Unit filename="README" />
 		<Unit filename="app.cpp" />
 		<Unit filename="app.h" />
+		<Unit filename="bitmap_preview.cpp" />
+		<Unit filename="bitmap_preview.hpp" />
 		<Unit filename="document.cpp" />
 		<Unit filename="document.hpp" />
 		<Unit filename="drawing.cpp" />
@@ -53,13 +55,16 @@
 		<Unit filename="fontmap_dialog.hpp" />
 		<Unit filename="main_frame.cpp" />
 		<Unit filename="main_frame.h" />
+		<Unit filename="main_frame_splitter.cpp" />
+		<Unit filename="main_frame_splitter.hpp" />
 		<Unit filename="mcm_file.cpp" />
+		<Unit filename="osd_image.hpp" />
 		<Unit filename="panel.cpp" />
 		<Unit filename="panel.hpp" />
+		<Unit filename="panel_splitter.cpp" />
+		<Unit filename="panel_splitter.hpp" />
 		<Unit filename="sp_in_thread.cpp" />
 		<Unit filename="sp_in_thread.hpp" />
-		<Unit filename="splitter.cpp" />
-		<Unit filename="splitter.hpp" />
 		<Unit filename="view.cpp" />
 		<Unit filename="view.hpp" />
 		<Unit filename="window_ids.cpp" />

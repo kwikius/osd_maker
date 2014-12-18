@@ -21,6 +21,7 @@ class document;
 class main_frame;
 class panel;
 struct view;
+struct bitmap_preview;
 
 class OsdBmpApp : public wxApp
 {
@@ -31,7 +32,11 @@ public:
    document* get_document()const {assert(m_document);return m_document;}
    main_frame* get_main_frame()const{assert(m_frame); return m_frame;}
    view * get_view()const;
-   
+   panel* get_panel() const;
+   bitmap_preview* get_bitmap_preview()const;
+    
+   wxConfig* get_config()const {return m_app_config;}
+
    void set_sp(quan::serial_port* sp_in)
    {
       assert(! have_sp());
@@ -50,9 +55,9 @@ public:
        assert( have_sp());
        return m_sp;
   }
-  panel* get_panel() const;
+  
   wxCriticalSection m_sp_CS;
-  wxConfig* get_config()const {return m_app_config;}
+  
 private:
    main_frame* m_frame;
    document* m_document;

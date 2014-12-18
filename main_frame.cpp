@@ -21,7 +21,7 @@
 #include "sp_in_thread.hpp"
 
 #include "app.h"
-#include "splitter.hpp"
+#include "main_frame_splitter.hpp"
 #include "sp_in_thread.hpp"
 
 //helper functions
@@ -66,7 +66,7 @@ main_frame::main_frame(wxFrame *frame, const wxString& title, wxSize const & siz
 ,Timer {nullptr}
 ,m_sp_in_thread {nullptr} {
 
-     this->m_splitter = new splitter(this);
+     this->m_splitter = new main_frame_splitter(this);
      create_menus();
      create_statusbar();
 
@@ -178,6 +178,7 @@ void main_frame::OnFileOpen(wxCommandEvent &event)
                   app.get_document()->get_bitmap_size(idx,size);
                   app.get_view()->set_current_bitmap_size(size);
                   app.get_view()->Refresh();
+                  app.get_bitmap_preview()->Refresh();
                }
           } else {
                if ( fd.GetFilterIndex() == 1) {

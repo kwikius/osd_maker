@@ -22,12 +22,12 @@ bool osd_bitmap::set_pixel_colour( pos_type const & p, osd_image::colour c)
    return true;
 }
  
-void create_osd_null_bitmap()
+void create_osd_null_image()
 {
-   osd_image::m_null_bitmap =  new osd_null_bitmap();
+   osd_image::m_null_image =  new osd_null_image();
 }
  
-osd_null_bitmap* osd_image::m_null_bitmap = nullptr;
+osd_null_image* osd_image::m_null_image = nullptr;
 
 bool document::init_bitmap_lib(image_container::type t)
 {
@@ -41,14 +41,14 @@ bool document::init_bitmap_lib(image_container::type t)
 }
  
 document::document()
- : m_map_size {quan::length::mm{500},quan::length::mm{500}}
+ : m_page_size {quan::length::mm{500},quan::length::mm{500}}
 , m_pixel_size {quan::length::mm{10},quan::length::mm{10}}
 , m_image_container {nullptr} 
 , m_container_type{image_container::type::Undefined}
 {
   // init the drawing image_container
    // or load a bitmap
-     create_osd_null_bitmap();
+     create_osd_null_image();
 }
  
 bool
@@ -84,7 +84,7 @@ document::load_png_file(int32_t pos, wxString const & path)
          return false;
      }
      while( blib->get_num_elements() <= static_cast<size_t>(pos)) {
-          blib->push_back(osd_image::get_null_bitmap());
+          blib->push_back(osd_image::get_null_image());
      }
  
      // create the osd bitmap
@@ -120,15 +120,15 @@ document::load_png_file(int32_t pos, wxString const & path)
 }
  
 quan::two_d::vect<quan::length::mm> const &
-document::get_map_size() const
+document::get_page_size() const
 {
-     return m_map_size;
+     return m_page_size;
 }
  
 void
-document::set_map_size( quan::two_d::vect<quan::length::mm> const & size)
+document::set_page_size( quan::two_d::vect<quan::length::mm> const & size)
 {
-     m_map_size = size;
+     m_page_size = size;
 }
  
 quan::two_d::vect<quan::length::mm> const &
@@ -152,7 +152,7 @@ bool  document::get_bitmap_size(int32_t idx, osd_image::size_type & size)const
 }
 
 bool
-document::get_pixel_colour(int32_t idx,osd_image::pos_type const & pos,osd_image::colour& colour)
+document::get_pixel_colour(int32_t idx,osd_image::pos_type const & pos,osd_image::colour& colour)const
 {
      if ( this->m_image_container == nullptr) {
           return false;

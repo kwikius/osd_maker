@@ -25,8 +25,8 @@ quan::two_d::vect<int> vect_mm_to_px(quan::two_d::vect<quan::length::mm> const &
    return result;
 }
 }
-//return y pos
-int panel::make_port_controls(wxBoxSizer* vert_sizer)
+
+void panel::make_port_controls(wxBoxSizer* vert_sizer)
 {
    quan::two_d::vect<int> const bd = vect_mm_to_px({quan::length::mm{6},quan::length::mm{6}});
 
@@ -41,13 +41,11 @@ int panel::make_port_controls(wxBoxSizer* vert_sizer)
    sizer->Add(BtnConnect,0,wxLEFT| wxRIGHT | wxBOTTOM | wxALIGN_CENTRE,bd.x);
 
    vert_sizer->Add (sizer,0,wxALL,5);
-   return 0;
-   
 }
 
-int panel::make_scale_controls(wxBoxSizer* vert_sizer, int y_in)
+void panel::make_scale_controls(wxBoxSizer* vert_sizer)
 {
-   int y = y_in;
+
    quan::two_d::vect<int> const bd = vect_mm_to_px({quan::length::mm{6},quan::length::mm{6}});
 
    auto sizer = new wxStaticBoxSizer(wxVERTICAL,this,wxT("Bitmap Scale"));
@@ -64,19 +62,17 @@ int panel::make_scale_controls(wxBoxSizer* vert_sizer, int y_in)
    sizer->Add(ScaleSlider,0,wxLEFT| wxRIGHT | wxBOTTOM,bd.x);
 
    vert_sizer->Add (sizer,0,wxALL,5);
-   return y;
-  
 }
-int panel::make_bitmap_info_controls(wxBoxSizer* vert_sizer,int y_in)
+
+void panel::make_bitmap_info_controls(wxBoxSizer* vert_sizer)
 {
    quan::two_d::vect<int> const bd = vect_mm_to_px({quan::length::mm{6},quan::length::mm{6}});
 
-   auto sizer = new wxStaticBoxSizer(wxVERTICAL,this,wxT("Bitmap Info"));
+   auto sizer = new wxStaticBoxSizer(wxVERTICAL,this,wxT("Bitmap Lib Info"));
    
    wxClientDC dc(this);
 
    wxSize te = dc.GetTextExtent(wxT("10000000"));
-
    {
       auto idx_box = new wxBoxSizer(wxHORIZONTAL);
       auto idxtext = new wxStaticText(this,-1,wxT("Current index"));
@@ -117,7 +113,6 @@ int panel::make_bitmap_info_controls(wxBoxSizer* vert_sizer,int y_in)
    sizer->Add(ybox,0,wxALL,5);
    vert_sizer->Add (sizer,0,wxALL,5);
    } 
-   return y_in;
 }
 
 panel::panel (wxWindow* parent)
@@ -130,28 +125,27 @@ panel::panel (wxWindow* parent)
  ,XsizeText{nullptr}
 ,YsizeText{nullptr}
 {
-   // add scrolling
+
    window_ids::panel = this->GetId();
    SetBackgroundColour(*wxLIGHT_GREY);
-   //Refresh();
-   
+  // this->Set
+
    auto vert_sizer = new wxBoxSizer (wxVERTICAL);
   
-   int y = make_port_controls(vert_sizer);
-   y = make_scale_controls(vert_sizer,y);
-   make_bitmap_info_controls(vert_sizer,y);
-  // auto & app = wxGetApp();
- //  auto doc = app.get_document();
+ //  make_port_controls(vert_sizer);
+   make_scale_controls(vert_sizer);
+   make_bitmap_info_controls(vert_sizer);
 
    auto horz_sizer = new wxBoxSizer (wxHORIZONTAL);
 
    horz_sizer->Add (vert_sizer);
    this->SetSizer (horz_sizer);
-   this->Layout();
-   horz_sizer->Fit (this);
+  // this->Layout();
+  // horz_sizer->Fit (this);
    // this makes the scrollbars show up
-   this->FitInside(); // ask the sizer about the needed size
-   this->SetScrollRate (5, 5);
+ //  this->Fit(); // ask the sizer about the needed size
+  // this->SetScrollRate (5, 5);
+   
 }
 
 BEGIN_EVENT_TABLE (panel, wxPanel)

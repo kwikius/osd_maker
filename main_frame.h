@@ -15,7 +15,7 @@
 #endif
 
 class sp_in_thread;
-class splitter;
+class main_frame_splitter;
 class panel;
 
 class main_frame: public wxFrame
@@ -39,7 +39,7 @@ class main_frame: public wxFrame
         
         DECLARE_EVENT_TABLE()
 
-        splitter* m_splitter;
+        main_frame_splitter* m_splitter;
         wxTimer * Timer;
         wxCriticalSection m_thread_CS;
         sp_in_thread* m_sp_in_thread;

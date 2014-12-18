@@ -46,9 +46,9 @@ private:
    wxTextCtrl* YsizeText;
 
   // wxRadioBox* ProtocolChooser;
-   int make_port_controls(wxBoxSizer* s);
-   int make_scale_controls(wxBoxSizer* s,int);
-   int make_bitmap_info_controls(wxBoxSizer* s,int);
+   void make_port_controls(wxBoxSizer* s);
+   void make_scale_controls(wxBoxSizer* s);
+   void make_bitmap_info_controls(wxBoxSizer* s);
 
    friend struct view;
 };

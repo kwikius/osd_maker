@@ -20,7 +20,8 @@
 #include "panel.hpp"
 #include "document.hpp"
 #include "view.hpp"
-#include "splitter.hpp"
+#include "main_frame_splitter.hpp"
+#include "bitmap_preview.hpp"
 
 IMPLEMENT_APP(OsdBmpApp);
 
@@ -40,7 +41,14 @@ bool OsdBmpApp::OnInit()
 }
 
 view* OsdBmpApp::get_view()const 
-{ return m_frame->m_splitter->m_view;}
+{ 
+   return m_frame->m_splitter->m_view;
+}
+
+bitmap_preview* OsdBmpApp::get_bitmap_preview()const
+{
+   return m_frame->m_splitter->m_panel_splitter->m_bitmap_preview;
+}
 
 OsdBmpApp::OsdBmpApp()
 : m_frame{nullptr}
@@ -54,9 +62,10 @@ panel * OsdBmpApp::get_panel() const
    assert( 
       (m_frame !=nullptr) && 
       (m_frame->m_splitter != nullptr) &&
-      ( m_frame->m_splitter->m_panel != nullptr) 
+      (m_frame->m_splitter->m_panel_splitter != nullptr) &&
+      ( m_frame->m_splitter->m_panel_splitter->m_panel != nullptr) 
    );
-   return m_frame->m_splitter->m_panel;
+   return m_frame->m_splitter->m_panel_splitter->m_panel;
 }
 
 
