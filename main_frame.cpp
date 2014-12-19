@@ -57,6 +57,7 @@ BEGIN_EVENT_TABLE(main_frame, wxFrame)
      EVT_MENU(idMenuQuit, main_frame::OnQuit)
      EVT_MENU(idMenuAbout, main_frame::OnAbout)
      EVT_MENU(wxID_OPEN,main_frame::OnFileOpen)
+     EVT_MENU(wxID_SAVE,main_frame::OnFileSave)
      EVT_TIMER(idTimer, main_frame::OnTimer)
 END_EVENT_TABLE()
 
@@ -88,16 +89,16 @@ main_frame::~main_frame()
 void main_frame::create_menus()
 {
      wxMenuBar* mbar = new wxMenuBar();
-     wxMenu* fileMenu = new wxMenu(_T(""));
-     fileMenu->Append(wxID_OPEN, _("&Open\tCtrl+O"), _("Open File"));
-     fileMenu->Append(idMenuQuit, _("&Quit\tAlt-F4"), _("Quit the application"));
-     mbar->Append(fileMenu, _("&File"));
-
-     wxMenu* helpMenu = new wxMenu(_T(""));
-     helpMenu->Append(idMenuAbout, _("&About\tF1"), _("Show info about this application"));
-     mbar->Append(helpMenu, _("&Help"));
-
      SetMenuBar(mbar);
+     wxMenu* fileMenu = new wxMenu(_T(""));
+     mbar->Append(fileMenu, _("&File"));
+         fileMenu->Append(wxID_OPEN, _("&Open\tCtrl+O"), _("Open File"));
+         fileMenu->Append(wxID_SAVE, _("&Save\tCtrl+S"), _("Save File"));
+         fileMenu->Append(idMenuQuit, _("&Quit\tAlt-F4"), _("Quit the application"));
+    
+     wxMenu* helpMenu = new wxMenu(_T(""));
+     mbar->Append(helpMenu, _("&Help"));
+     helpMenu->Append(idMenuAbout, _("&About\tF1"), _("Show info about this application"));
 }
 void main_frame::create_statusbar()
 {
@@ -160,26 +161,28 @@ void main_frame::OnFileOpen(wxCommandEvent &event)
      };
 
      if ( (fd.ShowModal() == wxID_OK)  ) {
+
           if ( fd.GetFilterIndex() == 0) { // png
                auto & app = wxGetApp();
-               int32_t idx = app.get_view()->get_current_bitmap_lib_index();
-               if (idx == -1) {
-                    if (!app.get_document()->init_bitmap_lib(image_container::type::ImageLib)) {
+               auto doc = app.get_document();
+               if (!doc->have_image_lib()) {
+                    if (!doc->init_bitmap_lib(image_container::type::ImageLib)) {
                          wxMessageBox(wxT("Load bitmap_lib failed"));
                          return;
                     }  
                }
                wxString path = fd.GetPath();
-               if (! app.get_document()->load_png_file(++idx,path)) {
+               if (! app.get_document()->load_png_file(path)) {
                     wxMessageBox(wxString::Format(wxT("Load \"%s\" failed"),path.wc_str()));
-               }else{
-                  app.get_view()->set_current_bitmap_lib_index(idx);
-                  osd_image::pos_type size;
-                  app.get_document()->get_bitmap_size(idx,size);
-                  app.get_view()->set_current_bitmap_size(size);
-                  app.get_view()->Refresh();
-                  app.get_bitmap_preview()->Refresh();
+                     return;
                }
+               // if its the only element then display it in the view
+               if ( app.get_document()->get_num_bitmap_elements() ==1){
+                     osd_image* pimage = doc->get_osd_image_ptr(0);
+                     assert( pimage  && __LINE__);
+                     app.get_view()->set_current_image(pimage->clone(),0);
+               }
+               app.get_bitmap_preview()->Refresh();
           } else {
                if ( fd.GetFilterIndex() == 1) {
                     wxMessageBox(wxT(".mcm file"));
@@ -194,7 +197,16 @@ void main_frame::OnFileOpen(wxCommandEvent &event)
 
 }
 
-
+void main_frame::OnFileSave(wxCommandEvent &event)
+{
+   // formats osdziplib
+   //    easy access flexible extensible may also want code!)
+   //    basically a zip using pngs in a dir system
+   // .osdziplib
+   // 2 dirs
+   // fonts dir - contains fonts
+   // bitmaps dir - contains bitmaps
+ }
 
 /*
  Timer represents the update rate of the  airborne telemetry unit

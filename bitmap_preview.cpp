@@ -2,6 +2,7 @@
 
 #include <wx/bitmap.h>
 #include <wx/rawbmp.h>
+#include <quan/max.hpp>
 #include "app.h"
 #include "osd_image.hpp"
 #include "document.hpp"
@@ -30,54 +31,64 @@ bitmap_preview::bitmap_preview(wxWindow* parent)
 
 }
 
+
+
+namespace {
+   // add wxImage
+   // integer scaling
+   wxColour const * colour_array[4] = {wxLIGHT_GREY,wxBLACK,wxWHITE,wxBLUE};
+   
+   void draw_bitmap(size_t idx, wxDC& dc, osd_image::pos_type const & position)
+   {
+      auto doc = wxGetApp().get_document();
+      osd_image* pimage = doc->get_osd_image_ptr(idx);
+      assert(pimage);
+      auto bmp = ConvertTo_wxBitmap(*pimage, colour_array);
+      dc.DrawBitmap(*bmp,position.x,position.y);
+      delete bmp;
+   }
+
+
+}
+
 void bitmap_preview::OnPaint(wxPaintEvent & event)
 {
    wxPaintDC dc(this);
    dc.SetBackground(* wxBLUE_BRUSH); // sets background brush but doesnt clear
    dc.Clear(); //       need to invoke to clear using current background brush
    
+   // maybe walk through
+   // and find the largest bitmap
+   // need to be able to slect them..
    auto doc = wxGetApp().get_document();
    auto num_elements = doc->get_num_bitmap_elements();
+   wxSize window_size = this->GetSize();
    if ( num_elements > 0){
-
-      osd_image* pimage = doc->get_osd_image_ptr(0);
-  
-      assert(pimage);
-  
-      osd_image::size_type size;
-      doc->get_bitmap_size(0,size);
-      wxBitmap bmp(size.x,size.y);
-      wxNativePixelData pixels(bmp);
-      
-      for ( size_t y = 0; y < size.y; ++y){
-         for ( size_t x = 0; x < size.x; ++x){
-            osd_image::colour c;
-            pimage->get_pixel_colour({x,y},c);
-            wxColour const * colour = wxBLUE;
-            switch(c){
-               case osd_image::colour::black:
-               colour = wxBLACK;
-               break;
-               case osd_image::colour::white:
-               colour = wxWHITE;
-               break;
-               case osd_image::colour::grey:
-               colour = wxLIGHT_GREY;
-               break;
-               default:
-               break;
-            }
-            wxNativePixelData::Iterator p(pixels);
-            p.MoveTo(pixels,x,y);
-            p.Red() = colour->Red();
-            p.Green() = colour->Green();
-            p.Blue() = colour->Blue();
-           // p.Alpa() = colour->Alpha();
+      osd_image::size_type border{20,20};
+      osd_image::pos_type pos = border;
+      size_t max_ysize = 0;
+      for (size_t idx = 0; idx < num_elements; ++idx){
+        osd_image::pos_type draw_pos;
+        osd_image::size_type size;
+        doc->get_bitmap_size(idx,size);
+        max_ysize = quan::max(max_ysize,size.y);
+        if ( (pos.x + 2 * border.x + size.x ) < static_cast<size_t>(window_size.x)){
+           draw_pos = pos;
+           pos.x += size.x + border.x;
+        } else{
+           pos.x = border.x;
+           pos.y += max_ysize + border.y;
+           max_ysize = size.y;
+           if ( (pos.y + size.y + border.y ) < static_cast<size_t>(window_size.y) ){
+             draw_pos = pos;
+           }else{
+              return; 
+           }
          }
-
+         draw_bitmap(idx, dc, draw_pos);
+         
       }
-      dc.DrawBitmap(bmp,20,20);
-     
+
    }
    // if there is any data
    // get dc

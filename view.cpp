@@ -7,9 +7,6 @@
 #include <quan/gx/primitives/simple_line.hpp>
 #include "fontmap_dialog.hpp"
 
-
-//#include "aircraft_symbol.hpp"
-
 BEGIN_EVENT_TABLE(view,wxWindow)
 
      EVT_PAINT(view::OnPaint)
@@ -26,32 +23,33 @@ view::view(wxWindow* parent)
      : wxWindow(parent, wxID_ANY)
      ,m_cur_mouse_pos {0,0}
 ,m_mouse_is_down {false}
-,m_current_bitmap_lib_index {-1} {
+,m_current_bitmap_lib_index {-1}
+,m_current_image{nullptr}
+,m_current_image_modified{false} {
      window_ids::view = this->GetId();
      this->SetWindowStyle(wxVSCROLL | wxHSCROLL);
      this->SetScrollbar(wxVERTICAL,50,10,110);
      this->SetScrollbar(wxHORIZONTAL,50,10,110);
      this->m_drawing_view.set_scale(1);
-     //this->Refresh();
      this->SetFocus();
+}
+
+void view::set_current_image( osd_image* image, uint32_t index)
+{
+   assert ( (m_current_image_modified == false) && __LINE__);
+   if ( m_current_image != nullptr){
+      m_current_image->destroy();
+   }
+   m_current_image = image;
+   m_current_bitmap_lib_index = index;
+   wxGetApp().get_panel()->set_current_bitmap_index(index);
+   this->Refresh();
 }
 
 void view::set_scale(double const & v)
 {
      m_drawing_view.set_scale(v);
      this->Refresh();
-}
-
-void  view::set_current_bitmap_lib_index(int32_t val)
-{
-   m_current_bitmap_lib_index = val;
-   wxGetApp().get_panel()->CurrentBitmapIndex->ChangeValue (wxString::Format (wxT ("%d"),val));
-}
-
-void  view::set_current_bitmap_size(osd_image::size_type const & size)
-{
-   wxGetApp().get_panel()->XsizeText->ChangeValue (wxString::Format (wxT ("%d"),size.x));
-   wxGetApp().get_panel()->YsizeText->ChangeValue (wxString::Format (wxT ("%d"),size.y));
 }
 
 quan::gx::abc_color::ptr view::get_colour(osd_image::colour colour_id)
@@ -86,16 +84,11 @@ void view::paint_bitmap_view(wxPaintEvent & event)
           &this->m_device_window
      };
  
-     auto current_index = this->get_current_bitmap_lib_index();
-     // ok checked for -1
-
-     if( current_index >=0 ) {
+     if( m_current_image != nullptr) {
           auto doc = wxGetApp().get_document();
-          osd_image::size_type num_pixels;
-          if (!doc->get_bitmap_size(current_index,num_pixels)) {
-               return ;
-          }
-          // should be view
+          osd_image::size_type num_pixels = m_current_image->get_size();
+
+          // should be view or config
           vect2_mm pixel_size = doc->get_pixel_size_mm();
           // bitmap always centered
           vect2_mm bitmap_size {num_pixels.x * pixel_size.x,num_pixels.y * pixel_size.y};
@@ -130,7 +123,8 @@ void view::paint_bitmap_view(wxPaintEvent & event)
                for ( size_t x = 0; x <num_pixels.x; ++x) {
                     // add color
                     osd_image::colour colour;
-                    doc->get_pixel_colour(current_index,osd_image::pos_type {x,y},colour);
+                   // doc->get_pixel_colour(current_index,osd_image::pos_type {x,y},colour);
+                    m_current_image->get_pixel_colour(osd_image::pos_type {x,y},colour);
                     quan::two_d::box<mm> cur_px_box {
                          cur_px_pos.x + border,
                          cur_px_pos.y - border,
@@ -247,9 +241,6 @@ void view::OnMouseLeftDown(wxMouseEvent & event)
 {
      event.Skip();
      m_mouse_is_down=true;
-     // auto doc = wxGetApp().get_document();
-     //  auto p = new fontmap_dialog(this);
-     //  p->Show();
 }
 /*
    get image pixel if any
@@ -257,9 +248,8 @@ void view::OnMouseLeftDown(wxMouseEvent & event)
 void view::OnChar(wxKeyEvent & event)
 {
      event.Skip();
-     auto index = this->get_current_bitmap_lib_index();
-     if ( index == -1) {
-          return ;
+     if (m_current_image == nullptr){
+         return;
      }
      osd_image::pos_type result_pos;
      if ( m_mouse_is_down &&
@@ -284,8 +274,7 @@ void view::OnChar(wxKeyEvent & event)
                break;
           }
           if ( colour != osd_image::colour::invalid) {
-               auto doc = wxGetApp().get_document();
-               doc->set_pixel_colour(index,result_pos, colour);
+               m_current_image->set_pixel_colour(result_pos, colour);
                this->Refresh();
           }
      }
@@ -301,8 +290,3 @@ void view::OnMouseMove(wxMouseEvent & event)
      m_cur_mouse_pos.x = event.GetX();
      m_cur_mouse_pos.y = event.GetY();
 }
- 
- 
- 
- 
- 

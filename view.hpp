@@ -12,6 +12,7 @@
 #include "app.h"
 #include "document.hpp"
 #include "drawing.hpp"
+#include "osd_image.hpp"
 
    struct view : wxWindow{
 
@@ -48,10 +49,8 @@
              return -1;
           }
       }
-      void  set_current_bitmap_lib_index(int32_t val);
-      void  set_current_bitmap_size(osd_image::size_type const & size);
-      
-      //enum view_mode {Bitmap, Test};
+      void set_current_image( osd_image* image, uint32_t index);
+      void set_modified(bool val){m_current_image_modified = val;}
    private:
       void paint_bitmap_view(wxPaintEvent & event);
       void paint_test_view(wxPaintEvent & event);
@@ -63,6 +62,9 @@
       bool m_mouse_is_down;
       int32_t  m_current_bitmap_lib_index;
       DECLARE_EVENT_TABLE()
+      
+      osd_image* m_current_image;
+      bool m_current_image_modified;
    };
 
 #endif // AEROFOIL_GRAPHICS_WINDOW_HPP_INCLUDED

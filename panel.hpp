@@ -13,13 +13,17 @@
 #include <wx/textctrl.h>
 #include <wx/radiobox.h>
 
+#include "osd_image.hpp"
+
 struct view;
 struct panel : wxScrolledWindow// wxPanel
 {
   panel (wxWindow * parent); 
 
-   
+
 private:
+   void set_current_bitmap_size(osd_image::size_type const & size);
+   void set_current_bitmap_index(int index);
    enum
    {
       idMenuQuit = 1000,

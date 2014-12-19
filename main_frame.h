@@ -35,6 +35,7 @@ class main_frame: public wxFrame
         void OnQuit(wxCommandEvent& event);
         void OnAbout(wxCommandEvent& event);
         void OnFileOpen(wxCommandEvent & event);
+        void OnFileSave(wxCommandEvent & event);
         void OnTimer(wxTimerEvent& event);
         
         DECLARE_EVENT_TABLE()

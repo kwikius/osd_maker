@@ -26,6 +26,18 @@ quan::two_d::vect<int> vect_mm_to_px(quan::two_d::vect<quan::length::mm> const &
 }
 }
 
+void  panel::set_current_bitmap_size(osd_image::size_type const & size)
+{
+   XsizeText->ChangeValue (wxString::Format (wxT ("%d"),size.x));
+   YsizeText->ChangeValue (wxString::Format (wxT ("%d"),size.y));
+}
+
+void panel::set_current_bitmap_index(int index)
+{
+   CurrentBitmapIndex->ChangeValue (wxString::Format (wxT ("%d"),index));
+}
+
+
 void panel::make_port_controls(wxBoxSizer* vert_sizer)
 {
    quan::two_d::vect<int> const bd = vect_mm_to_px({quan::length::mm{6},quan::length::mm{6}});

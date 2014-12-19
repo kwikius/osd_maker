@@ -22,12 +22,12 @@ bool osd_bitmap::set_pixel_colour( pos_type const & p, osd_image::colour c)
    return true;
 }
  
-void create_osd_null_image()
-{
-   osd_image::m_null_image =  new osd_null_image();
-}
+//void create_osd_null_image()
+//{
+//   osd_image::m_null_image =  new osd_null_image();
+//}
  
-osd_null_image* osd_image::m_null_image = nullptr;
+//osd_null_image* osd_image::m_null_image = nullptr;
 
 bool document::init_bitmap_lib(image_container::type t)
 {
@@ -48,15 +48,15 @@ document::document()
 {
   // init the drawing image_container
    // or load a bitmap
-     create_osd_null_image();
+   //  create_osd_null_image();
 }
  
 bool
-document::load_png_file(int32_t pos, wxString const & path)
+document::load_png_file( wxString const & path)
 {
-     if ( pos < 0){
-        wxMessageBox(wxT("load png negative pos"));
-         return false;
+     if ( this->m_image_container == nullptr) {
+           wxMessageBox(wxT("empty container fail"));
+          return false;
      }
      if ( ! wxImage::FindHandler(wxBITMAP_TYPE_PNG)) {
           wxImage::AddHandler(new wxPNGHandler);
@@ -67,26 +67,6 @@ document::load_png_file(int32_t pos, wxString const & path)
           wxMessageBox(wxT("image Load failed"));
           return false;
      }
-
-     if ( this->m_image_container == nullptr) {
-           wxMessageBox(wxT("empty container fail"));
-          return false;
-     }
-     bitmap_lib* blib = dynamic_cast<bitmap_lib*>(m_image_container);
-     if ( ! blib) {
-         // log error
-          wxMessageBox(wxT("dynamic_cast fail"));
-         return false;
-     }
-          // check its big enough, if not fill with dummies
-     if ( pos > 10){
-          wxMessageBox(wxT("Pos > 10 fail"));
-         return false;
-     }
-     while( blib->get_num_elements() <= static_cast<size_t>(pos)) {
-          blib->push_back(osd_image::get_null_image());
-     }
- 
      // create the osd bitmap
      osd_image::size_type bitmap_size {image.GetWidth(),image.GetHeight()};
      osd_bitmap * bmp = new osd_bitmap {bitmap_size};
@@ -111,11 +91,7 @@ document::load_png_file(int32_t pos, wxString const & path)
                bmp->set_pixel_colour( {x,y},colour);
           }
      }
-     // dump whatever is there
-     // make user aware prior?
-     blib->at(pos)->destroy();
-     blib->at(pos) = bmp;
-   //  wxMessageBox(wxT("Load png success"));
+     this->m_image_container->push_back(bmp); 
      return true;
 }
  

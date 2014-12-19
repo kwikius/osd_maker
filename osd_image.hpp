@@ -2,9 +2,10 @@
 #define OSD_BITMAP_MAKER_OSD_IMAGE_HPP_INCLUDED
 
 #include <vector>
+#include <wx/image.h>
 #include <quan/two_d/vect.hpp>
 
-struct osd_null_image;
+//struct osd_null_image;
 struct osd_image{
     typedef quan::two_d::vect<size_t> pos_type;
     typedef quan::two_d::vect<size_t> size_type;
@@ -18,31 +19,41 @@ struct osd_image{
     virtual size_type get_size()const=0;
     virtual bool get_pixel_colour( pos_type const & p, colour & c) const=0;
     virtual bool set_pixel_colour( pos_type const & p, colour c)=0;
-    static osd_null_image* get_null_image(){return m_null_image;}
+   // static osd_null_image* get_null_image(){return m_null_image;}
+    virtual osd_image* clone() const = 0;
     // delete usually 
     virtual void destroy() = 0;
     osd_image(){}
 protected:
     virtual ~osd_image(){}
 private:
-   static osd_null_image* m_null_image;
-   friend void create_osd_null_image();
+   //static osd_null_image* m_null_image;
+//   friend void create_osd_null_image();
    // convert to wxbitmap or rebuild bitmap from data
    // convert to wximage or rebuild image from
    // save as ..
 };
+
+wxBitmap* ConvertTo_wxBitmap(osd_image const& in, wxColour const * (&colours)[4]);
 
 struct osd_bitmap : osd_image{
    
    osd_bitmap(size_type const & size_in) 
    : m_size{size_in}, m_data{size_in.x * size_in.y,colour::transparent}
    {}
+   
    size_type get_size() const { return m_size;}
    bool get_pixel_colour( pos_type const & p, colour & c) const;
    bool set_pixel_colour( pos_type const & p, colour c);
    void destroy() { delete this;}
+   osd_bitmap* clone() const
+   {
+       return new osd_bitmap(*this);
+   }
    ~osd_bitmap(){}
    private:
+   osd_bitmap( osd_bitmap const & in) : m_size{in.m_size}, m_data{in.m_data}{}
+   osd_bitmap & operator = (osd_bitmap const &) = delete;
    size_type m_size;
    std::vector<colour> m_data;
 };
@@ -52,6 +63,7 @@ struct osd_null_image : osd_image{
    bool get_pixel_colour( pos_type const & p, colour & c) const { c = colour::transparent; return true;}
    bool set_pixel_colour( pos_type const & p, colour c) { return false;}
    void destroy() { }
+   osd_null_image* clone() const { return const_cast<osd_null_image*>(this);}
    private: 
       osd_null_image(){}
    friend void create_osd_null_image();
@@ -66,6 +78,7 @@ struct image_container{
    virtual size_t get_num_elements()const =0;
    virtual osd_image * at(size_t pos) const=0;
    virtual osd_image *& at(size_t pos) =0;
+   virtual void push_back(osd_image* p) =0;
    virtual ~image_container(){}
 };
 

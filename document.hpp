@@ -24,7 +24,7 @@ struct document {
      bool set_pixel_colour(int32_t idx,osd_image::pos_type const & pos, osd_image::colour);
      osd_image* get_osd_image_ptr(int32_t idx) 
      {
-         if ( ( idx <= 0) && have_image_lib() && (static_cast<size_t>(idx) < m_image_container->get_num_elements()) ){
+         if ( ( idx >= 0) && have_image_lib() && (static_cast<size_t>(idx) < m_image_container->get_num_elements()) ){
             return m_image_container->at(idx);
          }else{
             return nullptr;
@@ -43,7 +43,7 @@ struct document {
          }
      }
      bool load_mcm_font_file (std::istream & in);
-     bool load_png_file(int32_t pos,wxString const &path);
+     bool load_png_file(wxString const &path);
      bool init_bitmap_lib(image_container::type t);
 private:
      quan::two_d::vect<quan::length::mm> m_page_size;
