@@ -13,6 +13,7 @@
 
 struct document {
      document();
+     
      quan::two_d::vect<quan::length::mm> const &
             get_page_size() const ;
      void set_page_size( quan::two_d::vect<quan::length::mm> const & size);
@@ -24,15 +25,20 @@ struct document {
      bool set_pixel_colour(int32_t idx,osd_image::pos_type const & pos, osd_image::colour);
      osd_image* get_osd_image_ptr(int32_t idx) 
      {
-         if ( ( idx >= 0) && have_image_lib() && (static_cast<size_t>(idx) < m_image_container->get_num_elements()) ){
+         if ( ( idx >= 0) && have_image_lib() &&
+               (static_cast<size_t>(idx) < m_image_container->get_num_elements()) ){
             return m_image_container->at(idx);
          }else{
             return nullptr;
          }
      }
-
+     
      bool have_image_lib() const{
           return m_image_container != nullptr;
+     }
+     bool is_modified() const
+     {
+         return have_image_lib() && m_image_container->is_modified();
      }
      size_t get_num_bitmap_elements()const
      {
@@ -42,10 +48,13 @@ struct document {
             return 0U;
          }
      }
+     bool save_document();
+
      bool load_mcm_font_file (std::istream & in);
      bool load_png_file(wxString const &path);
      bool init_bitmap_lib(image_container::type t);
 private:
+     bool ll_save_document(wxString const & path);
      quan::two_d::vect<quan::length::mm> m_page_size;
      quan::two_d::vect<quan::length::mm> m_pixel_size; // {mm{10},mm{10}};
      image_container * m_image_container;

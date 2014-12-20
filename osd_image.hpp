@@ -35,6 +35,7 @@ private:
 };
 
 wxBitmap* ConvertTo_wxBitmap(osd_image const& in, wxColour const * (&colours)[4]);
+wxImage* ConvertTo_wxImage(osd_image const& in);
 
 struct osd_bitmap : osd_image{
    
@@ -79,6 +80,7 @@ struct image_container{
    virtual osd_image * at(size_t pos) const=0;
    virtual osd_image *& at(size_t pos) =0;
    virtual void push_back(osd_image* p) =0;
+   virtual bool is_modified() const = 0;
    virtual ~image_container(){}
 };
 
@@ -87,14 +89,16 @@ struct image_container{
    osd_image * at(size_t pos)const { return m_elements.at(pos);}
    osd_image *& at(size_t pos) { return m_elements.at(pos);}
    // assume p created on heap and takes ownership
-   void push_back(osd_image* p) { m_elements.push_back(p);}
-   bitmap_lib(){}
+   void push_back(osd_image* p) { m_elements.push_back(p); m_is_modified = true;}
+   bool is_modified() const {return m_is_modified;}
+   bitmap_lib():m_is_modified{false}{}
    ~bitmap_lib()
    {
       for (osd_image* p : m_elements){ p->destroy();}
    }
   private:
    std::vector <osd_image *> m_elements;
+   bool m_is_modified;
  };
 
 #endif // OSD_BITMAP_MAKER_OSD_IMAGE_HPP_INCLUDED

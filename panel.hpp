@@ -22,8 +22,8 @@ struct panel : wxScrolledWindow// wxPanel
 
 
 private:
-   void set_current_bitmap_size(osd_image::size_type const & size);
-   void set_current_bitmap_index(int index);
+   void set_current_bitmap(osd_image const * image ,uint32_t index);
+  // void set_current_bitmap_index(int index);
    enum
    {
       idMenuQuit = 1000,

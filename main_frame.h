@@ -24,6 +24,7 @@ class main_frame: public wxFrame
         main_frame(wxFrame *frame, const wxString& title, wxSize const & size);
         ~main_frame();
         bool Destroy();
+       
     private:
         enum
         {

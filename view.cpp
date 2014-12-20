@@ -36,13 +36,14 @@ view::view(wxWindow* parent)
 
 void view::set_current_image( osd_image* image, uint32_t index)
 {
+   assert ( (image != nullptr) && __LINE__);
    assert ( (m_current_image_modified == false) && __LINE__);
    if ( m_current_image != nullptr){
       m_current_image->destroy();
    }
    m_current_image = image;
    m_current_bitmap_lib_index = index;
-   wxGetApp().get_panel()->set_current_bitmap_index(index);
+   wxGetApp().get_panel()->set_current_bitmap(m_current_image, m_current_bitmap_lib_index);
    this->Refresh();
 }
 
@@ -256,26 +257,31 @@ void view::OnChar(wxKeyEvent & event)
                (get_image_pixel(m_cur_mouse_pos,result_pos) == true)
         ) {
           int ch = toupper(event.GetKeyCode());
-          osd_image::colour colour = osd_image::colour::invalid;
+          osd_image::colour new_colour = osd_image::colour::invalid;
           switch(ch) {
           case 'B':
-               colour = osd_image::colour::black;
+               new_colour = osd_image::colour::black;
                break;
           case 'W':
-               colour = osd_image::colour::white;
+               new_colour = osd_image::colour::white;
                break;
           case 'T':
-               colour = osd_image::colour::transparent;
+               new_colour = osd_image::colour::transparent;
                break;
           case 'G':
-               colour = osd_image::colour::grey;
+               new_colour = osd_image::colour::grey;
                break;
           default:
                break;
           }
-          if ( colour != osd_image::colour::invalid) {
-               m_current_image->set_pixel_colour(result_pos, colour);
-               this->Refresh();
+          if ( new_colour != osd_image::colour::invalid) {
+               osd_image::colour cur_colour = osd_image::colour::invalid;
+               m_current_image->get_pixel_colour(result_pos, cur_colour);
+               if ( new_colour != cur_colour){
+                  m_current_image->set_pixel_colour(result_pos, new_colour);
+                  this->set_modified(true);
+                  this->Refresh();
+               }
           }
      }
 }

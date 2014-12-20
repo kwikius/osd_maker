@@ -49,8 +49,19 @@
              return -1;
           }
       }
+      
       void set_current_image( osd_image* image, uint32_t index);
+      osd_image* clone_current_image()const
+      {
+         if ( m_current_image){
+            return m_current_image->clone();
+         }else{
+            return nullptr;
+         }
+      }
       void set_modified(bool val){m_current_image_modified = val;}
+      bool is_modified()const { return m_current_image_modified;}
+
    private:
       void paint_bitmap_view(wxPaintEvent & event);
       void paint_test_view(wxPaintEvent & event);

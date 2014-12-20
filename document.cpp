@@ -1,61 +1,107 @@
+#include <wx/zipstrm.h>
+#include <wx/wfstream.h>
+
+#include "app.h"
 #include "document.hpp"
+#include "view.hpp"
 
 bool osd_bitmap::get_pixel_colour( pos_type const & p, osd_image::colour & c) const
 {
-   if (( p.x >= m_size.x) || ( p.y >= m_size.y)){
-      return false;
-   }
-   auto idx = p.y * m_size.x + p.x;
-   c = m_data.at(idx);
-   return true;
+     if (( p.x >= m_size.x) || ( p.y >= m_size.y)) {
+          return false;
+     }
+     auto idx = p.y * m_size.x + p.x;
+     c = m_data.at(idx);
+     return true;
 }
 bool osd_bitmap::set_pixel_colour( pos_type const & p, osd_image::colour c)
 {
-   if (  c == colour::invalid){
-      return false;
-   }
-   if (( p.x >= m_size.x) || ( p.y >= m_size.y)){
-      return false;
-   }
-   auto idx = p.y * m_size.x + p.x;
-   m_data.at(idx) = c;
-   return true;
+     if (  c == colour::invalid) {
+          return false;
+     }
+     if (( p.x >= m_size.x) || ( p.y >= m_size.y)) {
+          return false;
+     }
+     auto idx = p.y * m_size.x + p.x;
+     m_data.at(idx) = c;
+     return true;
 }
- 
-//void create_osd_null_image()
-//{
-//   osd_image::m_null_image =  new osd_null_image();
-//}
- 
-//osd_null_image* osd_image::m_null_image = nullptr;
+
+bool document::save_document()
+{
+ auto view = wxGetApp().get_view();
+ if ( view->is_modified() ){
+   if ( wxMessageBox(wxT("View modified. Commit to lib before saving?"),
+    wxT("Confirm"),
+    wxICON_QUESTION | wxYES_NO  ) == wxYES ) {
+      auto view_image = view->clone_current_image();
+      assert(view_image && __LINE__);
+      int32_t index = view->get_current_bitmap_lib_index();
+      assert((index >= 0) && __LINE__);
+      assert ( get_num_bitmap_elements() > static_cast<uint32_t>(index));
+      // could check same, need to watch if stuff is deleted!
+      m_image_container->at(index)->destroy();
+      m_image_container->at(index) = view_image;
+      view->set_modified(false);
+    }
+ }
+  
+ ll_save_document(wxT("/home/andy/cpp/projects/OSDBitmapMaker/zipfile1.zip"));
+ return true;
+}
+bool document::ll_save_document(wxString const & path)
+{
+    wxFileOutputStream out{path};
+    if ( ! out.IsOk()){
+         wxMessageBox(wxT("Output file failed\n"));
+         return false;
+    }else{
+         wxZipOutputStream zipout{out};
+         for ( uint32_t i = 0; i < get_num_bitmap_elements(); ++i){
+            wxString name = wxString::Format(wxT("filename_%d.png"),i);
+            zipout.PutNextEntry(name);
+            osd_image * inosd_image = get_osd_image_ptr(i);
+            wxImage* wx_image = ConvertTo_wxImage(*inosd_image);
+            wx_image->SaveFile(zipout,wxBITMAP_TYPE_PNG);
+         }
+    }
+    return true;
+}
 
 bool document::init_bitmap_lib(image_container::type t)
 {
-   if ( have_image_lib() || (t == image_container::type::Undefined)){
-      return false;
-   }
-   m_image_container = new bitmap_lib;
-   m_container_type = t;
-   // send event 
-   return true;
+     if ( have_image_lib() || (t == image_container::type::Undefined)) {
+          return false;
+     }
+     m_image_container = new bitmap_lib;
+     m_container_type = t;
+     // send event
+     return true;
 }
- 
+
 document::document()
- : m_page_size {quan::length::mm{500},quan::length::mm{500}}
+     : m_page_size {quan::length::mm{500},quan::length::mm{500}}
 , m_pixel_size {quan::length::mm{10},quan::length::mm{10}}
-, m_image_container {nullptr} 
-, m_container_type{image_container::type::Undefined}
-{
-  // init the drawing image_container
-   // or load a bitmap
-   //  create_osd_null_image();
+, m_image_container {nullptr}
+, m_container_type {image_container::type::Undefined} {
+     // init the drawing image_container
+     // or load a bitmap
+     //  create_osd_null_image();
 }
- 
+
 bool
 document::load_png_file( wxString const & path)
 {
+     // init of bitmap_lib here as the type of lib dependent on file type
+     // but prob abandon that and just verify it when saving
+     if (!this->have_image_lib()) {
+          if (!this->init_bitmap_lib(image_container::type::ImageLib)) {
+               wxMessageBox(wxT("Load bitmap_lib failed"));
+               return false;
+          }
+     }
      if ( this->m_image_container == nullptr) {
-           wxMessageBox(wxT("empty container fail"));
+          wxMessageBox(wxT("empty container fail"));
           return false;
      }
      if ( ! wxImage::FindHandler(wxBITMAP_TYPE_PNG)) {
@@ -91,22 +137,22 @@ document::load_png_file( wxString const & path)
                bmp->set_pixel_colour( {x,y},colour);
           }
      }
-     this->m_image_container->push_back(bmp); 
+     this->m_image_container->push_back(bmp);
      return true;
 }
- 
+
 quan::two_d::vect<quan::length::mm> const &
 document::get_page_size() const
 {
      return m_page_size;
 }
- 
+
 void
 document::set_page_size( quan::two_d::vect<quan::length::mm> const & size)
 {
      m_page_size = size;
 }
- 
+
 quan::two_d::vect<quan::length::mm> const &
 document::get_pixel_size_mm()const
 {
@@ -115,13 +161,13 @@ document::get_pixel_size_mm()const
 
 bool  document::get_bitmap_size(int32_t idx, osd_image::size_type & size)const
 {
-   if ( this->m_image_container == nullptr) {
+     if ( this->m_image_container == nullptr) {
           return false;
      }
      if ( ( idx < 0) || (m_image_container->get_num_elements() <= static_cast<size_t>(idx)) ) {
           return false;
      }
- 
+
      osd_image* const bmp = m_image_container->at(idx);
      size = bmp->get_size();
      return true;
@@ -136,7 +182,7 @@ document::get_pixel_colour(int32_t idx,osd_image::pos_type const & pos,osd_image
      if ( ( idx < 0) || (m_image_container->get_num_elements() <= static_cast<size_t>(idx)) ) {
           return false;
      }
- 
+
      osd_image* const bmp = m_image_container->at(idx);
      osd_image::size_type const size = bmp->get_size();
      if ( (static_cast<uint32_t>(pos.x) < size.x)
@@ -147,7 +193,7 @@ document::get_pixel_colour(int32_t idx,osd_image::pos_type const & pos,osd_image
           return false;
      }
 }
-
+ 
 bool
 document::set_pixel_colour(int32_t idx,osd_image::pos_type const & pos,osd_image::colour colour)
 {
@@ -168,6 +214,7 @@ document::set_pixel_colour(int32_t idx,osd_image::pos_type const & pos,osd_image
           return false;
      }
 }
+ 
  
  
  
