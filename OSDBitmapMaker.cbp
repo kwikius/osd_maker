@@ -58,6 +58,7 @@
 		<Unit filename="main_frame_splitter.cpp" />
 		<Unit filename="main_frame_splitter.hpp" />
 		<Unit filename="mcm_file.cpp" />
+		<Unit filename="osd_image.cpp" />
 		<Unit filename="osd_image.hpp" />
 		<Unit filename="panel.cpp" />
 		<Unit filename="panel.hpp" />
