@@ -302,7 +302,7 @@ void view::OnChar(wxKeyEvent & event)
      }else {
           int ch = event.GetKeyCode();
           switch(ch) {
-          case '=':{
+          case '+':{
                double scale = this->get_scale();
                scale += 0.1;
                if (scale >1.0){

@@ -39,12 +39,15 @@ wxImage* ConvertTo_wxImage(osd_image const& in);
 
 struct osd_bitmap : osd_image{
    
-   osd_bitmap(size_type const & size_in) 
+   osd_bitmap(std::string const & name_in,size_type const & size_in) 
    : osd_image{image_type::Bitmap}
-   ,m_size{size_in}, m_data{size_in.x * size_in.y,colour::transparent}
+   ,m_name{name_in},
+      m_size{size_in}, 
+      m_data{size_in.x * size_in.y,colour::transparent}
    {}
    
    size_type get_size() const { return m_size;}
+   std::string const & get_name() const { return m_name;}
    bool get_pixel_colour( pos_type const & p, colour & c) const;
    bool set_pixel_colour( pos_type const & p, colour c);
    void destroy() { delete this;}
@@ -57,8 +60,10 @@ struct osd_bitmap : osd_image{
    osd_bitmap( osd_bitmap const & in) 
    : osd_image{image_type::Bitmap},m_size{in.m_size}, m_data{in.m_data}{}
    osd_bitmap & operator = (osd_bitmap const &) = delete;
+   std::string m_name;
    size_type m_size;
    std::vector<colour> m_data;
+  
 };
    struct font{
 

@@ -12,50 +12,25 @@
 #include <wx/stattext.h>
 #include <wx/textctrl.h>
 #include <wx/radiobox.h>
-
+#include <wx/treectrl.h>
 #include "osd_image.hpp"
 
 struct view;
 struct panel : wxScrolledWindow// wxPanel
 {
   panel (wxWindow * parent); 
-
-
 private:
-  // void set_current_bitmap(osd_image const * image ,uint32_t index);
-  // void set_current_bitmap_index(int index);
+
    enum
    {
       idMenuQuit = 1000,
       idMenuAbout,
-      idTimer,
-      idBtnConnect,
-      idScaleSlider
+      idTreeControl
    };
-
+   wxTreeCtrl* m_tree_ctrl;
+   wxTreeItemId m_fonts;
+   wxTreeItemId m_bitmaps;
    DECLARE_EVENT_TABLE()
-
-   void OnConnectDisconnect(wxCommandEvent& event);
- //  void OnAircraftPositionChanged(wxEvent& event);
-  // void OnScaleSlider(wxScrollEvent & event);
-  // void OnProtocolChanged(wxCommandEvent& event);
-   wxButton* BtnConnect;
-   wxTextCtrl* PortText;
-//scaling of the view
-  // wxTextCtrl* ScaleText;
-  // wxSlider* ScaleSlider;  
-
-   wxTextCtrl* CurrentBitmapIndex;
-   wxTextCtrl* XsizeText;
-   wxTextCtrl* YsizeText;
-
-  // wxRadioBox* ProtocolChooser;
-   void make_port_controls(wxBoxSizer* s);
-  // void make_scale_controls(wxBoxSizer* s);
-   void make_bitmap_info_controls(wxBoxSizer* s);
-
-   friend struct view;
 };
-
 
 #endif // QUANTRACKER_SIM_PANEL_HPP_INCLUDED

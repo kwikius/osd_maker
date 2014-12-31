@@ -21,18 +21,18 @@
             delete v;
          }
 
-         for ( auto v : m_osd_image_map){
-            v.second->destroy();
+         for ( auto v : m_bitmaps){
+            v->destroy();
          }
       }
       osd_image* find_osd_image( int handle);
-      int add_osd_image( osd_image*);
+      int add_bitmap( osd_bitmap*);
       void set_image_handle(int handle, osd_image* image);
+      std::string make_unique_image_name(std::string const & name_in);
       private:
-     // bitmap_lib m_bitmap_lib;
-     //  fontlib
-      std::vector<font*> m_fonts;
 
+      std::vector<font*> m_fonts;
+      std::vector<osd_bitmap*> m_bitmaps;
       bitmap_resource_t (bitmap_resource_t const&) = delete;
       bitmap_resource_t& operator= (bitmap_resource_t const&) = delete;
   

@@ -1,11 +1,48 @@
 #include <wx/zipstrm.h>
 #include <wx/wfstream.h>
 #include <wx/filedlg.h>
- 
+
 #include "app.h"
 #include "document.hpp"
 #include "main_frame.h"
 #include "view.hpp"
+#include <quan/fs/get_basename.hpp>
+#include <quan/fs/strip_file_extension.hpp>
+#include <quan/gx/wxwidgets/from_wxString.hpp>
+#include <quan/gx/wxwidgets/to_wxString.hpp>
+#include <cstdio>
+
+std::string bitmap_resource_t::make_unique_image_name(std::string const & name_in)
+{
+   std::string name_out = name_in;
+   int val = 1;
+   for(;;){
+      bool name_unique = true;
+      // search through bitmaps looking for name
+      for( auto v : m_osd_image_map){
+         osd_image* image =  v.second;
+         auto bmp = dynamic_cast<osd_bitmap*>( image);
+         if(bmp && (name_out == bmp->get_name())){
+            name_unique = false;
+            // modify the output name by prepending "copy_n_name
+            char* const buf = static_cast<char* const>(malloc( name_in.length() + 2 + 30));
+            sprintf(buf,"copy_%d_%s",val,name_in.c_str());
+            name_out = buf;
+            free(buf);
+            ++val;
+            break;
+         }
+      }
+      if ( name_unique == true){
+         return name_out;
+      }else{
+         continue;
+      }
+   }
+   // shouldnt get here
+   assert(false && __LINE__);
+   return "";
+}
 
 // image was created on heap or by clone
 // resource container takes ownership
@@ -56,10 +93,11 @@ osd_image* bitmap_resource_t::find_osd_image(int handle)
    }
 }
 // can only add bitmaps not font elements
-int bitmap_resource_t::add_osd_image( osd_image* image)
+int bitmap_resource_t::add_bitmap( osd_bitmap* bmp)
 {
    int new_handle = get_new_handle();
-   m_osd_image_map.insert({new_handle,image});
+   m_osd_image_map.insert({new_handle,bmp});
+   m_bitmaps.push_back(bmp);
    return new_handle;
 }
  
@@ -175,9 +213,18 @@ document::load_png_file (wxString const & path)
          wxMessageBox (wxT ("image Load failed"));
          return false;
       }
-   // create the osd bitmap
+    
+   // create unique name from filename
+   std::string name  =  quan::fs::get_basename(
+         quan::gx::wxwidgets::from_wxString<char>(path)
+      );
+   name = quan::fs::strip_file_extension(name);
+   name = m_resources->make_unique_image_name(name);
+   
+   wxMessageBox(quan::gx::wxwidgets::to_wxString(name));
+
    osd_image::size_type bitmap_size {image.GetWidth(), image.GetHeight() };
-   osd_bitmap * bmp = new osd_bitmap {bitmap_size};
+   osd_bitmap * bmp = new osd_bitmap {name,bitmap_size};
    for (uint32_t y = 0; y < bitmap_size.y; ++y) {
          for (uint32_t x = 0; x < bitmap_size.x; ++x) {
                osd_image::colour  colour = osd_image::colour::transparent;
@@ -201,9 +248,9 @@ document::load_png_file (wxString const & path)
                bmp->set_pixel_colour ( {x, y}, colour);
             }
       }
-
+   // TODO:create an icon from image or use a string to id it
    // add it to bitmaps
-   int handle = m_resources->add_osd_image(bmp);
+   int handle = m_resources->add_bitmap(bmp);
 
    auto view = wxGetApp().get_view();
    if (! view->have_image()) {

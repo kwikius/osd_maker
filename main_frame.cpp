@@ -220,16 +220,11 @@ void main_frame::OnImportImage(wxCommandEvent &event)
                if (! doc->load_png_file(path)) {
                     wxMessageBox(wxString::Format(wxT("Load \"%s\" failed"),path.wc_str()));
                     return;
-               }else{
-                   wxMessageBox(wxString::Format(wxT("Load \"%s\" succeeded"),path.wc_str()));
                }
+ //       else{
+//                   wxMessageBox(wxString::Format(wxT("Load \"%s\" succeeded"),path.wc_str()));
+//               }
 
-          
-             //  if ( app.get_document()->get_num_bitmap_elements() ==1) {
-                  //  osd_image* pimage = doc->get_osd_image_ptr(0);
-                  //  assert( pimage  && __LINE__);
-                  //  app.get_view()->copy_to_current_image(nullptr);
-             //  }
                // Have a new element in db so need to re draw the preview
                // with it included
                app.get_bitmap_preview()->Refresh();
