@@ -6,6 +6,7 @@
 #include <map>
 
 struct view;
+struct bitmap_tree;
 struct panel : wxScrolledWindow// wxPanel
 {
   panel (wxWindow * parent);
@@ -18,9 +19,8 @@ private:
       idMenuAbout,
       idTreeControl
    };
-   wxTreeCtrl* m_tree_ctrl;
-   wxTreeItemId m_fonts;
-   wxTreeItemId m_bitmaps;
+   bitmap_tree* m_bitmap_tree;
+
    DECLARE_EVENT_TABLE()
    
 };

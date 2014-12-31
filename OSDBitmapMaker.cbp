@@ -46,6 +46,7 @@
 		<Unit filename="app.h" />
 		<Unit filename="bitmap_preview.cpp" />
 		<Unit filename="bitmap_preview.hpp" />
+		<Unit filename="bitmap_tree.hpp" />
 		<Unit filename="document.cpp" />
 		<Unit filename="document.hpp" />
 		<Unit filename="drawing.cpp" />
@@ -70,6 +71,10 @@
 		<Unit filename="view.hpp" />
 		<Unit filename="window_ids.cpp" />
 		<Unit filename="window_ids.hpp" />
+		<Unit filename="../../../website/quan-trunk/quan/fs/get_basename.hpp" />
+		<Unit filename="../../../website/quan-trunk/quan/fs/strip_file_extension.hpp">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
 		<Unit filename="../../../website/quan-trunk/quan/gx/wxwidgets/graphics_context.hpp" />
 		<Unit filename="../../../website/quan-trunk/quan/tracker/zapp3_decode.hpp" />
 		<Unit filename="../../../website/quan-trunk/quan/tracker/zapp3_encode.hpp" />
@@ -85,6 +90,9 @@
 		<Unit filename="../../../website/quan-trunk/quan_matters/src/wxwidgets/draw_line.cpp" />
 		<Unit filename="../../../website/quan-trunk/quan_matters/src/wxwidgets/draw_poly_line.cpp" />
 		<Unit filename="../../../website/quan-trunk/quan_matters/src/wxwidgets/graphics_context.cpp" />
+		<Unit filename="../../../website/quan-trunk/quan_matters/src/wxwidgets/mm_to_px.cpp">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
 		<Extensions>
 			<code_completion />
 			<debugger />
