@@ -1,19 +1,32 @@
 
-#include <wx/wx.h>
 
-#include "app.h"
-#include "window_ids.hpp"
-#include "events.hpp"
-#include "document.hpp"
-#include "main_frame.h"
 #include "view.hpp"
 #include "panel.hpp"
+#include <quan/gx/wxwidgets/from_wxString.hpp>
+#include <quan/gx/wxwidgets/to_wxString.hpp>
+
+struct osd_handle : public wxTreeItemData {
+   osd_handle(int handle) : m_osd_handle{handle}{}
+   int get_handle()const{ return m_osd_handle;}
+  private:
+   int const m_osd_handle;
+};
+
+void panel::add_bitmap_handle(std::string const & name, int handle)
+{
+   m_tree_ctrl->AppendItem(m_bitmaps,quan::gx::wxwidgets::to_wxString(name)
+   ,-1
+   ,-1
+   ,new osd_handle{handle}
+   );
+     
+}
 
 panel::panel (wxWindow* parent)
 :  wxScrolledWindow {parent},m_tree_ctrl{nullptr}
 
 {
- int tree_style = wxTR_SINGLE | wxTR_HAS_BUTTONS | wxTR_EDIT_LABELS;
+ int tree_style = wxTR_SINGLE | wxTR_HAS_BUTTONS ;
  m_tree_ctrl = new wxTreeCtrl(this,idTreeControl, wxDefaultPosition, wxDefaultSize, tree_style,
  wxDefaultValidator, wxT("OSD Bitmap Project"));
 
@@ -21,7 +34,7 @@ panel::panel (wxWindow* parent)
  m_fonts = m_tree_ctrl->AppendItem(root,wxT("fonts"));
  m_bitmaps = m_tree_ctrl->AppendItem(root,wxT("bitmaps"));
 
-   m_tree_ctrl->Expand(root);
+ m_tree_ctrl->Expand(root);
  m_tree_ctrl->SetSize(20,20,200,200);
  //m_tree_ctrl->Show();
 }

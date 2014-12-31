@@ -5,7 +5,7 @@
 
 #include <wx/wx.h>
 #include <wx/image.h>
-
+#include <wx/treectrl.h>
 #include <quan/two_d/vect.hpp>
 #include <quan/length.hpp>
 
@@ -25,10 +25,10 @@
             v->destroy();
          }
       }
-      osd_image* find_osd_image( int handle);
+      osd_image* find_osd_image( int handle)const;
       int add_bitmap( osd_bitmap*);
       void set_image_handle(int handle, osd_image* image);
-      std::string make_unique_image_name(std::string const & name_in);
+      std::string make_unique_image_name(std::string const & name_in)const;
       private:
 
       std::vector<font*> m_fonts;
@@ -37,6 +37,7 @@
       bitmap_resource_t& operator= (bitmap_resource_t const&) = delete;
   
       std::map<int,osd_image*> m_osd_image_map;
+
       std::set<int> m_handles_in_use;
       int get_new_handle();
       bool free_handle(int n);

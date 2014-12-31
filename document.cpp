@@ -1,18 +1,21 @@
+#include <cstdio>
 #include <wx/zipstrm.h>
 #include <wx/wfstream.h>
 #include <wx/filedlg.h>
+
+#include <quan/fs/get_basename.hpp>
+#include <quan/fs/strip_file_extension.hpp>
+#include <quan/gx/wxwidgets/from_wxString.hpp>
+#include <quan/gx/wxwidgets/to_wxString.hpp>
 
 #include "app.h"
 #include "document.hpp"
 #include "main_frame.h"
 #include "view.hpp"
-#include <quan/fs/get_basename.hpp>
-#include <quan/fs/strip_file_extension.hpp>
-#include <quan/gx/wxwidgets/from_wxString.hpp>
-#include <quan/gx/wxwidgets/to_wxString.hpp>
-#include <cstdio>
+#include "panel.hpp"
 
-std::string bitmap_resource_t::make_unique_image_name(std::string const & name_in)
+
+std::string bitmap_resource_t::make_unique_image_name(std::string const & name_in)const
 {
    std::string name_out = name_in;
    int val = 1;
@@ -83,7 +86,7 @@ bool bitmap_resource_t::free_handle (int handle)
 }
 
 // can find bitmaps and font elements
-osd_image* bitmap_resource_t::find_osd_image(int handle)
+osd_image* bitmap_resource_t::find_osd_image(int handle)const
 {
    auto iter = m_osd_image_map.find(handle);
    if(iter != m_osd_image_map.end()){
@@ -225,6 +228,7 @@ document::load_png_file (wxString const & path)
 
    osd_image::size_type bitmap_size {image.GetWidth(), image.GetHeight() };
    osd_bitmap * bmp = new osd_bitmap {name,bitmap_size};
+   // create the osd bitmap
    for (uint32_t y = 0; y < bitmap_size.y; ++y) {
          for (uint32_t x = 0; x < bitmap_size.x; ++x) {
                osd_image::colour  colour = osd_image::colour::transparent;
@@ -248,18 +252,14 @@ document::load_png_file (wxString const & path)
                bmp->set_pixel_colour ( {x, y}, colour);
             }
       }
-   // TODO:create an icon from image or use a string to id it
-   // add it to bitmaps
    int handle = m_resources->add_bitmap(bmp);
-
+   wxGetApp().get_panel()->add_bitmap_handle(name, handle);
    auto view = wxGetApp().get_view();
    if (! view->have_image()) {
-         view->copy_to_current_image (handle);
-      }
-      
+      view->copy_to_current_image (handle);
+   }
    wxGetApp().get_main_frame()->enable_save_project (true);
    wxGetApp().get_main_frame()->enable_save_project_as (true);
-
    return true;
 }
  
