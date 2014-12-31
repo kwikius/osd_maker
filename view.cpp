@@ -1,10 +1,14 @@
+
 #include <cctype>
+
+#include <quan/gx/primitives/simple_line.hpp>
+
+#include "main_frame.h"
 #include "view.hpp"
 #include "panel.hpp"
 #include "events.hpp"
 #include "window_ids.hpp"
 #include "document.hpp"
-#include <quan/gx/primitives/simple_line.hpp>
 #include "fontmap_dialog.hpp"
 
 BEGIN_EVENT_TABLE(view,wxWindow)
@@ -23,8 +27,8 @@ view::view(wxWindow* parent)
      : wxWindow(parent, wxID_ANY)
      ,m_cur_mouse_pos {0,0}
 ,m_mouse_is_down {false}
-,m_current_bitmap_lib_index {-1}
 ,m_current_image{nullptr}
+,m_document_image_handle{-1}
 ,m_current_image_modified{false} {
      window_ids::view = this->GetId();
      this->SetWindowStyle(wxVSCROLL | wxHSCROLL);
@@ -34,16 +38,17 @@ view::view(wxWindow* parent)
      this->SetFocus();
 }
 
-void view::set_current_image( osd_image* image, uint32_t index)
+void view::copy_to_current_image( int handle)
 {
+   auto image = wxGetApp().get_document()->get_image(handle);
    assert ( (image != nullptr) && __LINE__);
    assert ( (m_current_image_modified == false) && __LINE__);
    if ( m_current_image != nullptr){
       m_current_image->destroy();
    }
-   m_current_image = image;
-   m_current_bitmap_lib_index = index;
-   wxGetApp().get_panel()->set_current_bitmap(m_current_image, m_current_bitmap_lib_index);
+   m_current_image = image->clone();
+   m_document_image_handle = handle;
+
    this->Refresh();
 }
 
@@ -51,6 +56,10 @@ void view::set_scale(double const & v)
 {
      m_drawing_view.set_scale(v);
      this->Refresh();
+}
+double view::get_scale()
+{
+      return m_drawing_view.get_scale();
 }
 
 quan::gx::abc_color::ptr view::get_colour(osd_image::colour colour_id)
@@ -201,11 +210,14 @@ void view::OnVScroll(wxScrollWinEvent & event)
 */
 bool view::get_image_pixel(vect2_d const & event_pos, osd_image::pos_type & result_pos)
 {
+      if ( ! m_current_image){
+         return false;
+      }
 
-     auto current_index = this->get_current_bitmap_lib_index();
-     if (current_index == -1) {
-          return false;
-     }
+//     auto current_index = this->get_current_bitmap_lib_index();
+//     if (current_index == -1) {
+//          return false;
+//     }
      quan::gx::wxwidgets::graphics_info_context ic {
           &this->m_drawing,
           &this->m_drawing_view,
@@ -216,8 +228,9 @@ bool view::get_image_pixel(vect2_d const & event_pos, osd_image::pos_type & resu
      auto drawing_pos = ic.device_to_drawing(event_pos);
      auto doc = wxGetApp().get_document();
  
-     osd_image::size_type num_pixels;
-     doc->get_bitmap_size(current_index,num_pixels);
+     osd_image::size_type num_pixels = m_current_image->get_size();
+  
+    // doc->get_bitmap_size(current_index,num_pixels);
      vect2_mm pixel_size = doc->get_pixel_size_mm();
      // bitmap always centered
      vect2_mm bitmap_size {num_pixels.x * pixel_size.x,num_pixels.y * pixel_size.y};
@@ -246,6 +259,7 @@ void view::OnMouseLeftDown(wxMouseEvent & event)
 /*
    get image pixel if any
 */
+
 void view::OnChar(wxKeyEvent & event)
 {
      event.Skip();
@@ -280,8 +294,35 @@ void view::OnChar(wxKeyEvent & event)
                if ( new_colour != cur_colour){
                   m_current_image->set_pixel_colour(result_pos, new_colour);
                   this->set_modified(true);
+                  wxGetApp().get_main_frame()->enable_save_project(true);
+                  wxGetApp().get_main_frame()->enable_save_project_as(true);
                   this->Refresh();
                }
+          }
+     }else {
+          int ch = event.GetKeyCode();
+          switch(ch) {
+          case '=':{
+               double scale = this->get_scale();
+               scale += 0.1;
+               if (scale >1.0){
+                  scale = 1.0;
+               }  
+               this->set_scale(scale);
+          }
+          break;
+          case '-':{
+               double scale = this->get_scale();
+               scale -= 0.1;
+               if (scale < 0.1){
+                  scale = 0.1;
+               }  
+               this->set_scale(scale);
+           }
+            break;
+            default:
+            break;
+
           }
      }
 }

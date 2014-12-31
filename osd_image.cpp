@@ -77,3 +77,25 @@ wxImage* ConvertTo_wxImage(osd_image const& in)
       return img;
 
 }
+
+bool osd_bitmap::get_pixel_colour (pos_type const & p, osd_image::colour & c) const
+{
+   if ( (p.x >= m_size.x) || (p.y >= m_size.y)) {
+         return false;
+      }
+   auto idx = p.y * m_size.x + p.x;
+   c = m_data.at (idx);
+   return true;
+}
+bool osd_bitmap::set_pixel_colour (pos_type const & p, osd_image::colour c)
+{
+   if (c == colour::invalid) {
+         return false;
+      }
+   if ( (p.x >= m_size.x) || (p.y >= m_size.y)) {
+         return false;
+      }
+   auto idx = p.y * m_size.x + p.x;
+   m_data.at (idx) = c;
+   return true;
+}

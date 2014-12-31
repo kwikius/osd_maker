@@ -40,12 +40,14 @@ namespace {
    
    void draw_bitmap(size_t idx, wxDC& dc, osd_image::pos_type const & position)
    {
+#if 0
       auto doc = wxGetApp().get_document();
       osd_image* pimage = doc->get_osd_image_ptr(idx);
       assert(pimage);
       auto bmp = ConvertTo_wxBitmap(*pimage, colour_array);
       dc.DrawBitmap(*bmp,position.x,position.y);
       delete bmp;
+#endif
    }
 
 
@@ -53,6 +55,7 @@ namespace {
 
 void bitmap_preview::OnPaint(wxPaintEvent & event)
 {
+#if 0
    wxPaintDC dc(this);
    dc.SetBackground(* wxBLUE_BRUSH); // sets background brush but doesnt clear
    dc.Clear(); //       need to invoke to clear using current background brush
@@ -61,7 +64,8 @@ void bitmap_preview::OnPaint(wxPaintEvent & event)
    // and find the largest bitmap
    // need to be able to slect them..
    auto doc = wxGetApp().get_document();
-   auto num_elements = doc->get_num_bitmap_elements();
+  // auto num_elements = doc->get_num_bitmap_elements();
+  // auto num_elements = 0U;
    wxSize window_size = this->GetSize();
    if ( num_elements > 0){
       osd_image::size_type border{20,20};
@@ -94,4 +98,5 @@ void bitmap_preview::OnPaint(wxPaintEvent & event)
    // get dc
    // rows cols
    // find number of bitmaps
+#endif
 }

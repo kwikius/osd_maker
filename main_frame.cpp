@@ -53,11 +53,14 @@ wxString wxbuildinfo(wxbuildinfoformat format)
 }
  
 BEGIN_EVENT_TABLE(main_frame, wxFrame)
-     EVT_CLOSE(main_frame::OnClose)
+     EVT_CLOSE(main_frame::OnCloseProject)
      EVT_MENU(idMenuQuit, main_frame::OnQuit)
      EVT_MENU(idMenuAbout, main_frame::OnAbout)
-     EVT_MENU(wxID_OPEN,main_frame::OnFileOpen)
-     EVT_MENU(wxID_SAVE,main_frame::OnFileSave)
+     EVT_MENU(wxID_NEW,main_frame::OnNewProject)
+     EVT_MENU(wxID_OPEN,main_frame::OnOpenProject)
+     EVT_MENU(wxID_SAVE,main_frame::OnSaveProject)
+     EVT_MENU(idImportImage,main_frame::OnImportImage)
+     EVT_MENU(idImportFont,main_frame::OnImportFont)
      EVT_TIMER(idTimer, main_frame::OnTimer)
 END_EVENT_TABLE()
  
@@ -85,21 +88,61 @@ main_frame::main_frame(wxFrame *frame, const wxString& title, wxSize const & siz
  
 main_frame::~main_frame()
 {}
+
+void main_frame::enable_menu_item(int id, bool b)
+{
+   auto mbar = GetMenuBar();
+   assert(mbar);
+   mbar->Enable(id, b);
+}
+
+void main_frame::enable_import_image(bool b)
+{
+  enable_menu_item(idImportImage, b);
+}
+void main_frame::enable_import_font(bool b)
+{
+  enable_menu_item(idImportFont, b);
+}
+void main_frame::enable_save_project( bool b)
+{
+  enable_menu_item(wxID_SAVE, b);
+}
+void main_frame::enable_save_project_as( bool b)
+{
+  enable_menu_item(wxID_SAVEAS,b);
+}
  
 void main_frame::create_menus()
 {
      wxMenuBar* mbar = new wxMenuBar();
      SetMenuBar(mbar);
+
+     wxMenu* projectMenu = new wxMenu(_T(""));
+     mbar->Append(projectMenu, _("&File"));
+     projectMenu->Append(wxID_NEW, _("&New Project...\tCtrl+N"), _("New Project"));
+     projectMenu->Append(wxID_OPEN, _("&Open Project...\tCtrl+O"), _("Open Project"));
+     projectMenu->Append(wxID_SAVE, _("&Save Project\tCtrl+S"), _("Save Project"));
+     projectMenu->Append(wxID_SAVEAS, _("&Save Project As...\tShift+Ctrl+S"), _("Save Project As"));
+     projectMenu->Append(idMenuQuit, _("&Quit\tCtrl+Q"), _("Quit the Application"));
+
      wxMenu* fileMenu = new wxMenu(_T(""));
-     mbar->Append(fileMenu, _("&File"));
-     fileMenu->Append(wxID_OPEN, _("&Open\tCtrl+O"), _("Open File"));
-     fileMenu->Append(wxID_SAVE, _("&Save\tCtrl+S"), _("Save File"));
-     fileMenu->Append(idMenuQuit, _("&Quit\tAlt-F4"), _("Quit the application"));
- 
+     mbar->Append(fileMenu, _("&Import"));
+     fileMenu->Append(idImportImage, _("&Image..."), _("Import Image File"));
+     fileMenu->Append(idImportFont, _("&Font..."), _("Import Font File"));
+
      wxMenu* helpMenu = new wxMenu(_T(""));
      mbar->Append(helpMenu, _("&Help"));
-     helpMenu->Append(idMenuAbout, _("&About\tF1"), _("Show info about this application"));
+     helpMenu->Append(idMenuAbout, _("&About"), _("Show info about this application"));
+
+     enable_save_project(false);
+     enable_save_project_as(false);
+  //   enable_import_image(false);
+   //  enable_import_font(false);
+      enable_import_image(true);
 }
+
+
 void main_frame::create_statusbar()
 {
      CreateStatusBar(2);
@@ -125,14 +168,14 @@ bool main_frame::Destroy()
      return wxFrame::Destroy();
 }
  
-void main_frame::OnClose(wxCloseEvent &event)
+void main_frame::OnCloseProject(wxCloseEvent &event)
 {
-     // check cancel etc
-     if ( event.CanVeto() && wxGetApp().get_document()->is_modified()) {
-          if ( wxMessageBox(wxT("library modified. Do you want to save it?"),
+     auto & app = wxGetApp();
+     if ( event.CanVeto() && (app.get_document()->is_modified() || app.get_view()->is_modified())) {
+          if ( wxMessageBox(wxT("Do you want to save before exit?"),
                             wxT("Confirm Library File Save"),
-                            wxICON_QUESTION | wxYES_NO  ) == wxYES ) {
-               wxGetApp().get_document()->save_document();
+                            wxICON_QUESTION | wxYES_NO ) == wxYES ) {
+               wxGetApp().get_document()->save_project();
           }
      }
      wxSize frame_size = this->GetSize();
@@ -147,45 +190,46 @@ void main_frame::OnQuit(wxCommandEvent &event)
 {
      event.Skip();
      this->Close();
- 
 }
  
-void main_frame::OnAbout(wxCommandEvent &event)
-{
-     wxString msg = wxbuildinfo(long_f);
-     wxMessageBox(msg, _("Welcome to..."));
-}
+
  
-void main_frame::OnFileOpen(wxCommandEvent &event)
+//TODO |MinimOSD Charset(*.mcm)|*.mcm
+void main_frame::OnImportFont(wxCommandEvent &event)
 {
+
+}
+
+void main_frame::OnImportImage(wxCommandEvent &event)
+{
+     auto & app = wxGetApp();
+     auto doc = app.get_document();
+
      wxFileDialog fd {
           this,
-          wxT("Open File"),  // message
+          wxT("Import Image"),  // message
           wxT(""),                     // default dir
           wxT(""),                     // default file
-          wxT("PNG files(*.png)|*.png|MinimOSD Charset(*.mcm)|*.mcm"),// wildcard
-          wxFD_OPEN | wxFD_FILE_MUST_EXIST | wxFD_CHANGE_DIR,
-          wxDefaultPosition,
-          wxDefaultSize,
-          wxT("Open Bitmap File Dialog")
+          wxT("PNG files(*.png)|*.png"),// wildcard
+          wxFD_OPEN | wxFD_FILE_MUST_EXIST | wxFD_CHANGE_DIR
      };
  
      if ( (fd.ShowModal() == wxID_OK)  ) {
- 
           if ( fd.GetFilterIndex() == 0) { // png
-               auto & app = wxGetApp();
-               auto doc = app.get_document();
                wxString path = fd.GetPath();
                if (! doc->load_png_file(path)) {
                     wxMessageBox(wxString::Format(wxT("Load \"%s\" failed"),path.wc_str()));
                     return;
+               }else{
+                   wxMessageBox(wxString::Format(wxT("Load \"%s\" succeeded"),path.wc_str()));
                }
-               // if its the only element then make a copy and display it in the view
-               if ( app.get_document()->get_num_bitmap_elements() ==1) {
-                    osd_image* pimage = doc->get_osd_image_ptr(0);
-                    assert( pimage  && __LINE__);
-                    app.get_view()->set_current_image(pimage->clone(),0);
-               }
+
+          
+             //  if ( app.get_document()->get_num_bitmap_elements() ==1) {
+                  //  osd_image* pimage = doc->get_osd_image_ptr(0);
+                  //  assert( pimage  && __LINE__);
+                  //  app.get_view()->copy_to_current_image(nullptr);
+             //  }
                // Have a new element in db so need to re draw the preview
                // with it included
                app.get_bitmap_preview()->Refresh();
@@ -200,10 +244,34 @@ void main_frame::OnFileOpen(wxCommandEvent &event)
      }
 }
  
-void main_frame::OnFileSave(wxCommandEvent &event)
+void main_frame::OnSaveProject(wxCommandEvent &event)
 {
-  
-    
+    wxGetApp().get_document()->save_project();
+}
+
+
+
+void main_frame::OnNewProject(wxCommandEvent &event)
+{
+   // dialog with project name
+   wxTextEntryDialog dlg{ 
+      this,
+      wxT("Enter Project name"),
+      wxT("New Project"),
+      wxT("OSDBitmaps1")
+   };
+   
+   if ( dlg.ShowModal() == wxID_OK){
+     
+     // if have current project
+     wxGetApp().get_document()->set_project_name(dlg.GetValue());
+   } 
+}
+
+void main_frame::OnOpenProject(wxCommandEvent &event)
+{
+  // FileDialog 
+   
 }
  
 /*
@@ -212,5 +280,11 @@ void main_frame::OnFileSave(wxCommandEvent &event)
 void main_frame::OnTimer(wxTimerEvent &event)
 {
  
+}
+
+void main_frame::OnAbout(wxCommandEvent &event)
+{
+     wxString msg = wxbuildinfo(long_f);
+     wxMessageBox(msg, _("Welcome to..."));
 }
  

@@ -22,7 +22,7 @@ struct panel : wxScrolledWindow// wxPanel
 
 
 private:
-   void set_current_bitmap(osd_image const * image ,uint32_t index);
+  // void set_current_bitmap(osd_image const * image ,uint32_t index);
   // void set_current_bitmap_index(int index);
    enum
    {
@@ -37,13 +37,13 @@ private:
 
    void OnConnectDisconnect(wxCommandEvent& event);
  //  void OnAircraftPositionChanged(wxEvent& event);
-   void OnScaleSlider(wxScrollEvent & event);
+  // void OnScaleSlider(wxScrollEvent & event);
   // void OnProtocolChanged(wxCommandEvent& event);
    wxButton* BtnConnect;
    wxTextCtrl* PortText;
 //scaling of the view
-   wxTextCtrl* ScaleText;
-   wxSlider* ScaleSlider;  
+  // wxTextCtrl* ScaleText;
+  // wxSlider* ScaleSlider;  
 
    wxTextCtrl* CurrentBitmapIndex;
    wxTextCtrl* XsizeText;
@@ -51,7 +51,7 @@ private:
 
   // wxRadioBox* ProtocolChooser;
    void make_port_controls(wxBoxSizer* s);
-   void make_scale_controls(wxBoxSizer* s);
+  // void make_scale_controls(wxBoxSizer* s);
    void make_bitmap_info_controls(wxBoxSizer* s);
 
    friend struct view;

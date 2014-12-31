@@ -26,15 +26,6 @@ quan::two_d::vect<int> vect_mm_to_px(quan::two_d::vect<quan::length::mm> const &
 }
 }
 
-void  panel::set_current_bitmap(osd_image const * image, uint32_t index)
-{
-   assert( image  && __LINE__);
-   CurrentBitmapIndex->ChangeValue (wxString::Format (wxT ("%d"),index));
-   auto size = image->get_size();
-   XsizeText->ChangeValue (wxString::Format (wxT ("%d"),size.x));
-   YsizeText->ChangeValue (wxString::Format (wxT ("%d"),size.y));
-}
-
 void panel::make_port_controls(wxBoxSizer* vert_sizer)
 {
    quan::two_d::vect<int> const bd = vect_mm_to_px({quan::length::mm{6},quan::length::mm{6}});
@@ -51,7 +42,7 @@ void panel::make_port_controls(wxBoxSizer* vert_sizer)
 
    vert_sizer->Add (sizer,0,wxALL,5);
 }
-
+/*
 void panel::make_scale_controls(wxBoxSizer* vert_sizer)
 {
 
@@ -72,6 +63,7 @@ void panel::make_scale_controls(wxBoxSizer* vert_sizer)
 
    vert_sizer->Add (sizer,0,wxALL,5);
 }
+*/
 
 void panel::make_bitmap_info_controls(wxBoxSizer* vert_sizer)
 {
@@ -128,8 +120,6 @@ panel::panel (wxWindow* parent)
 :  wxScrolledWindow {parent}
 ,BtnConnect {nullptr}
 ,PortText {nullptr}
- ,ScaleText{nullptr}
-  ,ScaleSlider{nullptr}
 ,CurrentBitmapIndex{nullptr}
  ,XsizeText{nullptr}
 ,YsizeText{nullptr}
@@ -142,7 +132,7 @@ panel::panel (wxWindow* parent)
    auto vert_sizer = new wxBoxSizer (wxVERTICAL);
   
  //  make_port_controls(vert_sizer);
-   make_scale_controls(vert_sizer);
+  // make_scale_controls(vert_sizer);
    make_bitmap_info_controls(vert_sizer);
 
    auto horz_sizer = new wxBoxSizer (wxHORIZONTAL);
@@ -159,16 +149,16 @@ panel::panel (wxWindow* parent)
 
 BEGIN_EVENT_TABLE (panel, wxPanel)
    EVT_BUTTON (idBtnConnect, panel::OnConnectDisconnect)
-   EVT_COMMAND_SCROLL (idScaleSlider,panel::OnScaleSlider)
+  // EVT_COMMAND_SCROLL (idScaleSlider,panel::OnScaleSlider)
 END_EVENT_TABLE()
 
-void panel::OnScaleSlider (wxScrollEvent & event)
-{
-   auto v = ScaleSlider->GetValue();
-   double scale =  v / 100.0;
-   wxGetApp().get_view()->set_scale (scale);
-   ScaleText->ChangeValue (wxString::Format (wxT ("%f"),scale));
-}
+//void panel::OnScaleSlider (wxScrollEvent & event)
+//{
+//   auto v = ScaleSlider->GetValue();
+//   double scale =  v / 100.0;
+//   wxGetApp().get_view()->set_scale (scale);
+//   ScaleText->ChangeValue (wxString::Format (wxT ("%f"),scale));
+//}
 
 void panel::OnConnectDisconnect (wxCommandEvent &event)
 {

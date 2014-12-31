@@ -24,19 +24,29 @@ class main_frame: public wxFrame
         main_frame(wxFrame *frame, const wxString& title, wxSize const & size);
         ~main_frame();
         bool Destroy();
-       
+        void enable_save_project(bool b);
+        void enable_save_project_as(bool b);
+        void enable_import_image(bool b);
+        void enable_import_font(bool b);
     private:
+        void enable_menu_item(int id, bool b);
         enum
         {
             idMenuQuit = 1000,
             idMenuAbout,
+            idImportImage,
+            idImportFont,
             idTimer
         };
-        void OnClose(wxCloseEvent& event);
+        void OnNewProject(wxCommandEvent & event);
+        void OnOpenProject(wxCommandEvent & event);
+        void OnCloseProject(wxCloseEvent& event);
         void OnQuit(wxCommandEvent& event);
         void OnAbout(wxCommandEvent& event);
-        void OnFileOpen(wxCommandEvent & event);
-        void OnFileSave(wxCommandEvent & event);
+        void OnImportImage(wxCommandEvent & event);
+        void OnImportFont(wxCommandEvent & event);
+        void OnSaveProject(wxCommandEvent & event);
+        
         void OnTimer(wxTimerEvent& event);
         
         DECLARE_EVENT_TABLE()

@@ -33,6 +33,7 @@ public:
    main_frame* get_main_frame()const{assert(m_frame); return m_frame;}
    view * get_view()const;
    panel* get_panel() const;
+
    bitmap_preview* get_bitmap_preview()const;
     
    wxConfig* get_config()const {return m_app_config;}

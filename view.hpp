@@ -30,6 +30,7 @@
 
       document* get_document(){ return wxGetApp().get_document();}
       void set_scale(double const & v);
+      double get_scale();
            
       typedef quan::two_d::vect<int>               vect2_i;
       typedef quan::two_d::vect<uint32_t>          vect2_u;
@@ -42,15 +43,8 @@
 
       bool get_image_pixel(vect2_d const & event_pos, osd_image::pos_type & result_pos);
       quan::gx::abc_color::ptr get_colour(osd_image::colour colour_id);
-      int32_t get_current_bitmap_lib_index(){
-          if (wxGetApp().get_document()->have_image_lib()){
-             return m_current_bitmap_lib_index;
-          }else{
-             return -1;
-          }
-      }
-      
-      void set_current_image( osd_image* image, uint32_t index);
+     
+      void copy_to_current_image(int handle);
       osd_image* clone_current_image()const
       {
          if ( m_current_image){
@@ -59,23 +53,34 @@
             return nullptr;
          }
       }
+      bool have_image()
+      {
+            return m_current_image != nullptr;
+      }
+      int get_doc_image_handle()
+      {
+         assert ( this->have_image() &&  __LINE__);
+
+         return m_document_image_handle;
+      }
       void set_modified(bool val){m_current_image_modified = val;}
       bool is_modified()const { return m_current_image_modified;}
 
    private:
       void paint_bitmap_view(wxPaintEvent & event);
-      void paint_test_view(wxPaintEvent & event);
+    // void paint_test_view(wxPaintEvent & event);
       drawing  m_drawing;
       quan::gx::simple_drawing_view m_drawing_view;
       quan::gx::simple_device_window m_device_window;
-     // view_mode m_view_mode;
       vect2_d m_cur_mouse_pos;
       bool m_mouse_is_down;
-      int32_t  m_current_bitmap_lib_index;
+
       DECLARE_EVENT_TABLE()
       
       osd_image* m_current_image;
+      int m_document_image_handle;
       bool m_current_image_modified;
+      
    };
 
 #endif // AEROFOIL_GRAPHICS_WINDOW_HPP_INCLUDED
