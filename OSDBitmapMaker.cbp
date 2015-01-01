@@ -46,6 +46,7 @@
 		<Unit filename="app.h" />
 		<Unit filename="bitmap_preview.cpp" />
 		<Unit filename="bitmap_preview.hpp" />
+		<Unit filename="bitmap_tree.cpp" />
 		<Unit filename="bitmap_tree.hpp" />
 		<Unit filename="document.cpp" />
 		<Unit filename="document.hpp" />

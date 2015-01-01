@@ -61,6 +61,7 @@ BEGIN_EVENT_TABLE(main_frame, wxFrame)
      EVT_MENU(wxID_SAVE,main_frame::OnSaveProject)
      EVT_MENU(idImportImage,main_frame::OnImportImage)
      EVT_MENU(idImportFont,main_frame::OnImportFont)
+     EVT_MENU(idCommitViewToTree,main_frame::OnCommitViewToTree)
      EVT_TIMER(idTimer, main_frame::OnTimer)
 END_EVENT_TABLE()
  
@@ -112,6 +113,11 @@ void main_frame::enable_save_project_as( bool b)
 {
   enable_menu_item(wxID_SAVEAS,b);
 }
+
+void main_frame::enable_commit_view_to_tree(bool b)
+{
+  enable_menu_item(idCommitViewToTree,b);
+}
  
 void main_frame::create_menus()
 {
@@ -131,12 +137,17 @@ void main_frame::create_menus()
      fileMenu->Append(idImportImage, _("&Image..."), _("Import Image File"));
      fileMenu->Append(idImportFont, _("&Font..."), _("Import Font File"));
 
+     wxMenu* viewMenu = new wxMenu(_T(""));
+     mbar->Append(viewMenu, _("&View"));
+     viewMenu->Append(idCommitViewToTree,_("Commit view to live-tree"));
+
      wxMenu* helpMenu = new wxMenu(_T(""));
      mbar->Append(helpMenu, _("&Help"));
      helpMenu->Append(idMenuAbout, _("&About"), _("Show info about this application"));
 
      enable_save_project(false);
      enable_save_project_as(false);
+     enable_commit_view_to_tree(false);
   //   enable_import_image(false);
    //  enable_import_font(false);
       enable_import_image(true);
@@ -166,6 +177,11 @@ bool main_frame::Destroy()
           }
      }
      return wxFrame::Destroy();
+}
+
+void main_frame::OnCommitViewToTree(wxCommandEvent & event)
+{
+    wxGetApp().get_view()->sync_to_document();
 }
  
 void main_frame::OnCloseProject(wxCloseEvent &event)

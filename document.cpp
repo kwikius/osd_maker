@@ -113,41 +113,21 @@ void document::set_modified (bool val)
    this->m_is_modified = val;
 }
  
- 
 bool document::open_project (wxString const & path)
 {
    return false;
+}
+
+void document::set_image(int handle, osd_image* image)
+{
+  m_resources->set_image_handle(handle,image);
 }
  
 // ret false if doc was not saved
 // save zip of the project files
 bool document::save_project()
 {
-   // if the view is modified then
-   // prompt user if she wants to include it in the
-   // project before saving
-   auto view = wxGetApp().get_view();
-   if (view->is_modified()) {
-         int result = wxMessageBox (wxT ("View modified. Commit to lib before saving lib file?"),
-                                    wxT ("Confirm View Commit"),
-                                    wxICON_QUESTION | wxYES_NO | wxCANCEL);
-         switch (result) {
-               case wxYES: {
-                     auto view = wxGetApp().get_view();
-                     this->m_resources->set_image_handle(
-                           view->get_doc_image_handle(), 
-                           view->clone_current_image()
-                     );
-                     this->set_modified (true);
-                     view->set_modified (false);
-                  }
-                  break;
-               case wxNO:  // user doesnt want to commit view
-                  break;
-               default: // cancel the op
-                  return false;
-            }
-      }
+   wxGetApp().get_view()->sync_hmi_view();
    wxString save_path = get_project_file_path() ;
    if (save_path == wxT ("")) {
          wxFileDialog fd {wxGetApp().get_main_frame(),
@@ -224,7 +204,7 @@ document::load_png_file (wxString const & path)
    name = quan::fs::strip_file_extension(name);
    name = m_resources->make_unique_image_name(name);
    
-   wxMessageBox(quan::gx::wxwidgets::to_wxString(name));
+  // wxMessageBox(quan::gx::wxwidgets::to_wxString(name));
 
    osd_image::size_type bitmap_size {image.GetWidth(), image.GetHeight() };
    osd_bitmap * bmp = new osd_bitmap {name,bitmap_size};
@@ -255,11 +235,13 @@ document::load_png_file (wxString const & path)
    int handle = m_resources->add_bitmap(bmp);
    wxGetApp().get_panel()->add_bitmap_handle(name, handle);
    auto view = wxGetApp().get_view();
+   auto frame = wxGetApp().get_main_frame();
    if (! view->have_image()) {
       view->copy_to_current_image (handle);
+      
    }
-   wxGetApp().get_main_frame()->enable_save_project (true);
-   wxGetApp().get_main_frame()->enable_save_project_as (true);
+   frame->enable_save_project (true);
+   frame->enable_save_project_as (true);
    return true;
 }
  

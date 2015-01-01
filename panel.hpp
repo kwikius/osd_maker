@@ -7,12 +7,15 @@
 
 struct view;
 struct bitmap_tree;
-struct panel : wxScrolledWindow// wxPanel
+struct panel : wxWindow// wxPanel
 {
   panel (wxWindow * parent);
   void add_bitmap_handle(std::string const & name, int handle); 
+  bool get_handle(wxTreeEvent & event, int & result_out)const;
 private:
-
+  
+   void OnTreeItemActivated(wxTreeEvent & event);
+   void OnTreeItemRightClick(wxTreeEvent & event);
    enum
    {
       idMenuQuit = 1000,
@@ -20,7 +23,7 @@ private:
       idTreeControl
    };
    bitmap_tree* m_bitmap_tree;
-
+  
    DECLARE_EVENT_TABLE()
    
 };

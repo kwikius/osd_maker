@@ -28,6 +28,7 @@
       void OnMouseMove(wxMouseEvent & event);
       void OnChar(wxKeyEvent & event);
 
+
       document* get_document(){ return wxGetApp().get_document();}
       void set_scale(double const & v);
       double get_scale();
@@ -43,8 +44,12 @@
 
       bool get_image_pixel(vect2_d const & event_pos, osd_image::pos_type & result_pos);
       quan::gx::abc_color::ptr get_colour(osd_image::colour colour_id);
-     
+      // returns result of yes no cancel messgaebox
+      int sync_hmi_view();
+      void sync_to_document();
+      // copy image refeed by handle to view for display
       void copy_to_current_image(int handle);
+      // make a heap copy of current view image
       osd_image* clone_current_image()const
       {
          if ( m_current_image){
@@ -63,7 +68,7 @@
 
          return m_document_image_handle;
       }
-      void set_modified(bool val){m_current_image_modified = val;}
+      void set_modified(bool val);
       bool is_modified()const { return m_current_image_modified;}
 
    private:

@@ -68,7 +68,10 @@ struct document {
      bool load_png_file(wxString const &path);
     /// bool init_bitmap_lib(image_container::type t);
      wxString get_project_file_path(){ return m_project_file_path;}
+     // doc doesnt relinquish ownership of image
      osd_image* get_image( int handle)const {return m_resources->find_osd_image(handle);}
+     // doc takes ownership of image which was created on heap
+     void set_image(int handle, osd_image* image);
 private:
      bool ll_save_project(wxString const & path);
      quan::two_d::vect<quan::length::mm> m_page_size;

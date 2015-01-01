@@ -38,17 +38,48 @@ view::view(wxWindow* parent)
      this->SetFocus();
 }
 
+void view::sync_to_document()
+{
+   auto doc = wxGetApp().get_document();
+   doc->set_image(
+      this->get_doc_image_handle(), 
+      this->clone_current_image()
+   );
+   doc->set_modified (true);
+   this->set_modified (false);
+}
+
+int view::sync_hmi_view()
+{
+   if (this->is_modified()) {
+      int result = wxMessageBox (wxT ("View modified. Commit to live tree?"),
+      wxT ("Confirm View Commit"),
+      wxICON_QUESTION | wxYES_NO | wxCANCEL);
+      if (result ==  wxYES ) {
+         this->sync_to_document();
+      }
+      return result;
+   }else{
+      return wxYES;
+   }
+}
+
+void view::set_modified(bool val)
+{
+   m_current_image_modified = val;
+   wxGetApp().get_main_frame()->enable_commit_view_to_tree(val);
+}
+
 void view::copy_to_current_image( int handle)
 {
    auto image = wxGetApp().get_document()->get_image(handle);
    assert ( (image != nullptr) && __LINE__);
-   assert ( (m_current_image_modified == false) && __LINE__);
    if ( m_current_image != nullptr){
       m_current_image->destroy();
    }
    m_current_image = image->clone();
    m_document_image_handle = handle;
-
+   this->set_modified(false);
    this->Refresh();
 }
 

@@ -28,6 +28,7 @@ class main_frame: public wxFrame
         void enable_save_project_as(bool b);
         void enable_import_image(bool b);
         void enable_import_font(bool b);
+        void enable_commit_view_to_tree(bool b);
     private:
         void enable_menu_item(int id, bool b);
         enum
@@ -36,7 +37,8 @@ class main_frame: public wxFrame
             idMenuAbout,
             idImportImage,
             idImportFont,
-            idTimer
+            idTimer,
+            idCommitViewToTree
         };
         void OnNewProject(wxCommandEvent & event);
         void OnOpenProject(wxCommandEvent & event);
@@ -46,6 +48,7 @@ class main_frame: public wxFrame
         void OnImportImage(wxCommandEvent & event);
         void OnImportFont(wxCommandEvent & event);
         void OnSaveProject(wxCommandEvent & event);
+        void OnCommitViewToTree(wxCommandEvent & event);
         
         void OnTimer(wxTimerEvent& event);
         
