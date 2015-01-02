@@ -14,6 +14,19 @@
 #include "view.hpp"
 #include "panel.hpp"
 
+using quan::gx::wxwidgets::from_wxString;
+using quan::gx::wxwidgets::to_wxString;
+
+font * bitmap_resource_t::get_font_at(size_t i)
+{
+   assert( (i < get_num_fonts()) && __LINE__);
+   return m_fonts.at(i);
+}
+osd_bitmap* bitmap_resource_t::get_bitmap_at(size_t i)
+{
+   assert( (i < get_num_bitmaps()) && __LINE__);
+   return m_bitmaps.at(i);
+}
 
 std::string bitmap_resource_t::make_unique_image_name(std::string const & name_in)const
 {
@@ -103,6 +116,25 @@ int bitmap_resource_t::add_bitmap( osd_bitmap* bmp)
    m_bitmaps.push_back(bmp);
    return new_handle;
 }
+
+void document::add_bitmap(osd_bitmap* bmp)
+{
+   //TODO  add check name is unique...
+   int handle = m_resources->add_bitmap(bmp);
+   wxGetApp().get_panel()->add_bitmap_handle(bmp->get_name(), handle);
+   auto view = wxGetApp().get_view();
+   auto frame = wxGetApp().get_main_frame();
+   if (! view->have_image()) {
+      view->copy_to_current_image (handle);
+   }
+   frame->enable_save_project (true);
+   frame->enable_save_project_as (true);
+}
+
+void document::set_image(int handle, osd_image* image)
+{
+  m_resources->set_image_handle(handle,image);
+}
  
 bool document::is_modified() const
 {
@@ -115,14 +147,45 @@ void document::set_modified (bool val)
  
 bool document::open_project (wxString const & path)
 {
+   // save current project if its modified etc
+   // check the path
+   // create a new resources
+
+  if (! wxImage::FindHandler (wxBITMAP_TYPE_PNG)) {
+         wxImage::AddHandler (new wxPNGHandler);
+   }
+   
+   wxFileInputStream in(path);
+   if (!in.IsOk()){
+         wxMessageBox (wxT ("Input file failed\n"));
+         return false;
+   }
+   wxZipInputStream zipin(in);
+   if (!zipin.IsOk()){
+         wxMessageBox (wxT ("Create zip input stream failed\n"));
+         return false;
+   }
+   int num_entries = zipin.GetTotalEntries();
+   
+   for ( int i = 0; i < num_entries; ++i){
+      wxZipEntry* entry = zipin.GetNextEntry();
+      assert(entry && __LINE__);
+      if ( !entry->IsDir()){
+         std::string full_name = from_wxString<char>(entry->GetName()); 
+         if ( ( full_name.find("bitmaps/",0,8) != std::string::npos) &&
+            (full_name.find(".png",full_name.length()-4,4) != std::string::npos)
+         ){
+          std::string name = full_name.substr(8,full_name.length()-12);
+          wxImage image(zipin,wxBITMAP_TYPE_PNG);
+          osd_bitmap * bmp = ConvertTo_osd_bitmap(name,image);
+          this->add_bitmap(bmp);
+         }
+      }
+      delete entry;
+   }
    return false;
 }
 
-void document::set_image(int handle, osd_image* image)
-{
-  m_resources->set_image_handle(handle,image);
-}
- 
 // ret false if doc was not saved
 // save zip of the project files
 bool document::save_project()
@@ -151,97 +214,79 @@ bool document::ll_save_project (wxString const & path)
    if (! out.IsOk()) {
          wxMessageBox (wxT ("Output file failed\n"));
          return false;
-      }
-   else {
+   }else{
          wxZipOutputStream zipout {out};
-#if 0
-         for (uint32_t i = 0; i < get_num_bitmap_elements(); ++i) {
-               wxString name = wxString::Format (wxT ("filename_%d.png"), i);
+         zipout.PutNextDirEntry(wxT("fonts"));
+         //make fonts and bitmaps dirs
+/*
+         for (size_t i = 0; i < m_resources->get_num_fonts(); ++i) {
+               wxString name = wxString::Format (wxT ("font_%d.png"), i);
                zipout.PutNextEntry (name);
-               osd_image * inosd_image = get_osd_image_ptr (i);
+               osd_image * osd_image = m_resources->get_font_at(i);
                wxImage* wx_image = ConvertTo_wxImage (*inosd_image);
                wx_image->SaveFile (zipout, wxBITMAP_TYPE_PNG);
+               zipout.CloseEntry();
             }
-#endif
+*/
+
+         zipout.PutNextDirEntry(wxT("bitmaps"));
+         for (size_t i = 0; i < m_resources->get_num_bitmaps(); ++i) {
+               osd_image * osd_image = m_resources->get_bitmap_at(i);
+               auto bmp = dynamic_cast<osd_bitmap*>(osd_image);
+               assert(bmp && __LINE__);
+               wxString name = wxT("bitmaps/");
+               name += to_wxString(bmp->get_name());
+               name += wxT(".png");
+               zipout.PutNextEntry (name);
+               wxImage* wx_image = ConvertTo_wxImage(*bmp);
+               wx_image->SaveFile (zipout, wxBITMAP_TYPE_PNG);
+          }
       }
-#if 0
-   m_project_file_path = path;
-   assert (m_image_container && __LINE__);
-   m_image_container->set_modified (false);
+
+   this->set_modified (false);
    wxGetApp().get_main_frame()->enable_save_project (false);
    return true;
-#endif
-   return false;
+
 }
- 
  
 document::document()
    : m_page_size {quan::length::mm{500}, quan::length::mm{500}}
 , m_pixel_size {quan::length::mm{10}, quan::length::mm{10}}
 , m_resources {new bitmap_resource_t}, m_is_modified {false}
 {}
- 
+
 bool
 document::load_png_file (wxString const & path)
 {
-   // init of bitmap_lib here as the type of lib dependent on file type
-   // but prob abandon that and just verify it when saving
-   
+
    if (! wxImage::FindHandler (wxBITMAP_TYPE_PNG)) {
          wxImage::AddHandler (new wxPNGHandler);
       }
-   // load into image
+
    wxImage image;
    if (! image.LoadFile (path)) {
          wxMessageBox (wxT ("image Load failed"));
          return false;
       }
     
-   // create unique name from filename
    std::string name  =  quan::fs::get_basename(
-         quan::gx::wxwidgets::from_wxString<char>(path)
+         from_wxString<char>(path)
       );
    name = quan::fs::strip_file_extension(name);
    name = m_resources->make_unique_image_name(name);
-   
-  // wxMessageBox(quan::gx::wxwidgets::to_wxString(name));
-
-   osd_image::size_type bitmap_size {image.GetWidth(), image.GetHeight() };
-   osd_bitmap * bmp = new osd_bitmap {name,bitmap_size};
-   // create the osd bitmap
-   for (uint32_t y = 0; y < bitmap_size.y; ++y) {
-         for (uint32_t x = 0; x < bitmap_size.x; ++x) {
-               osd_image::colour  colour = osd_image::colour::transparent;
-               if (!image.IsTransparent (x, y)) {
-                     uint8_t red = image.GetRed (x, y);
-                     uint8_t green = image.GetGreen (x, y);
-                     uint8_t blue = image.GetBlue (x, y);
-                     float mono = (red * 0.2126 + green * 0.7152 + blue * 0.0722) / 255;
-                     if (mono < 1. / 4) {
-                           colour = osd_image::colour::black;
-                        }
-                     else {
-                           if (mono < 1. / 2) {
-                                 colour = osd_image::colour::grey;
-                              }
-                           else {
-                                 colour = osd_image::colour::white;
-                              }
-                        }
-                  }
-               bmp->set_pixel_colour ( {x, y}, colour);
-            }
-      }
+   osd_bitmap * bmp = ConvertTo_osd_bitmap(name,image);
+   this->add_bitmap(bmp);
+/*
    int handle = m_resources->add_bitmap(bmp);
-   wxGetApp().get_panel()->add_bitmap_handle(name, handle);
+   wxGetApp().get_panel()->add_bitmap_handle(bmp->get_name(), handle);
    auto view = wxGetApp().get_view();
    auto frame = wxGetApp().get_main_frame();
    if (! view->have_image()) {
       view->copy_to_current_image (handle);
-      
    }
    frame->enable_save_project (true);
    frame->enable_save_project_as (true);
+*/
    return true;
 }
  
@@ -262,13 +307,3 @@ document::get_pixel_size_mm() const
 {
    return m_pixel_size;
 }
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 

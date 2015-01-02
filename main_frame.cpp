@@ -281,8 +281,13 @@ void main_frame::OnNewProject(wxCommandEvent &event)
 
 void main_frame::OnOpenProject(wxCommandEvent &event)
 {
-  // FileDialog 
-   
+  wxFileDialog dlg(this,wxT("Open Project"),wxT(""),wxT("")
+      ,wxT("zip files(*zip)|*.zip"),wxFD_OPEN | wxFD_FILE_MUST_EXIST);
+   if (dlg.ShowModal() == wxID_CANCEL){
+      return;
+   }  
+   wxString path = dlg.GetPath();
+   wxGetApp().get_document()->open_project(path);
 }
  
 /*
