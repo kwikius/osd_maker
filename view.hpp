@@ -15,9 +15,7 @@
 #include "osd_image.hpp"
 
    struct view : wxWindow{
-
       view(wxWindow* parent);
-
       void OnPaint(wxPaintEvent & event);
       void OnSize(wxSizeEvent & event);
       void OnScroll(wxScrollWinEvent & event);
@@ -27,12 +25,10 @@
       void OnMouseLeftUp(wxMouseEvent & event);
       void OnMouseMove(wxMouseEvent & event);
       void OnChar(wxKeyEvent & event);
-
-
+      void reset();
       document* get_document(){ return wxGetApp().get_document();}
       void set_scale(double const & v);
       double get_scale();
-           
       typedef quan::two_d::vect<int>               vect2_i;
       typedef quan::two_d::vect<uint32_t>          vect2_u;
       typedef quan::two_d::vect<double>            vect2_d;
@@ -52,17 +48,14 @@
       // make a heap copy of current view image
       osd_image* clone_current_image()const
       {
-         if ( m_current_image){
-            return m_current_image->clone();
-         }else{
-            return nullptr;
-         }
+         assert(have_image()&& __LINE__);
+         return m_current_image->clone();
       }
-      bool have_image()
+      bool have_image()const
       {
             return m_current_image != nullptr;
       }
-      int get_doc_image_handle()
+      int get_doc_image_handle()const
       {
          assert ( this->have_image() &&  __LINE__);
 

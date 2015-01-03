@@ -16,13 +16,9 @@
   struct bitmap_resource_t{
       bitmap_resource_t(): m_max_handle{m_min_handle}{}
       ~bitmap_resource_t(){
-         for ( auto v : m_fonts){
-            delete v;
-         }
-
-         for ( auto v : m_bitmaps){
-            v->destroy();
-         }
+            for ( auto iter : m_osd_image_map){
+               iter.second->destroy();
+            }
       }
       size_t get_num_fonts() const{ return m_fonts.size();}
       size_t get_num_bitmaps() const{ return m_bitmaps.size();}
@@ -31,10 +27,11 @@
       osd_image* find_osd_image( int handle)const;
       int add_bitmap( osd_bitmap*);
       void set_image_handle(int handle, osd_image* image);
-      std::string make_unique_image_name(std::string const & name_in)const;
+      bool find_bitmap_name(std::string const & name_in)const;
+      std::string make_unique_bitmap_name(std::string const & name_in)const;
     private:
       std::vector<font*> m_fonts;
-      std::vector<osd_bitmap*> m_bitmaps;
+      std::vector<int> m_bitmaps;
       bitmap_resource_t (bitmap_resource_t const&) = delete;
       bitmap_resource_t& operator= (bitmap_resource_t const&) = delete;
       std::map<int,osd_image*> m_osd_image_map;
@@ -47,6 +44,7 @@
 
 struct document {
      document();
+     void reset();
      quan::two_d::vect<quan::length::mm> const &
      get_page_size() const ;
      void set_page_size( quan::two_d::vect<quan::length::mm> const & size);
@@ -69,14 +67,10 @@ private:
      bool ll_save_project(wxString const & path);
      quan::two_d::vect<quan::length::mm> m_page_size;
      quan::two_d::vect<quan::length::mm> m_pixel_size; // {mm{10},mm{10}};
-
      wxString m_project_file_path;
      wxString m_project_name;
-
      bitmap_resource_t* m_resources;
      bool m_is_modified;
-     
-    
 };
 
 #endif // QUANTRACKER_SIM_DOCUMENT_HPP_INCLUDED

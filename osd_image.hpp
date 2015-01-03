@@ -55,12 +55,15 @@ struct osd_bitmap : osd_image{
    ~osd_bitmap(){}
    private:
    osd_bitmap( osd_bitmap const & in) 
-   : osd_image{image_type::Bitmap},m_size{in.m_size}, m_data{in.m_data}{}
+   :  osd_image{image_type::Bitmap}
+      ,m_name{in.m_name}
+      ,m_size{in.m_size}
+      ,m_data{in.m_data}
+   {}
    osd_bitmap & operator = (osd_bitmap const &) = delete;
    std::string m_name;
    size_type m_size;
    std::vector<colour> m_data;
-  
 };
 
    struct font{

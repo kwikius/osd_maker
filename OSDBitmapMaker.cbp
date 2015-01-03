@@ -52,7 +52,6 @@
 		<Unit filename="document.hpp" />
 		<Unit filename="drawing.cpp" />
 		<Unit filename="drawing.hpp" />
-		<Unit filename="events.cpp" />
 		<Unit filename="events.hpp" />
 		<Unit filename="fontmap_dialog.hpp" />
 		<Unit filename="main_frame.cpp" />

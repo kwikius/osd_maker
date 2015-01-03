@@ -37,14 +37,25 @@ view::view(wxWindow* parent)
      this->m_drawing_view.set_scale(1);
      this->SetFocus();
 }
+void view::reset()
+{
+  if ( m_current_image!= nullptr){
+      m_current_image->destroy();
+      m_current_image = nullptr;
+  }
+  m_document_image_handle = -1;
+  m_current_image_modified = false;
+}
 
 void view::sync_to_document()
 {
    auto doc = wxGetApp().get_document();
-   doc->set_image(
-      this->get_doc_image_handle(), 
-      this->clone_current_image()
-   );
+   osd_image* image = this->clone_current_image();
+   int image_handle = this->get_doc_image_handle();
+//## need to 
+//   osd_bitmap* bmp = dynamic_cast<osd_bitmap*> (image);
+//   assert( bmp);
+   doc->set_image( image_handle, image );
    doc->set_modified (true);
    this->set_modified (false);
 }

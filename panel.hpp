@@ -12,6 +12,7 @@ struct panel : wxWindow// wxPanel
   panel (wxWindow * parent);
   void add_bitmap_handle(std::string const & name, int handle); 
   bool get_handle(wxTreeEvent & event, int & result_out)const;
+  void reset();
 private:
   
    void OnTreeItemActivated(wxTreeEvent & event);

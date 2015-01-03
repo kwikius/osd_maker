@@ -29,6 +29,7 @@ class main_frame: public wxFrame
         void enable_import_image(bool b);
         void enable_import_font(bool b);
         void enable_commit_view_to_tree(bool b);
+        void clear();
     private:
         void enable_menu_item(int id, bool b);
         enum

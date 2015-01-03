@@ -16,6 +16,14 @@ struct osd_handle : public wxTreeItemData {
    int const m_osd_handle;
 };
 
+void panel::reset()
+{
+   delete m_bitmap_tree ;
+   m_bitmap_tree = new bitmap_tree{this,idTreeControl};
+   m_bitmap_tree->Expand(m_bitmap_tree->GetRootItem());
+   m_bitmap_tree->SetSize(20,20,200,200); 
+}
+
 void panel::add_bitmap_handle(std::string const & name, int handle)
 {
    m_bitmap_tree->AppendItem(

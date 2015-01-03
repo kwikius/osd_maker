@@ -259,11 +259,18 @@ void main_frame::OnSaveProject(wxCommandEvent &event)
 {
     wxGetApp().get_document()->save_project();
 }
-
-
+void main_frame::clear()
+{
+   wxGetApp().get_panel()->reset();
+   wxGetApp().get_view()->reset();
+   wxGetApp().get_document()->reset();
+}
 
 void main_frame::OnNewProject(wxCommandEvent &event)
 {
+   this->clear();
+   this->Refresh();
+#if 0
    // dialog with project name
    wxTextEntryDialog dlg{ 
       this,
@@ -277,6 +284,7 @@ void main_frame::OnNewProject(wxCommandEvent &event)
      // if have current project
      wxGetApp().get_document()->set_project_name(dlg.GetValue());
    } 
+#endif
 }
 
 void main_frame::OnOpenProject(wxCommandEvent &event)
