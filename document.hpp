@@ -13,34 +13,7 @@
 #include <map>
 #include <set>
 
-  struct bitmap_resource_t{
-      bitmap_resource_t(): m_max_handle{m_min_handle}{}
-      ~bitmap_resource_t(){
-            for ( auto iter : m_osd_image_map){
-               iter.second->destroy();
-            }
-      }
-      size_t get_num_fonts() const{ return m_fonts.size();}
-      size_t get_num_bitmaps() const{ return m_bitmaps.size();}
-      font * get_font_at(size_t i);
-      osd_bitmap* get_bitmap_at(size_t i);
-      osd_image* find_osd_image( int handle)const;
-      int add_bitmap( osd_bitmap*);
-      void set_image_handle(int handle, osd_image* image);
-      bool find_bitmap_name(std::string const & name_in)const;
-      std::string make_unique_bitmap_name(std::string const & name_in)const;
-    private:
-      std::vector<font*> m_fonts;
-      std::vector<int> m_bitmaps;
-      bitmap_resource_t (bitmap_resource_t const&) = delete;
-      bitmap_resource_t& operator= (bitmap_resource_t const&) = delete;
-      std::map<int,osd_image*> m_osd_image_map;
-      std::set<int> m_handles_in_use;
-      int get_new_handle();
-      bool free_handle(int n);
-      int m_max_handle;
-      static constexpr int m_min_handle = 1;
-  };
+struct bitmap_resource_t;
 
 struct document {
      document();
@@ -59,9 +32,10 @@ struct document {
      bool load_png_file(wxString const &path);
      wxString get_project_file_path(){ return m_project_file_path;}
      // doc doesnt relinquish ownership of image
-     osd_image* get_image( int handle)const {return m_resources->find_osd_image(handle);}
+     osd_image* get_image( int handle)const ;
      // doc takes ownership of image which was created on heap
      void set_image(int handle, osd_image* image);
+     // Take ownership of bitmap which was created on heap
      void add_bitmap(osd_bitmap*);
 private:
      bool ll_save_project(wxString const & path);
