@@ -7,55 +7,81 @@
 #include "osd_image.hpp"
 #include "document.hpp"
 #include "bitmap_preview.hpp"
-#include "window_ids.hpp"
+#include "font.hpp"
 
 BEGIN_EVENT_TABLE(bitmap_preview,wxWindow)
 
-       EVT_PAINT(bitmap_preview::OnPaint)
+  //     EVT_PAINT(bitmap_preview::OnPaint)
 //     EVT_SIZE(view::OnSize)
 //     EVT_SCROLLWIN(view::OnScroll)
 //     EVT_LEFT_DOWN(view::OnMouseLeftDown)
 //     EVT_LEFT_UP(view::OnMouseLeftUp)
 //     EVT_MOTION(view::OnMouseMove)
 //     EVT_CHAR(view::OnChar)
+       EVT_GRID_CMD_CELL_LEFT_DCLICK(idGrid,bitmap_preview::OnGridCellLeftDblClick)
 
 END_EVENT_TABLE()
 
-bitmap_preview::bitmap_preview(wxWindow* parent)
-     : wxWindow(parent, wxID_ANY){
-     window_ids::bitmap_preview = this->GetId();
-     this->SetSize(0,0,400,200);
-     this->SetWindowStyle(wxVSCROLL | wxHSCROLL);
-     this->SetScrollbar(wxVERTICAL,50,10,110);
-     this->SetScrollbar(wxHORIZONTAL,50,10,110);
-
+void bitmap_preview::OnGridCellLeftDblClick(wxGridEvent& event)
+{
+   int x = event.GetCol();
+   int y = event.GetRow();
+   wxMessageBox(wxString::Format(wxT("[%d,%d]"),x,y));
+   
 }
 
-
-
+bitmap_preview::bitmap_preview(wxWindow* parent)
+     : wxWindow{parent, wxID_ANY},m_grid{nullptr}
+{
+  //wxSize cell_size{14,18};
+  wxSize cell_size{14 *2,18 *2};
+  int num_elements = font::end-font::begin;
+  int const num_rows = 4;
+  int const rem = ((num_elements % num_rows)==0)?0:1;
+  int const num_cols = (num_elements / num_rows) + rem;
+  wxSize grid_size{num_cols * cell_size.x,num_rows * cell_size.y};
+  this->m_grid = new wxGrid{this,idGrid,wxPoint{0,0},grid_size*2};
+  m_grid->CreateGrid(num_rows,num_cols);
+  m_grid->SetDefaultColSize(cell_size.x);
+  m_grid->SetDefaultRowSize(cell_size.y);
+  m_grid->SetRowLabelSize(0);
+  m_grid->SetColLabelSize(0);
+  m_grid->DisableDragGridSize();
+  for ( int y = 0; y < num_rows; ++y){
+    for ( int x = 0; x < num_cols; ++x){
+      int ar_pos = y * num_cols + x;
+      int int_ch = ' ';
+      if ( ar_pos < num_elements){
+            int_ch = ar_pos + font::begin;
+            char ch = static_cast<char>(int_ch);
+            m_grid->SetCellValue(y,x,wxString::Format(wxT("%c"),ch));
+            m_grid->SetReadOnly(y,x);
+      }
+  
+    }
+  }      
+}
+#if 0
 namespace {
+
    // add wxImage
    // integer scaling
    wxColour const * colour_array[4] = {wxLIGHT_GREY,wxBLACK,wxWHITE,wxBLUE};
    
    void draw_bitmap(size_t idx, wxDC& dc, osd_image::pos_type const & position)
    {
-#if 0
+
       auto doc = wxGetApp().get_document();
       osd_image* pimage = doc->get_osd_image_ptr(idx);
       assert(pimage);
       auto bmp = ConvertTo_wxBitmap(*pimage, colour_array);
       dc.DrawBitmap(*bmp,position.x,position.y);
       delete bmp;
-#endif
    }
-
-
 }
 
 void bitmap_preview::OnPaint(wxPaintEvent & event)
 {
-#if 0
    wxPaintDC dc(this);
    dc.SetBackground(* wxBLUE_BRUSH); // sets background brush but doesnt clear
    dc.Clear(); //       need to invoke to clear using current background brush
@@ -98,5 +124,6 @@ void bitmap_preview::OnPaint(wxPaintEvent & event)
    // get dc
    // rows cols
    // find number of bitmaps
-#endif
+
 }
+#endif

@@ -7,7 +7,7 @@
 #include "view.hpp"
 #include "panel.hpp"
 #include "events.hpp"
-#include "window_ids.hpp"
+//#include "window_ids.hpp"
 #include "document.hpp"
 #include "fontmap_dialog.hpp"
 
@@ -30,7 +30,7 @@ view::view(wxWindow* parent)
 ,m_current_image{nullptr}
 ,m_document_image_handle{-1}
 ,m_current_image_modified{false} {
-     window_ids::view = this->GetId();
+   //  window_ids::view = this->GetId();
      this->SetWindowStyle(wxVSCROLL | wxHSCROLL);
      this->SetScrollbar(wxVERTICAL,50,10,110);
      this->SetScrollbar(wxHORIZONTAL,50,10,110);

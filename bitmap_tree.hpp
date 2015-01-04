@@ -6,6 +6,7 @@
 struct bitmap_tree : wxTreeCtrl{
    bitmap_tree( wxWindow* parent, int id);
    wxTreeItemId const & get_bitmaps_id(){return m_bitmaps;}
+   wxTreeItemId const & get_fonts_id(){return m_fonts;}
 private:
    wxTreeItemId m_fonts;
    wxTreeItemId m_bitmaps;

@@ -11,10 +11,15 @@ struct panel : wxWindow// wxPanel
 {
   panel (wxWindow * parent);
   void add_bitmap_handle(std::string const & name, int handle); 
-  bool get_handle(wxTreeEvent & event, int & result_out)const;
+  void add_font_handle(std::string const & name, int handle);
+  bool get_bitmap_handle(wxTreeEvent & event, int & result_out)const;
+  bool get_font_handle(wxTreeEvent & event, int & result_out)const;
   void reset();
 private:
-  
+   enum class selection_type{ Unknown, Font, Bitmap};
+   selection_type get_selection_type(wxTreeEvent& event);
+   void on_font_item_activated(wxTreeEvent & event);
+   void on_bitmap_item_activated(wxTreeEvent & event);
    void OnTreeItemActivated(wxTreeEvent & event);
    void OnTreeItemRightClick(wxTreeEvent & event);
    enum

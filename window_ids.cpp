@@ -1,4 +1,4 @@
-#include "window_ids.hpp"
+//#include "window_ids.hpp"
 
 
 wxWindowID window_ids::view = 0;

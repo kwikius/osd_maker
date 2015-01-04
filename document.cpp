@@ -280,7 +280,7 @@ void  process_mcm_char (uint8_t inval, osd_bitmap* out, osd_bitmap::pos_type & p
          break;
       }
       if ( colour == osd_image::colour::invalid){
-         wxMessageBox(wxT("Invalid coluur"));
+         wxMessageBox(wxT("Invalid colour"));
          return ;//false;
       }
       //assert(( colour != osd_image::colour::invalid) && __LINE__ );
@@ -304,7 +304,7 @@ void output_mcm_char( uint8_t ch, std::vector <std::vector<uint8_t> > const & ch
    }
 }
 
-}
+} //namespace
 
 bool document::load_mcm_font_file (wxString const & path)
 {
@@ -364,7 +364,7 @@ bool document::load_mcm_font_file (wxString const & path)
       try{
          auto elem = font_chars.at(ch-font::begin);
          int handle = m_resources->add_font_element(elem);
-         if ( ch == 'B'){
+         if ( ch == '8'){
             first_handle = handle;
          }
          f->set_handle_at(ch, handle);
