@@ -38,6 +38,38 @@ font* bitmap_resource_t::find_font_by_name(std::string const & name_in)const
     return nullptr;
 }
 
+std::string bitmap_resource_t::make_unique_font_name(std::string const & name_in)const
+{
+   std::string name_out = name_in;
+   int val = 1;
+   for(;;){
+      bool name_unique = true;
+      // search through font looking for name
+      for( auto iter : m_font_map){
+         font* f = iter.second;
+         assert((f != nullptr ) && __LINE__);
+         if(name_out == f->get_name()){
+            name_unique = false;
+            // modify the output name by prepending "copy_n_name
+            char* const buf = static_cast<char* const>(malloc( name_in.length() + 2 + 30));
+            sprintf(buf,"copy_%d_%s",val,name_in.c_str());
+            name_out = buf;
+            free(buf);
+            ++val;
+            break;
+         }
+      }
+      if ( name_unique == true){
+         return name_out;
+      }else{
+         continue;
+      }
+   }
+   // shouldnt get here
+   assert(false && __LINE__);
+   return "";
+}
+
 std::string bitmap_resource_t::make_unique_bitmap_name(std::string const & name_in)const
 {
    std::string name_out = name_in;
@@ -126,6 +158,15 @@ osd_image* bitmap_resource_t::find_osd_image(int handle)const
    }
 }
 
+font* bitmap_resource_t::find_font(int handle)const
+{
+   auto iter = m_font_map.find(handle);
+   if(iter != m_font_map.end()){
+      return iter->second;
+   }else{
+      return nullptr;
+   }
+}
 
 // after iterating and moving do clean_bitmap_handles() to remove dead handles
 osd_bitmap* bitmap_resource_t::move_osd_bitmap(int handle)

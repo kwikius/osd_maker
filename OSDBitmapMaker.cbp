@@ -73,8 +73,6 @@
 		<Unit filename="sp_in_thread.hpp" />
 		<Unit filename="view.cpp" />
 		<Unit filename="view.hpp" />
-		<Unit filename="window_ids.cpp" />
-		<Unit filename="window_ids.hpp" />
 		<Unit filename="../../../website/quan-trunk/quan/fs/get_basename.hpp" />
 		<Unit filename="../../../website/quan-trunk/quan/fs/strip_file_extension.hpp">
 			<Option target="&lt;{~None~}&gt;" />

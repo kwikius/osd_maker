@@ -10,11 +10,12 @@
       enum{
          idGrid = 1000
       };
-      
+      void set_font_handle(int font_handle);
    private:
       void OnGridCellLeftDblClick(wxGridEvent& event);
       DECLARE_EVENT_TABLE()
       wxGrid* m_grid;
+      int m_current_font_handle;
    };
 
 #endif // OSD_BITMAP_MAKER_BITMAP_PREVIEW_HPP_INCLUDED

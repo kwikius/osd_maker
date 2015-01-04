@@ -14,6 +14,9 @@
             for ( auto iter : m_osd_image_map){
                iter.second->destroy();
             }
+            for ( auto iter : m_font_map){
+                delete iter.second;
+            }
       }
      // size_t get_num_fonts() const{ return m_fonts.size();}
       size_t get_num_bitmaps() const{ return m_bitmaps.size();}
@@ -21,6 +24,7 @@
        // for iterating through bitmap_handles
       bool get_bitmap_handle_at(size_t i, int & handle_out) const;
       osd_image* find_osd_image( int handle)const;
+      font* find_font( int handle)const;
       // relinquish ownership of image and free its handle 
       // note that handles are replaced with invalid handles
       // use clean_bitmap_handles after iterating
@@ -33,6 +37,7 @@
       font* find_font_by_name(std::string const & name_in)const;
       
       std::string make_unique_bitmap_name(std::string const & name_in)const;
+      std::string make_unique_font_name(std::string const & name_in)const;
       bool clean_bitmap_handles();
     private:
       // only bitmap handles

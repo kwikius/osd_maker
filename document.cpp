@@ -24,14 +24,17 @@ using quan::gx::wxwidgets::to_wxString;
 osd_image* document::get_image( int handle)const 
 {return m_resources->find_osd_image(handle);}
 
+font* document::get_font(int handle) const
+{return m_resources->find_font(handle);}
+
+#if 0
 void document::add_font(font* f)
 {
    assert(( f != nullptr) && __LINE__);
- 
-   
    // get new handle
    // put font in map
 }
+#endif
 
 void document::add_bitmap(osd_bitmap* bmp)
 {
@@ -357,8 +360,14 @@ bool document::load_mcm_font_file (wxString const & path)
       font_chars.push_back(fe);
    }
    assert( (font_chars.size() == (font::end - font::begin))  && __LINE__);
+
+   std::string name = quan::fs::get_basename(
+      from_wxString<char>(path)
+   );
+   name = quan::fs::strip_file_extension(name);
+   name = m_resources->make_unique_font_name(name);
    
-   auto f = new font{"font1",size};
+   auto f = new font{name,size};
    int first_handle = -1;
    for ( int ch = font::begin; ch < font::end; ++ch){
       try{
@@ -371,14 +380,17 @@ bool document::load_mcm_font_file (wxString const & path)
          
       }catch( std::exception & e){
          wxMessageBox(wxString::Format(wxT("Exception %d"),ch));
+         delete f;
          return false;
       }
    }
 
-   m_resources->add_font(f);
+   int font_handle = m_resources->add_font(f);
+   
    if (! wxGetApp().get_view()->have_image()) {
       wxGetApp().get_view()->copy_to_current_image (first_handle);
    }
+   wxGetApp().get_panel()->add_font_handle(f->get_name(),font_handle);
    return true;
 }
  

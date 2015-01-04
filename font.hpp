@@ -24,6 +24,7 @@ struct font{
          return false;
       }
       out = m_elements.at( i - begin);
+      return true;
    }
    bool set_handle_at(int i, int val){ 
       if ((i < begin) || ( i >=end)){

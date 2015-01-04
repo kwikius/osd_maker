@@ -7,6 +7,7 @@
 #include "view.hpp"
 #include "panel.hpp"
 #include "bitmap_tree.hpp"
+#include "bitmap_preview.hpp"
 
 namespace {
 struct osd_bitmap_handle : public wxTreeItemData {
@@ -109,11 +110,11 @@ bool panel::get_font_handle(wxTreeEvent & event, int & result_out)const
    if ( abc_data == nullptr){
       return false;
    }
-   auto d = dynamic_cast<osd_font_handle*>(abc_data);
-      if ( d == nullptr){
+   auto fh = dynamic_cast<osd_font_handle*>(abc_data);
+      if ( fh == nullptr){
       return false;
    }
-   result_out = d->get_handle();
+   result_out = fh->get_handle();
    return true;
 }
 
@@ -121,8 +122,6 @@ bool panel::get_font_handle(wxTreeEvent & event, int & result_out)const
 
 void panel::OnTreeItemActivated(wxTreeEvent & event)
 {
-
-
   // find out if font or bitmap
    auto seltype = get_selection_type(event);
    switch(seltype){
@@ -143,6 +142,12 @@ void panel::on_font_item_activated(wxTreeEvent & event)
    // then we need to select the selected font into the preview
    // whatever is in the view can stay until a new item is selected into the view
    // so its previews job to sort it
+   // put its handle to bitmap_preview
+   int font_handle  = -1;
+   if ( ! get_font_handle(event, font_handle)){
+      return ;
+   }
+   wxGetApp().get_bitmap_preview()->set_font_handle(font_handle);
 }
 
 void panel::on_bitmap_item_activated(wxTreeEvent & event)
@@ -151,6 +156,8 @@ void panel::on_bitmap_item_activated(wxTreeEvent & event)
    if ( ! get_bitmap_handle(event,event_handle)){
       return;
    }
+
+//redo this-------------------
    auto view = wxGetApp().get_view();
    int view_handle = view->get_doc_image_handle();
    
