@@ -20,24 +20,23 @@ struct osd_image{
     virtual size_type get_size()const=0;
     virtual bool get_pixel_colour( pos_type const & p, colour & c) const=0;
     virtual bool set_pixel_colour( pos_type const & p, colour c)=0;
-   // static osd_null_image* get_null_image(){return m_null_image;}
     virtual osd_image* clone() const = 0;
-    // delete usually 
     virtual void destroy() = 0;
     enum class image_type{ Unknown,FontElement, Bitmap};
     image_type get_image_type()const{return m_image_type;}
+    void set_image_type ( image_type in){ m_image_type = in;}
 protected:
     osd_image(image_type t):m_image_type{t}{}
     virtual ~osd_image(){}
 private:
-    image_type const m_image_type;
+    image_type m_image_type;
 
 };
 
 struct osd_bitmap : osd_image{
    
-   osd_bitmap(std::string const & name_in,size_type const & size_in) 
-   : osd_image{image_type::Bitmap}
+   osd_bitmap(std::string const & name_in,size_type const & size_in, image_type image_type_in = image_type::Bitmap) 
+   : osd_image{image_type_in}
    ,m_name{name_in},
       m_size{size_in}, 
       m_data{size_in.x * size_in.y,colour::transparent}
@@ -66,10 +65,8 @@ struct osd_bitmap : osd_image{
    std::vector<colour> m_data;
 };
 
-   struct font{
 
-   };
-   wxBitmap* ConvertTo_wxBitmap(osd_image const& in, wxColour const * (&colours)[4]);
+wxBitmap* ConvertTo_wxBitmap(osd_image const& in, wxColour const * (&colours)[4]);
 wxImage* ConvertTo_wxImage(osd_image const& in);
 osd_bitmap* ConvertTo_osd_bitmap(std::string const & name,wxImage const& image);
 

@@ -211,7 +211,29 @@ void main_frame::OnQuit (wxCommandEvent &event)
 //TODO |MinimOSD Charset(*.mcm)|*.mcm
 void main_frame::OnImportFont (wxCommandEvent &event)
 {
-
+   auto & app = wxGetApp();
+   auto doc = app.get_document();
+   wxFileDialog fd {
+      this,
+      wxT ("Import Image"), // message
+      wxT (""),                    // default dir
+      wxT (""),                    // default file
+      wxT ("MCM files(*.mcm)|*.mcm"), // wildcard
+      wxFD_OPEN | wxFD_FILE_MUST_EXIST | wxFD_CHANGE_DIR
+   };
+   if ( (fd.ShowModal() == wxID_OK)) {
+         if (fd.GetFilterIndex() == 0) {  // png
+               wxString path = fd.GetPath();
+               if (! doc->load_mcm_font_file (path)) {
+                     wxMessageBox (wxString::Format (wxT ("Load \"%s\" failed"), path.wc_str()));
+                     return;
+                  }
+               app.get_bitmap_preview()->Refresh();
+            }
+         else {
+            wxMessageBox(wxT("Unknown File type"));
+         }
+      }
 }
 
 void main_frame::OnImportImage (wxCommandEvent &event)
@@ -236,13 +258,8 @@ void main_frame::OnImportImage (wxCommandEvent &event)
                app.get_bitmap_preview()->Refresh();
             }
          else {
-               if (fd.GetFilterIndex() == 1) {
-                     wxMessageBox (wxT (".mcm file"));
-               }else {
-                     // TODO add lib format
-                     // unknown format tell user..
-                  }
-            }
+            wxMessageBox(wxT("Unknown File type"));
+         }
       }
 }
 

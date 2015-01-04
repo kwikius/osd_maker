@@ -46,6 +46,8 @@
 		<Unit filename="app.h" />
 		<Unit filename="bitmap_preview.cpp" />
 		<Unit filename="bitmap_preview.hpp" />
+		<Unit filename="bitmap_resource.cpp" />
+		<Unit filename="bitmap_resource.hpp" />
 		<Unit filename="bitmap_tree.cpp" />
 		<Unit filename="bitmap_tree.hpp" />
 		<Unit filename="document.cpp" />
@@ -53,7 +55,9 @@
 		<Unit filename="drawing.cpp" />
 		<Unit filename="drawing.hpp" />
 		<Unit filename="events.hpp" />
+		<Unit filename="font.hpp" />
 		<Unit filename="fontmap_dialog.hpp" />
+		<Unit filename="info_on_fonts.txt" />
 		<Unit filename="main_frame.cpp" />
 		<Unit filename="main_frame.h" />
 		<Unit filename="main_frame_splitter.cpp" />

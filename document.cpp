@@ -2,6 +2,8 @@
 #include <wx/zipstrm.h>
 #include <wx/wfstream.h>
 #include <wx/filedlg.h>
+#include <wx/textfile.h>
+#include <fstream>
 
 #include <quan/fs/get_basename.hpp>
 #include <quan/fs/strip_file_extension.hpp>
@@ -14,6 +16,7 @@
 #include "main_frame.h"
 #include "view.hpp"
 #include "panel.hpp"
+#include "font.hpp"
 
 using quan::gx::wxwidgets::from_wxString;
 using quan::gx::wxwidgets::to_wxString;
@@ -21,10 +24,19 @@ using quan::gx::wxwidgets::to_wxString;
 osd_image* document::get_image( int handle)const 
 {return m_resources->find_osd_image(handle);}
 
+void document::add_font(font* f)
+{
+   assert(( f != nullptr) && __LINE__);
+ 
+   
+   // get new handle
+   // put font in map
+}
+
 void document::add_bitmap(osd_bitmap* bmp)
 {
    assert((bmp != nullptr) && __LINE__);
-   assert( ! m_resources->find_bitmap_name(bmp->get_name()));
+   assert( ! m_resources->find_bitmap_by_name(bmp->get_name()));
    int handle = m_resources->add_bitmap(bmp);
    wxGetApp().get_panel()->add_bitmap_handle(bmp->get_name(), handle);
    auto view = wxGetApp().get_view();
@@ -91,7 +103,7 @@ bool document::open_project (wxString const & path)
             (full_name.find(".png",full_name.length()-4,4) != std::string::npos)
          ){
           std::string name = full_name.substr(8,full_name.length()-12);
-          if (temp_resources->find_bitmap_name(name)){
+          if (temp_resources->find_bitmap_by_name(name) != nullptr){
             wxMessageBox(wxT("Invalid file, multiple bitmaps of same name"));
             delete temp_resources;
             delete entry;
@@ -200,8 +212,7 @@ void document::reset()
   m_project_file_path = wxT("");
 }
 
-bool
-document::load_png_file (wxString const & path)
+bool document::load_png_file (wxString const & path)
 {
 
    if (! wxImage::FindHandler (wxBITMAP_TYPE_PNG)) {
@@ -221,6 +232,153 @@ document::load_png_file (wxString const & path)
    name = m_resources->make_unique_bitmap_name(name);
    osd_bitmap * bmp = ConvertTo_osd_bitmap(name,image);
    this->add_bitmap(bmp);
+   return true;
+}
+
+namespace {
+
+bool line_string_to_val (std::string const & str, uint8_t & out)
+{
+   if ( str.length() < 8){
+      wxMessageBox(wxT("Short"));
+      return false;
+   }
+   out = 0;
+   for (uint8_t j = 0; j < 8; ++j) {
+      switch (str.at(j)) {
+      case '0':
+         break;
+      case '1':
+         out  |= (1 << j);
+         break;
+      default:
+         wxMessageBox(wxString::Format(wxT("%c"),str.at(j)));
+         return false;
+      }
+   }
+   return true;
+}
+
+void  process_mcm_char (uint8_t inval, osd_bitmap* out, osd_bitmap::pos_type & pos)
+{
+   for (uint8_t j = 0; j < 8; j+=2) {
+      uint8_t code = (inval >> j) & 0b11;
+      osd_image::colour colour = osd_image::colour::invalid;
+      switch (code) {
+      case  0b00: // black
+         //out << "#";
+         colour = osd_image::colour::black;
+         break;
+      case  0b01: // white
+        // out << " ";
+         colour = osd_image::colour::white;
+         break;
+      case  0b10: // transparent
+      case  0b11: 
+        // out << "*" ;
+         colour = osd_image::colour::transparent;
+         break;
+      }
+      if ( colour == osd_image::colour::invalid){
+         wxMessageBox(wxT("Invalid coluur"));
+         return ;//false;
+      }
+      //assert(( colour != osd_image::colour::invalid) && __LINE__ );
+      out->set_pixel_colour(pos,colour);
+      ++pos.x;
+   }
+}
+// to a bitmap
+void output_mcm_char( uint8_t ch, std::vector <std::vector<uint8_t> > const & chars_vect, osd_bitmap* bitmap)
+{
+   std::vector<uint8_t> const & v = chars_vect.at(ch);
+   uint32_t iter = 0;
+   osd_image::pos_type pos{0,0};
+   for ( uint32_t line = 0; line < 18 ; ++line){
+      pos.x = 0;
+      pos.y = line;
+      for ( uint32_t row_elem = 0; row_elem < 3; ++row_elem){
+         process_mcm_char(v.at(iter),bitmap,pos);
+         ++iter;
+      }
+   }
+}
+
+}
+
+bool document::load_mcm_font_file (wxString const & path)
+{
+   std::string path1 = from_wxString<char>(path);
+   std::ifstream in(path1);
+
+   if (!in){
+         wxMessageBox (wxT ("Failed to open Input file\n"));
+         return false;
+   }
+
+   std::string str;
+   std::getline(in,str);
+   
+   int count = 0;
+   
+   std::vector <std::vector<uint8_t> >  chars_vect;
+   bool success = false;
+   while (in && ! in.eof()){
+      std::vector<uint8_t>  char_vect;
+      for (uint32_t i = 0; i < 64; ++i) {
+         std::getline (in,str);
+         
+         uint8_t out = 0;
+         if (line_string_to_val (str,out)) {
+            char_vect.push_back (out);
+         }else{
+            wxMessageBox(wxT("Failed 1"));
+            return false;
+         }
+      }
+     
+      chars_vect.push_back (char_vect);
+      // std::cout << "char " << count << " done\n";
+      if (++count == 256) {
+        // std::cout << "all chars done\n";
+         success =true;
+      }
+   }
+   if (!success){
+       wxMessageBox(wxT("Input file failed"));
+      return false;
+   }
+   std::vector<osd_bitmap*> font_chars;
+   osd_image::size_type size{12,18};
+   for ( int ch = font::begin; ch < font::end; ++ch){
+      char name[] = {'\'', static_cast<char>(ch),'\'','\0'};
+      auto fe = new osd_bitmap{name,size,osd_image::image_type::FontElement};
+      output_mcm_char(ch,chars_vect,fe);
+      font_chars.push_back(fe);
+   }
+   assert( (font_chars.size() == (font::end - font::begin))  && __LINE__);
+   
+   auto f = new font{"font1",size};
+   int first_handle = -1;
+   for ( int ch = font::begin; ch < font::end; ++ch){
+      try{
+         auto elem = font_chars.at(ch-font::begin);
+         int handle = m_resources->add_font_element(elem);
+         if ( ch == 'B'){
+            first_handle = handle;
+         }
+         f->set_handle_at(ch, handle);
+         
+      }catch( std::exception & e){
+         wxMessageBox(wxString::Format(wxT("Exception %d"),ch));
+         return false;
+      }
+   }
+
+   m_resources->add_font(f);
+   if (! wxGetApp().get_view()->have_image()) {
+      wxGetApp().get_view()->copy_to_current_image (first_handle);
+   }
    return true;
 }
  

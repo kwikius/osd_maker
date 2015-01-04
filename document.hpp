@@ -10,6 +10,7 @@
 #include <quan/length.hpp>
 
 #include "osd_image.hpp"
+#include "font.hpp"
 #include <map>
 #include <set>
 
@@ -28,7 +29,7 @@ struct document {
      void set_project_name(wxString const & str) { m_project_name = str;}
      bool save_project();
      bool open_project(wxString const & path);
-     bool load_mcm_font_file (std::istream & in);
+     bool load_mcm_font_file (wxString const & path);
      bool load_png_file(wxString const &path);
      wxString get_project_file_path(){ return m_project_file_path;}
      // doc doesnt relinquish ownership of image
@@ -36,8 +37,12 @@ struct document {
      // doc takes ownership of image which was created on heap
      void set_image(int handle, osd_image* image);
      // Take ownership of bitmap which was created on heap
-     void add_bitmap(osd_bitmap*);
+  
 private:
+
+     void add_bitmap(osd_bitmap*);
+     void add_font ( font*);
+
      bool ll_save_project(wxString const & path);
      quan::two_d::vect<quan::length::mm> m_page_size;
      quan::two_d::vect<quan::length::mm> m_pixel_size; // {mm{10},mm{10}};

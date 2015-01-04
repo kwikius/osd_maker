@@ -12,16 +12,30 @@ bool bitmap_resource_t::get_bitmap_handle_at(size_t i, int & handle_out)const
    return true;
 }
 
-bool bitmap_resource_t::find_bitmap_name(std::string const & name_in)const
+osd_bitmap* bitmap_resource_t::find_bitmap_by_name(std::string const & name_in)const
 {
-    for( auto v : m_osd_image_map){
-         osd_image* image = v.second;
+
+    for( auto handle : m_bitmaps){
+         assert(( handle != -1) && __LINE__);
+         auto image = find_osd_image(handle);
+         assert(( image != nullptr) && __LINE__);
          auto bmp = dynamic_cast<osd_bitmap*>( image);
          if(bmp && (name_in == bmp->get_name())){
-             return true;
+             return bmp;
          }
     }
-    return false;
+    return nullptr;
+}
+
+font* bitmap_resource_t::find_font_by_name(std::string const & name_in)const
+{
+    for( auto v : m_font_map){
+         font* f = v.second;
+         if( (name_in == f->get_name())){
+             return f;
+         }
+    }
+    return nullptr;
 }
 
 std::string bitmap_resource_t::make_unique_bitmap_name(std::string const & name_in)const
@@ -31,10 +45,13 @@ std::string bitmap_resource_t::make_unique_bitmap_name(std::string const & name_
    for(;;){
       bool name_unique = true;
       // search through bitmaps looking for name
-      for( auto v : m_osd_image_map){
-         osd_image* image = v.second;
+      for( auto handle : m_bitmaps){
+         assert(( handle != -1) && __LINE__);
+         auto image = find_osd_image(handle);
+         assert((image != nullptr ) && __LINE__);
          auto bmp = dynamic_cast<osd_bitmap*>( image);
-         if(bmp && (name_out == bmp->get_name())){
+         assert( bmp && __LINE__);
+         if(name_out == bmp->get_name()){
             name_unique = false;
             // modify the output name by prepending "copy_n_name
             char* const buf = static_cast<char* const>(malloc( name_in.length() + 2 + 30));
@@ -111,7 +128,6 @@ osd_image* bitmap_resource_t::find_osd_image(int handle)const
 
 
 // after iterating and moving do clean_bitmap_handles() to remove dead handles
-// 
 osd_bitmap* bitmap_resource_t::move_osd_bitmap(int handle)
 {
    assert(handle != -1);
@@ -154,4 +170,19 @@ int bitmap_resource_t::add_bitmap( osd_bitmap* bmp)
    m_osd_image_map.insert({new_handle,bmp});
    m_bitmaps.push_back(new_handle);
    return new_handle;
+}
+
+// assume its already part of the font
+int bitmap_resource_t::add_font_element( osd_bitmap* bmp)
+{
+   int new_handle = get_new_handle();
+   m_osd_image_map.insert({new_handle,bmp});
+   return new_handle;
+}
+
+int bitmap_resource_t::add_font( font* f)
+{
+   int new_handle = get_new_handle();
+   m_font_map.insert({new_handle,f});
+   return new_handle;  
 }
