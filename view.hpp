@@ -43,6 +43,8 @@
       // returns result of yes no cancel messgaebox
       int sync_hmi_view();
       void sync_to_document();
+      //see panel and
+      bool sync_with_image_handle(int handle);
       // copy image refeed by handle to view for display
       void copy_to_current_image(int handle);
       // make a heap copy of current view image

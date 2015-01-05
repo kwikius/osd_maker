@@ -37,6 +37,7 @@ view::view(wxWindow* parent)
      this->m_drawing_view.set_scale(1);
      this->SetFocus();
 }
+
 void view::reset()
 {
   if ( m_current_image!= nullptr){
@@ -46,6 +47,8 @@ void view::reset()
   m_document_image_handle = -1;
   m_current_image_modified = false;
 }
+
+
 
 void view::sync_to_document()
 {
@@ -73,6 +76,32 @@ int view::sync_hmi_view()
    }else{
       return wxYES;
    }
+}
+
+bool view::sync_with_image_handle(int event_handle)
+{
+   int view_handle = this->get_doc_image_handle();
+   
+   if ( view_handle == event_handle){
+      if ( !this->is_modified()){
+         return false;
+      }else{
+         if( wxMessageBox(
+           wxT("[OK] to Revert view to live-tree?"),
+           wxT("Confirm View Revert"),
+           wxICON_QUESTION |wxOK | wxCANCEL ) != wxOK){
+           return false;
+         }
+      }
+   }else{ // not same image in view
+     if ( this->is_modified()){
+        if ( this->sync_hmi_view() == wxCANCEL){
+            return false;
+        }
+     }
+   }
+   this->copy_to_current_image(event_handle);
+   return true;
 }
 
 void view::set_modified(bool val)

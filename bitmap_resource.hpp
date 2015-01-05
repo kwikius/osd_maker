@@ -18,11 +18,12 @@
                 delete iter.second;
             }
       }
-     // size_t get_num_fonts() const{ return m_fonts.size();}
+      size_t get_num_fonts() const{ return m_fonts.size();}
       size_t get_num_bitmaps() const{ return m_bitmaps.size();}
       //font * get_font_at(size_t i);
        // for iterating through bitmap_handles
       bool get_bitmap_handle_at(size_t i, int & handle_out) const;
+      bool get_font_handle_at(size_t i, int & handle_out) const;
       osd_image* find_osd_image( int handle)const;
       font* find_font( int handle)const;
       // relinquish ownership of image and free its handle 
@@ -42,6 +43,7 @@
     private:
       // only bitmap handles
       std::vector<int> m_bitmaps;
+      std::vector<int> m_fonts;
       bitmap_resource_t (bitmap_resource_t const&) = delete;
       bitmap_resource_t& operator= (bitmap_resource_t const&) = delete;
       // holds font elements and bitmpas

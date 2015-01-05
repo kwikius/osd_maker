@@ -164,17 +164,30 @@ bool document::ll_save_project (wxString const & path)
    }else{
          wxZipOutputStream zipout {out};
          zipout.PutNextDirEntry(wxT("fonts"));
+         /*
+            for each font
+               create a subdir name same as the font name
+                  for each font element
+                     position in the font
+                  
+
+         */
          //make fonts and bitmaps dirs
-/*
+
          for (size_t i = 0; i < m_resources->get_num_fonts(); ++i) {
-               wxString name = wxString::Format (wxT ("font_%d.png"), i);
-               zipout.PutNextEntry (name);
-               osd_image * osd_image = m_resources->get_font_at(i);
-               wxImage* wx_image = ConvertTo_wxImage (*inosd_image);
-               wx_image->SaveFile (zipout, wxBITMAP_TYPE_PNG);
-               zipout.CloseEntry();
+               int font_handle =-1;
+               assert( m_resources->get_font_handle_at(i,font_handle) && __LINE__) ;
+               font * cur_font = get_font(font_handle);
+               assert( cur_font != nullptr && __LINE__);
+               wxString dirname = wxT("fonts/");
+               dirname += to_wxString(cur_font->get_name());
+               zipout.PutNextDirEntry (dirname);
+//               osd_image * osd_image = m_resources->get_font_at(i);
+//               wxImage* wx_image = ConvertTo_wxImage (*inosd_image);
+//               wx_image->SaveFile (zipout, wxBITMAP_TYPE_PNG);
+//               zipout.CloseEntry();
             }
-*/
+
 
          zipout.PutNextDirEntry(wxT("bitmaps"));
          for (size_t i = 0; i < m_resources->get_num_bitmaps(); ++i) {
@@ -353,13 +366,16 @@ bool document::load_mcm_font_file (wxString const & path)
    }
    std::vector<osd_bitmap*> font_chars;
    osd_image::size_type size{12,18};
-   for ( int ch = font::begin; ch < font::end; ++ch){
+   constexpr int begin = 0 ;
+   constexpr int end = 256;
+
+   for ( int ch = begin; ch < end; ++ch){
       char name[] = {'\'', static_cast<char>(ch),'\'','\0'};
       auto fe = new osd_bitmap{name,size,osd_image::image_type::FontElement};
       output_mcm_char(ch,chars_vect,fe);
       font_chars.push_back(fe);
    }
-   assert( (font_chars.size() == (font::end - font::begin))  && __LINE__);
+   assert( (font_chars.size() == (end - begin))  && __LINE__);
 
    std::string name = quan::fs::get_basename(
       from_wxString<char>(path)
@@ -367,30 +383,31 @@ bool document::load_mcm_font_file (wxString const & path)
    name = quan::fs::strip_file_extension(name);
    name = m_resources->make_unique_font_name(name);
    
-   auto f = new font{name,size};
+   auto new_font = new font{name,size,begin};
    int first_handle = -1;
-   for ( int ch = font::begin; ch < font::end; ++ch){
+   for ( int ch = begin; ch < end; ++ch){
       try{
-         auto elem = font_chars.at(ch-font::begin);
+         auto elem = font_chars.at(ch-begin);
          int handle = m_resources->add_font_element(elem);
          if ( ch == '8'){
             first_handle = handle;
          }
-         f->set_handle_at(ch, handle);
+         new_font->set_handle_at(ch, handle);
          
       }catch( std::exception & e){
          wxMessageBox(wxString::Format(wxT("Exception %d"),ch));
-         delete f;
+         delete new_font;
          return false;
       }
    }
 
-   int font_handle = m_resources->add_font(f);
+   int font_handle = m_resources->add_font(new_font);
    
    if (! wxGetApp().get_view()->have_image()) {
       wxGetApp().get_view()->copy_to_current_image (first_handle);
+      // TODO set focus to it in panel and preview
    }
-   wxGetApp().get_panel()->add_font_handle(f->get_name(),font_handle);
+   wxGetApp().get_panel()->add_font_handle(new_font->get_name(),font_handle);
    return true;
 }
  

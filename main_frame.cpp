@@ -271,12 +271,15 @@ void main_frame::OnSaveProject (wxCommandEvent &event)
 void main_frame::clear()
 {
    wxGetApp().get_panel()->reset();
+   wxGetApp().get_bitmap_preview()->reset();
    wxGetApp().get_view()->reset();
    wxGetApp().get_document()->reset();
 }
 
 void main_frame::OnNewProject (wxCommandEvent &event)
 {
+   //TODO if current project modified then save
+
    this->clear();
    this->Refresh();
 #if 0

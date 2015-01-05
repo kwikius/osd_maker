@@ -12,6 +12,17 @@ bool bitmap_resource_t::get_bitmap_handle_at(size_t i, int & handle_out)const
    return true;
 }
 
+bool bitmap_resource_t::get_font_handle_at(size_t i, int & handle_out) const
+{
+   if ( i >= get_num_fonts()){
+      return false;
+   }
+   int handle = m_fonts.at(i);
+   assert((handle != -1) && __LINE__);
+   handle_out = handle;
+   return true;
+}
+
 osd_bitmap* bitmap_resource_t::find_bitmap_by_name(std::string const & name_in)const
 {
 
@@ -225,5 +236,6 @@ int bitmap_resource_t::add_font( font* f)
 {
    int new_handle = get_new_handle();
    m_font_map.insert({new_handle,f});
+   m_fonts.push_back(new_handle);
    return new_handle;  
 }

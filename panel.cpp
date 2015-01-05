@@ -159,6 +159,9 @@ void panel::on_bitmap_item_activated(wxTreeEvent & event)
 
 //redo this-------------------
    auto view = wxGetApp().get_view();
+#if 1
+   view->sync_with_image_handle(event_handle);
+#else
    int view_handle = view->get_doc_image_handle();
    
    if ( view_handle == event_handle){
@@ -180,6 +183,8 @@ void panel::on_bitmap_item_activated(wxTreeEvent & event)
      }
    }
    view->copy_to_current_image(event_handle);
+#endif
+
 }
 
 

@@ -11,6 +11,7 @@
          idGrid = 1000
       };
       void set_font_handle(int font_handle);
+      void reset();
    private:
       void OnGridCellLeftDblClick(wxGridEvent& event);
       DECLARE_EVENT_TABLE()
