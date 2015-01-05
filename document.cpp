@@ -164,31 +164,31 @@ bool document::ll_save_project (wxString const & path)
    }else{
          wxZipOutputStream zipout {out};
          zipout.PutNextDirEntry(wxT("fonts"));
-         /*
-            for each font
-               create a subdir name same as the font name
-                  for each font element
-                     position in the font
-                  
-
-         */
-         //make fonts and bitmaps dirs
-
          for (size_t i = 0; i < m_resources->get_num_fonts(); ++i) {
-               int font_handle =-1;
-               assert( m_resources->get_font_handle_at(i,font_handle) && __LINE__) ;
-               font * cur_font = get_font(font_handle);
-               assert( cur_font != nullptr && __LINE__);
-               wxString dirname = wxT("fonts/");
-               dirname += to_wxString(cur_font->get_name());
-               zipout.PutNextDirEntry (dirname);
-//               osd_image * osd_image = m_resources->get_font_at(i);
-//               wxImage* wx_image = ConvertTo_wxImage (*inosd_image);
-//               wx_image->SaveFile (zipout, wxBITMAP_TYPE_PNG);
-//               zipout.CloseEntry();
+            int font_handle =-1;
+            assert( m_resources->get_font_handle_at(i,font_handle) && __LINE__) ;
+            font * cur_font = get_font(font_handle);
+            assert( cur_font != nullptr && __LINE__);
+            wxString dirname = wxT("fonts/");
+            dirname += to_wxString(cur_font->get_name());
+            zipout.PutNextDirEntry (dirname);
+            for ( size_t j= cur_font->get_begin(); 
+                  j < (cur_font->get_num_elements() + cur_font->get_begin());
+                  ++j){
+               int image_handle = -1;
+               assert(cur_font->get_handle_at(j, image_handle) && __LINE__);
+               assert ((image_handle != -1) && __LINE__);
+               osd_image * osd_image = m_resources->find_osd_image(image_handle);
+               assert( osd_image && __LINE__);
+               osd_bitmap* bmp = dynamic_cast<osd_bitmap*>(osd_image);
+               assert(bmp && __LINE__);
+               wxString filename = dirname + wxT("/");
+               filename += wxString::Format(wxT("char%d.png"),j);
+               zipout.PutNextEntry (filename);
+               wxImage* wx_image = ConvertTo_wxImage(*bmp);
+               wx_image->SaveFile (zipout, wxBITMAP_TYPE_PNG);
             }
-
-
+         }
          zipout.PutNextDirEntry(wxT("bitmaps"));
          for (size_t i = 0; i < m_resources->get_num_bitmaps(); ++i) {
                int handle = -1;

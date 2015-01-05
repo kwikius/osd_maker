@@ -38,7 +38,7 @@ struct font{
       m_elements.at(pos) = val;
       return true;
    }
-   int get_num_elements()const {return static_cast<int>(m_elements.size());}
+   size_t get_num_elements()const {return m_elements.size();}
 private:
    font & operator = ( font const &) = delete;
    font ( font const &) = delete;
