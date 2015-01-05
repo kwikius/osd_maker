@@ -187,8 +187,9 @@ osd_bitmap* bitmap_resource_t::move_osd_bitmap(int handle)
    if(iter == m_osd_image_map.end()){
       return nullptr;
    };
-   
    osd_image* image = iter->second;
+   m_osd_image_map.erase(iter);
+
    osd_bitmap* bmp = dynamic_cast<osd_bitmap*>(image);
    assert(bmp && __LINE__);
    bool handle_invalidated = false;
@@ -202,6 +203,47 @@ osd_bitmap* bitmap_resource_t::move_osd_bitmap(int handle)
    assert(handle_invalidated && __LINE__);
    assert(free_handle(handle) && __LINE__);
    return bmp;
+}
+
+osd_bitmap* bitmap_resource_t::move_font_element(int handle)
+{
+   assert(handle != -1);
+   auto iter = m_osd_image_map.find(handle);
+   if(iter == m_osd_image_map.end()){
+      return nullptr;
+   };
+   osd_image* image = iter->second;
+   m_osd_image_map.erase(iter);
+
+   osd_bitmap* bmp = dynamic_cast<osd_bitmap*>(image);
+   assert(bmp && __LINE__);
+   
+   assert(free_handle(handle) && __LINE__);
+   return bmp;
+}
+
+font* bitmap_resource_t::move_font(int handle)
+{
+   assert(handle != -1);
+   auto iter = m_font_map.find(handle);
+   if(iter == m_font_map.end()){
+      return nullptr;
+   };
+   font* cur_font = iter->second;
+   m_font_map.erase(iter);
+
+   assert(cur_font && __LINE__);
+   bool handle_invalidated = false;
+   for ( auto iter = m_fonts.begin(), end = m_fonts.end(); iter != end; ++iter){
+      if (*iter == handle){
+         *iter = -1;
+         handle_invalidated = true;
+         break;
+      }
+   }
+   assert(handle_invalidated && __LINE__);
+   assert(free_handle(handle) && __LINE__);
+   return cur_font;
 }
 
 bool bitmap_resource_t::clean_bitmap_handles()

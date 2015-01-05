@@ -26,10 +26,12 @@
       bool get_font_handle_at(size_t i, int & handle_out) const;
       osd_image* find_osd_image( int handle)const;
       font* find_font( int handle)const;
+      font * move_font(int handle);
       // relinquish ownership of image and free its handle 
       // note that handles are replaced with invalid handles
       // use clean_bitmap_handles after iterating
       osd_bitmap* move_osd_bitmap(int handle);
+      osd_bitmap* move_font_element(int handle);
       int add_bitmap( osd_bitmap*);
       int add_font_element( osd_bitmap*);
       int add_font(font*);

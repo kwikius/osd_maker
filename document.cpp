@@ -1,4 +1,6 @@
 #include <cstdio>
+#include <cstdlib>
+#include <cctype>
 #include <wx/zipstrm.h>
 #include <wx/wfstream.h>
 #include <wx/filedlg.h>
@@ -115,6 +117,38 @@ bool document::open_project (wxString const & path)
           wxImage image(zipin,wxBITMAP_TYPE_PNG);
           osd_bitmap * bmp = ConvertTo_osd_bitmap(name,image);
           temp_resources->add_bitmap(bmp);
+         } else{
+             if ( ( full_name.find("fonts/",0,6) != std::string::npos) &&
+            (full_name.find(".png",full_name.length()-4,4) != std::string::npos)
+             ){
+               size_t dirsep = full_name.find_first_of('/',6);
+               if (dirsep == std::string::npos){
+                  wxMessageBox(wxT("Invalid file"));
+                  //TODO clean up
+                  return false;
+               }
+               std::string font_name = full_name.substr(6, dirsep - 6);
+               font * home_font = temp_resources->find_font_by_name(font_name);
+               if ( home_font == nullptr){
+                 home_font = new font{font_name,osd_image::size_type{0,0},0};
+                 temp_resources->add_font(home_font);
+               } 
+               std::string font_element_index_str = full_name.substr(dirsep +5,full_name.length() - (dirsep + 9));
+               for ( auto c : font_element_index_str){
+                  if ( !::isdigit(c)){
+                        wxMessageBox(wxT("Invalid font char file"));
+                        //TODO clean up
+                        return false;
+                  }
+               }
+               int font_element_pos = ::atoi(font_element_index_str.c_str());
+               // TODO check not too big
+               char font_element_name[] = {'\'', static_cast<char>(font_element_pos),'\'','\0'};
+               wxImage font_elem_image(zipin,wxBITMAP_TYPE_PNG);
+               osd_bitmap * elem_bmp = ConvertTo_osd_bitmap(font_element_name,font_elem_image);
+               int font_elem_handle = temp_resources->add_font_element(elem_bmp);
+               home_font->set_handle_at(font_element_pos, font_elem_handle);
+             }
          }
       }
       delete entry;
@@ -127,6 +161,27 @@ bool document::open_project (wxString const & path)
       assert(bmp);
       this->add_bitmap(bmp);
    }
+   for ( size_t i = 0; i < temp_resources->get_num_fonts(); ++i){
+      int temp_font_handle = -1;
+      assert ( temp_resources->get_font_handle_at(i,temp_font_handle) && __LINE__);
+      assert (( temp_font_handle != -1) && __LINE__);
+      font* new_font = temp_resources->move_font(temp_font_handle);
+      assert ((new_font != nullptr) && __LINE__);
+      for ( size_t j = new_font->get_begin(); 
+            j < (new_font->get_num_elements() + static_cast<size_t>(new_font->get_begin()));
+            ++j){
+         int temp_image_handle = -1;
+         assert(new_font->get_handle_at( j, temp_image_handle) && __LINE__);
+         osd_bitmap* font_elem = temp_resources->move_font_element(temp_image_handle);
+         assert (( font_elem != nullptr && __LINE__));
+         int elem_handle = m_resources->add_font_element(font_elem);
+         new_font->set_handle_at(j, elem_handle);
+      } 
+      int new_font_handle = this->m_resources->add_font(new_font);
+      wxGetApp().get_panel()->add_font_handle(new_font->get_name(),new_font_handle);
+   }
+   // TODO delete temp_resource;
+  
    this->m_project_file_path = path;
    wxGetApp().get_main_frame()->SetTitle(path);
    return true;
