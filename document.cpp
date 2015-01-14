@@ -29,14 +29,10 @@ osd_image* document::get_image( int handle)const
 font* document::get_font(int handle) const
 {return m_resources->find_font(handle);}
 
-#if 0
-void document::add_font(font* f)
+font* document::get_font( std::string const & name)const
 {
-   assert(( f != nullptr) && __LINE__);
-   // get new handle
-   // put font in map
+    return m_resources->find_font_by_name(name);
 }
-#endif
 
 void document::add_bitmap(osd_bitmap* bmp)
 {
@@ -95,9 +91,7 @@ bool document::open_project (wxString const & path)
          return false;
    }
    int num_entries = zipin.GetTotalEntries();
-   // create a vector of bitmaps
-   // add each to vector of bitmaps
-   // or create a resources
+
    auto temp_resources = new bitmap_resource_t;
    for ( int i = 0; i < num_entries; ++i){
       wxZipEntry* entry = zipin.GetNextEntry();
@@ -153,6 +147,7 @@ bool document::open_project (wxString const & path)
       }
       delete entry;
    }
+
    wxGetApp().get_main_frame()->clear();
    for ( size_t i =0, end = temp_resources->get_num_bitmaps(); i < end; ++i){
       int handle = -1;

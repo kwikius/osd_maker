@@ -14,17 +14,11 @@
 #include "drawing.hpp"
 #include "osd_image.hpp"
 
+#include "display_layout.hpp"
+
    struct view : wxWindow{
       view(wxWindow* parent);
-      void OnPaint(wxPaintEvent & event);
-      void OnSize(wxSizeEvent & event);
-      void OnScroll(wxScrollWinEvent & event);
-      void OnHScroll(wxScrollWinEvent & event);
-      void OnVScroll(wxScrollWinEvent & event);
-      void OnMouseLeftDown(wxMouseEvent & event);
-      void OnMouseLeftUp(wxMouseEvent & event);
-      void OnMouseMove(wxMouseEvent & event);
-      void OnChar(wxKeyEvent & event);
+     
       void reset();
       document* get_document(){ return wxGetApp().get_document();}
       void set_scale(double const & v);
@@ -65,21 +59,39 @@
       }
       void set_modified(bool val);
       bool is_modified()const { return m_current_image_modified;}
-
+      enum class view_mode {Unknown, inBitmaps, inLayouts};
+      view_mode get_view_mode() const{ return m_view_mode;}
+      void set_view_mode(view_mode mode) ;//{m_view_mode = mode;}
+      font* get_current_font()const;
    private:
+      void OnPaint(wxPaintEvent & event);
+      void OnSize(wxSizeEvent & event);
+      void OnScroll(wxScrollWinEvent & event);
+      void OnHScroll(wxScrollWinEvent & event);
+      void OnVScroll(wxScrollWinEvent & event);
+      void OnMouseLeftDown(wxMouseEvent & event);
+      void OnMouseLeftUp(wxMouseEvent & event);
+      void OnMouseMove(wxMouseEvent & event);
+      void OnChar(wxKeyEvent & event);
       void paint_bitmap_view(wxPaintEvent & event);
-    // void paint_test_view(wxPaintEvent & event);
+      void paint_layout_view(wxPaintEvent & event);
       drawing  m_drawing;
       quan::gx::simple_drawing_view m_drawing_view;
       quan::gx::simple_device_window m_device_window;
+      void on_bitmaps_char(wxKeyEvent & event);
       vect2_d m_cur_mouse_pos;
       bool m_mouse_is_down;
+      
 
       DECLARE_EVENT_TABLE()
       
       osd_image* m_current_image;
       int m_document_image_handle;
+     // int m_last_font_handle;
       bool m_current_image_modified;
+      view_mode m_view_mode;
+      
+      display_layout m_display_layout;
       
    };
 

@@ -36,19 +36,29 @@ void panel::reset()
    m_bitmap_tree->SetSize(20,20,200,200); 
 }
 
+// todo add modes for font and bitmaps parents selected
+// need to change view mode if necessary
 panel::selection_type panel::get_selection_type( wxTreeEvent & event)
 {
     auto id = event.GetItem();
     auto parent_id = m_bitmap_tree->GetItemParent(id);
     if( parent_id == m_bitmap_tree->get_bitmaps_id()){
          return selection_type::Bitmap;
-    }else{
-      if(parent_id == m_bitmap_tree->get_fonts_id()){
-         return selection_type::Font;
-      }else{
-         return selection_type::Unknown;
-      }
     }
+    if(parent_id == m_bitmap_tree->get_fonts_id()){
+         return selection_type::Font;
+    }
+
+    if(id == m_bitmap_tree->get_layouts_id()){
+            return selection_type::LayoutDir;
+    }
+    if ( id == m_bitmap_tree->get_fonts_id()){
+           return selection_type::FontDir;
+    }
+    if ( id == m_bitmap_tree->get_bitmaps_id()){
+           return selection_type::BitmapDir;
+    }
+    return selection_type::Unknown;
 }
 
 void panel::add_bitmap_handle(std::string const & name, int handle)
@@ -118,8 +128,6 @@ bool panel::get_font_handle(wxTreeEvent & event, int & result_out)const
    return true;
 }
 
-
-
 void panel::OnTreeItemActivated(wxTreeEvent & event)
 {
   // find out if font or bitmap
@@ -130,6 +138,15 @@ void panel::OnTreeItemActivated(wxTreeEvent & event)
       break;
       case selection_type::Font:
          on_font_item_activated(event);
+      break;
+      case selection_type::LayoutDir: 
+         on_layout_dir_activated(event); 
+      break;
+      case selection_type::FontDir:
+         on_font_dir_activated(event);
+      break;
+      case selection_type::BitmapDir:
+         on_bitmap_dir_activated(event);
       break;
       default:
       break;
@@ -148,6 +165,10 @@ void panel::on_font_item_activated(wxTreeEvent & event)
       return ;
    }
    wxGetApp().get_bitmap_preview()->set_font_handle(font_handle);
+   auto view = wxGetApp().get_view();
+   if ( view->get_view_mode() == view::view_mode::inLayouts){
+       view->Refresh();
+   }
 }
 
 void panel::on_bitmap_item_activated(wxTreeEvent & event)
@@ -156,37 +177,36 @@ void panel::on_bitmap_item_activated(wxTreeEvent & event)
    if ( ! get_bitmap_handle(event,event_handle)){
       return;
    }
-
-//redo this-------------------
-   auto view = wxGetApp().get_view();
-#if 1
-   view->sync_with_image_handle(event_handle);
-#else
-   int view_handle = view->get_doc_image_handle();
-   
-   if ( view_handle == event_handle){
-      if ( !view->is_modified()){
-         return;
-      }else{
-         if( wxMessageBox(
-           wxT("[OK] to Revert view to live-tree?"),
-           wxT("Confirm View Revert"),
-           wxICON_QUESTION |wxOK | wxCANCEL ) != wxOK){
-           return;
-         }
-      }
-   }else{ // not same image in view
-     if ( view->is_modified()){
-        if ( view->sync_hmi_view() == wxCANCEL){
-            return;
-        }
-     }
-   }
-   view->copy_to_current_image(event_handle);
-#endif
-
+   wxGetApp().get_view()->sync_with_image_handle(event_handle);
 }
 
+void panel::on_bitmap_dir_activated(wxTreeEvent & event)
+{
+   auto view = wxGetApp().get_view();
+   if ( view->get_view_mode() == view::view_mode::inLayouts){
+       view->set_view_mode(view::view_mode::inBitmaps);
+       view->Refresh();
+   }
+}
+
+void panel::on_font_dir_activated(wxTreeEvent & event)
+{
+   auto view = wxGetApp().get_view();
+   if ( view->get_view_mode() == view::view_mode::inLayouts){
+       view->set_view_mode(view::view_mode::inBitmaps);
+       view->Refresh();
+   }
+}
+
+void panel::on_layout_dir_activated(wxTreeEvent & event)
+{
+    auto view = wxGetApp().get_view();
+    if ( view->get_view_mode() != view::view_mode::inLayouts){
+       view->set_view_mode(view::view_mode::inLayouts);
+       view->Refresh();
+    }
+   //wxMessageBox(wxT("layouts"));
+}
 
 void panel::OnTreeItemRightClick(wxTreeEvent & event)
 {

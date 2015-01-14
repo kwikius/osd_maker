@@ -5,11 +5,13 @@
 
 struct bitmap_tree : wxTreeCtrl{
    bitmap_tree( wxWindow* parent, int id);
-   wxTreeItemId const & get_bitmaps_id(){return m_bitmaps;}
-   wxTreeItemId const & get_fonts_id(){return m_fonts;}
+   wxTreeItemId const & get_bitmaps_id()const {return m_bitmaps;}
+   wxTreeItemId const & get_fonts_id()const {return m_fonts;}
+   wxTreeItemId const & get_layouts_id() const { return m_layouts;}
 private:
    wxTreeItemId m_fonts;
    wxTreeItemId m_bitmaps;
+   wxTreeItemId m_layouts;
   // DECLARE_EVENT_TABLE()
 };
 

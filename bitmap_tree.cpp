@@ -13,6 +13,7 @@ bitmap_tree::bitmap_tree( wxWindow* parent, int id)
   auto root = this->AddRoot(wxT("New Project"));
   m_fonts = this->AppendItem(root,wxT("fonts"));
   m_bitmaps = this->AppendItem(root,wxT("bitmaps"));
+  m_layouts = this->AppendItem(root,wxT("layouts"));
 }
 
 //BEGIN_EVENT_TABLE(bitmap_tree,wxTreeCtrl)

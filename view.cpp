@@ -10,6 +10,7 @@
 //#include "window_ids.hpp"
 #include "document.hpp"
 #include "fontmap_dialog.hpp"
+#include "bitmap_preview.hpp"
 
 BEGIN_EVENT_TABLE(view,wxWindow)
 
@@ -29,7 +30,8 @@ view::view(wxWindow* parent)
 ,m_mouse_is_down {false}
 ,m_current_image{nullptr}
 ,m_document_image_handle{-1}
-,m_current_image_modified{false} {
+,m_current_image_modified{false}
+,m_view_mode{view_mode::inBitmaps} {
    //  window_ids::view = this->GetId();
      this->SetWindowStyle(wxVSCROLL | wxHSCROLL);
      this->SetScrollbar(wxVERTICAL,50,10,110);
@@ -37,6 +39,18 @@ view::view(wxWindow* parent)
      this->m_drawing_view.set_scale(1);
      this->SetFocus();
 }
+font* view::get_current_font()const
+{
+    int font_handle = wxGetApp().get_bitmap_preview()->get_font_handle();
+    if ( font_handle == -1){
+      return nullptr;
+    }
+    return wxGetApp().get_document()->get_font(font_handle);
+}
+
+//TODO disable scrollbars or some other stuff with them
+void view::set_view_mode(view_mode mode) 
+{m_view_mode = mode;}
 
 void view::reset()
 {
@@ -47,8 +61,6 @@ void view::reset()
   m_document_image_handle = -1;
   m_current_image_modified = false;
 }
-
-
 
 void view::sync_to_document()
 {
@@ -80,6 +92,11 @@ int view::sync_hmi_view()
 
 bool view::sync_with_image_handle(int event_handle)
 {
+   bool const need_mode_change = this->get_view_mode() == view_mode::inLayouts;
+   if (need_mode_change){
+     this->set_view_mode(view_mode::inBitmaps);
+     this->Refresh();
+   }
    int view_handle = this->get_doc_image_handle();
    
    if ( view_handle == event_handle){
@@ -130,7 +147,7 @@ void view::set_scale(double const & v)
 }
 double view::get_scale()
 {
-      return m_drawing_view.get_scale();
+   return m_drawing_view.get_scale();
 }
 
 quan::gx::abc_color::ptr view::get_colour(osd_image::colour colour_id)
@@ -223,11 +240,37 @@ void view::paint_bitmap_view(wxPaintEvent & event)
      }
 
 }
+
+void view::paint_layout_view(wxPaintEvent & event)
+{
+     m_display_layout.clear();
+//     if( this->have_image()){
+//         m_display_layout.bitmap_out({100,100},m_current_image);
+//     }
+     auto f = this->get_current_font();
+     if( f != nullptr){
+         m_display_layout.text_out({100,100},"HELLO WORLD",f);
+     }
+     wxBitmap bitmap{m_display_layout.get_image()};
+     wxPaintDC dc(this);
+     dc.SetBackground(* wxBLACK_BRUSH); 
+     dc.Clear();
+     dc.DrawBitmap(bitmap,20,20);
+}
  
  
 void view::OnPaint(wxPaintEvent & event)
 {
-     paint_bitmap_view(event);
+     switch ( this->get_view_mode()){
+         case view_mode::inBitmaps:
+            paint_bitmap_view(event);
+         break;
+         case view_mode::inLayouts:
+           paint_layout_view(event);
+         break;   
+         default:
+         break;
+     }
 }
  
 // update device_window size data when size changes
@@ -333,7 +376,15 @@ void view::OnMouseLeftDown(wxMouseEvent & event)
 
 void view::OnChar(wxKeyEvent & event)
 {
-     event.Skip();
+    event.Skip();
+    if ( get_view_mode() == view_mode::inBitmaps ){
+      on_bitmaps_char(event);
+    }
+}
+
+void view::on_bitmaps_char(wxKeyEvent & event)
+{
+
      if (m_current_image == nullptr){
          return;
      }

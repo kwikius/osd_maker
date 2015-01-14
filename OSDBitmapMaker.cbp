@@ -42,6 +42,7 @@
 		<Unit filename="LICENSE.txt" />
 		<Unit filename="Makefile" />
 		<Unit filename="README" />
+		<Unit filename="TODO.txt" />
 		<Unit filename="app.cpp" />
 		<Unit filename="app.h" />
 		<Unit filename="bitmap_preview.cpp" />
@@ -50,6 +51,8 @@
 		<Unit filename="bitmap_resource.hpp" />
 		<Unit filename="bitmap_tree.cpp" />
 		<Unit filename="bitmap_tree.hpp" />
+		<Unit filename="display_layout.cpp" />
+		<Unit filename="display_layout.hpp" />
 		<Unit filename="document.cpp" />
 		<Unit filename="document.hpp" />
 		<Unit filename="drawing.cpp" />
