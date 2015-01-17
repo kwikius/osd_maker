@@ -59,15 +59,15 @@ void display_layout::text_out(pxp const & pos_in,std::string const & text, font*
    pxp pos = pos_in;
    for (const char* ptr = text.c_str(); *ptr != '\0'; ++ptr) {
         // abc_bitmap<uint8_t>* fontch = get_font_char (*ptr);
-         int char_handle =-1;
-         font_in->get_handle_at(*ptr,char_handle);
-         assert( (char_handle != -1) && __LINE__);
-         auto char_bmp = wxGetApp().get_document()->get_image(char_handle);
-         if (char_bmp) {
-            bitmap_out(pos,char_bmp);
-            pos.x += char_bmp->get_size().x;
-         }
+      int char_handle =-1;
+      font_in->get_handle_at(*ptr,char_handle);
+      assert( (char_handle != -1) && __LINE__);
+      auto char_bmp = wxGetApp().get_document()->get_image(char_handle);
+      if (char_bmp) {
+         bitmap_out(pos,char_bmp);
+         pos.x += char_bmp->get_size().x;
       }
+   }
 }
 
 display_layout::display_layout()
@@ -84,7 +84,21 @@ display_layout::display_layout()
    }
    m_background_image = bkgnd_image;
    m_image = bkgnd_image;
+   auto display_size = get_display_size();
+
+// N.B. due to "text" coordinate system. the top is at the bottom !!!
+// TODO could modify box to xmin, x_max , y_min, y_max rather than top bottom etc
+   m_display_rect.left = 0;
+   m_display_rect.top = display_size.y;
+   m_display_rect.right =display_size.x;
+   m_display_rect.bottom = 0;
+   m_clip.set_clipbox(m_display_rect);
 };
+
+display_layout::size_type display_layout::get_display_size() const
+{
+  return {m_background_image.GetWidth(), m_background_image.GetHeight()};
+}
 
 void display_layout::clear()
 {

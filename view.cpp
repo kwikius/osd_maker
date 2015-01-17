@@ -251,11 +251,13 @@ void view::paint_layout_view(wxPaintEvent & event)
      if( f != nullptr){
          m_display_layout.text_out({100,100},"HELLO WORLD",f);
      }
+     m_display_layout.line_out({50,50},{100,100},display_layout::colour::black);
      wxBitmap bitmap{m_display_layout.get_image()};
      wxPaintDC dc(this);
      dc.SetBackground(* wxBLACK_BRUSH); 
      dc.Clear();
-     dc.DrawBitmap(bitmap,20,20);
+     dc.DrawBitmap(bitmap,0,0);
+
 }
  
  
