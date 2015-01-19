@@ -39,6 +39,8 @@ struct font{
       return true;
    }
    size_t get_num_elements()const {return m_elements.size();}
+   size_t get_char_height()const { return m_size.x;}
+   size_t get_char_width() const {return m_size.y;}
 private:
    font & operator = ( font const &) = delete;
    font ( font const &) = delete;

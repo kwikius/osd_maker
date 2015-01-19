@@ -12,71 +12,19 @@ void display_layout::rescale(osd_image::size_type const & new_size)
    m_image.Rescale(new_size.x, new_size.y);
 }
 
-void display_layout::set_pixel(pxp const & px,colour c)
+display_layout::pos_type display_layout::transform_to_raw(pos_type const & pos)
 {
-   switch (c) {
-      case colour::black:
-         m_image.SetRGB (px.x, px.y, 0, 0, 0);
-         m_image.SetAlpha (px.x, px.y, wxIMAGE_ALPHA_OPAQUE);
-         break;
-      case colour::white:
-         m_image.SetRGB (px.x, px.y, 255, 255, 255);
-         m_image.SetAlpha (px.x, px.y, wxIMAGE_ALPHA_OPAQUE);
-         break;
-      case colour::grey:
-         m_image.SetRGB (px.x, px.y, 127, 127, 127);
-         m_image.SetAlpha (px.x, px.y, wxIMAGE_ALPHA_OPAQUE);
-         break;
-      case colour::transparent:
-         m_image.SetRGB (px.x, px.y, 0, 0, 0);
-         m_image.SetAlpha (px.x, px.y, wxIMAGE_ALPHA_TRANSPARENT);
-         break;
-      default:
-         break;
-   }
+  auto ds = get_display_size();
+  return {pos.x + ds.x/2 ,ds.y/2 - pos.y};
 }
 
-void display_layout::bitmap_out(pxp const & pos, osd_image* image)
+display_layout::pos_type display_layout::transform_from_raw(pos_type const & raw_pos)
 {
-   auto abs_pos = pos + m_origin;
-   if ( !image){
-      return ;
-   }
-   auto size_px = image->get_size();
-   for ( uint32_t y = 0U; y < size_px.y; ++y){
-      for ( uint32_t x = 0U; x < size_px.x; ++x){
-          pxp out_pos{abs_pos.x + x, abs_pos.y + y};
-          colour c = osd_image::colour::transparent;
-          image->get_pixel_colour({x,y},c);
-          if ( c != osd_image::colour::transparent){
-            set_pixel(out_pos,c); 
-          }
-      }
-   }
+   auto ds = get_display_size();
+   return {raw_pos.x - ds.x/2 , ds.y /2 - raw_pos.y};
 }
 
-
-void display_layout::text_out(pxp const & pos_in,std::string const & text, font* font_in)
-{
-   assert( font_in && __LINE__);
-   if ( text == ""){
-      return;
-   }
-   pxp pos = pos_in;
-   for (const char* ptr = text.c_str(); *ptr != '\0'; ++ptr) {
-        // abc_bitmap<uint8_t>* fontch = get_font_char (*ptr);
-      int char_handle =-1;
-      font_in->get_handle_at(*ptr,char_handle);
-      assert( (char_handle != -1) && __LINE__);
-      auto char_bmp = wxGetApp().get_document()->get_image(char_handle);
-      if (char_bmp) {
-         bitmap_out(pos,char_bmp);
-         pos.x += char_bmp->get_size().x;
-      }
-   }
-}
-
-display_layout::display_layout() :m_origin{0,0}
+display_layout::display_layout() 
 {
    if (! m_image.HasAlpha()){
       m_image.SetAlpha();
@@ -91,17 +39,16 @@ display_layout::display_layout() :m_origin{0,0}
    m_background_image = bkgnd_image;
    m_image = bkgnd_image;
    auto display_size = get_display_size();
-
-// N.B. due to "text" coordinate system. the top is at the bottom !!!
-// TODO could modify box to xmin, x_max , y_min, y_max rather than top bottom etc
-   m_display_rect.left = 0;
-   m_display_rect.top = display_size.y;
-   m_display_rect.right =display_size.x;
-   m_display_rect.bottom = 0;
+   auto left_top = transform_from_raw({0,0});
+   auto right_bottom = transform_from_raw(display_size);
+   m_display_rect.left = left_top.x;
+   m_display_rect.top =  left_top.y;
+   m_display_rect.right = right_bottom.x;
+   m_display_rect.bottom = right_bottom.y;
    m_clip.set_clipbox(m_display_rect);
 };
 
-void display_layout::set_origin(pos_type const & p) { m_origin = p;}
+//void display_layout::set_origin(pos_type const & p) { m_origin = p;}
 
 display_layout::size_type display_layout::get_display_size() const
 {
