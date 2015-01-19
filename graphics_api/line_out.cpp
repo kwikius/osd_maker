@@ -4,28 +4,21 @@
 #include <utility>
 #include "../display_layout.hpp"
 
-#if 1
-
 void display_layout::line_out(pxp const & p0_in_full, pxp const & p1_in_full, colour c )
 {
 #if 1
-   clip_result_type clip_result = m_clip({p0_in_full,p1_in_full});
+   clip_result_type clip_result = m_clip({m_origin + p0_in_full,m_origin + p1_in_full});
    if (!clip_result.first){
-    //  return;
+      return;
    }
-   auto const  p0_in = clip_result.second.from;
-   auto const  p1_in = clip_result.second.to;
+   auto  p0 = clip_result.second.from;
+   auto  p1 = clip_result.second.to;
 
-	bool const steep = abs(p1_in.y - p0_in.y) > abs(p1_in.x - p0_in.x);
+	bool const steep = abs(p1.y - p0.y) > abs(p1.x - p0.x);
 
-   quan::two_d::vect<int> p0;
-   quan::two_d::vect<int> p1;
-	if (!steep) {
-      p0 = p0_in;
-      p1 = p1_in;
-   }else{
-       p0 = {  p0_in.y,p0_in.x};
-       p1 = {  p1_in.y,p1_in.x};
+   if (steep){
+      std::swap(p0.x,p0.y);
+      std::swap(p1.x,p1.y);
    }
 
    if ( p0.x > p1.x){

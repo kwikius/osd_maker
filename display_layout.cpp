@@ -7,6 +7,11 @@ wxImage const & display_layout::get_image()const
    return m_image;
 }
 
+void display_layout::rescale(osd_image::size_type const & new_size)
+{
+   m_image.Rescale(new_size.x, new_size.y);
+}
+
 void display_layout::set_pixel(pxp const & px,colour c)
 {
    switch (c) {
@@ -33,14 +38,14 @@ void display_layout::set_pixel(pxp const & px,colour c)
 
 void display_layout::bitmap_out(pxp const & pos, osd_image* image)
 {
-
+   auto abs_pos = pos + m_origin;
    if ( !image){
       return ;
    }
    auto size_px = image->get_size();
    for ( uint32_t y = 0U; y < size_px.y; ++y){
       for ( uint32_t x = 0U; x < size_px.x; ++x){
-          pxp out_pos{pos.x + x, pos.y + y};
+          pxp out_pos{abs_pos.x + x, abs_pos.y + y};
           colour c = osd_image::colour::transparent;
           image->get_pixel_colour({x,y},c);
           if ( c != osd_image::colour::transparent){
@@ -49,6 +54,7 @@ void display_layout::bitmap_out(pxp const & pos, osd_image* image)
       }
    }
 }
+
 
 void display_layout::text_out(pxp const & pos_in,std::string const & text, font* font_in)
 {
@@ -70,7 +76,7 @@ void display_layout::text_out(pxp const & pos_in,std::string const & text, font*
    }
 }
 
-display_layout::display_layout()
+display_layout::display_layout() :m_origin{0,0}
 {
    if (! m_image.HasAlpha()){
       m_image.SetAlpha();
@@ -94,6 +100,8 @@ display_layout::display_layout()
    m_display_rect.bottom = 0;
    m_clip.set_clipbox(m_display_rect);
 };
+
+void display_layout::set_origin(pos_type const & p) { m_origin = p;}
 
 display_layout::size_type display_layout::get_display_size() const
 {
