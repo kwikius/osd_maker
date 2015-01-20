@@ -9,13 +9,14 @@ void draw_compass(display_layout & d, quan::angle::deg bearing) // add ofset and
  
    quan::two_d::rotation const rotate{bearing};
    //auto const display_size = d.get_display_size();
-   display_layout::pxp constexpr pos = {263,-188};
+   //display_layout::pxp constexpr pos = {263,-188};
+   display_layout::pxp constexpr pos = {0,-188};
    auto f = wxGetApp().get_view()->get_current_font();
    
    if (f){
       display_layout::size_type const char_size{f->get_char_width(),f->get_char_height()};
       display_layout::pos_type const  char_offset = - char_size /2;
-      constexpr auto font_radius = 36;
+      constexpr auto font_radius = 32;
       constexpr char compass_char[]{'N','S','E','W'};
       constexpr display_layout::pos_type compass_vector[] {
             {0,font_radius}
@@ -34,29 +35,23 @@ void draw_compass(display_layout & d, quan::angle::deg bearing) // add ofset and
          }
       }
    }
-#if 0
-   constexpr int arrow_len = 26;
-   constexpr auto arrow_point = display_layout::pxp{ 0, arrow_len/2};
-   auto const rot_arrow_point = rotate(arrow_point);
-   auto const rot_arrow_tail =rotate(display_layout::pxp{0,-arrow_len/2});
-   auto const rot_arrow_head_left = rotate(arrow_point + display_layout::size_type{-3,-5});
-   auto const rot_arrow_head_right = rotate(arrow_point + display_layout::size_type{3,-5});
-   d.line_out(rot_arrow_point, rot_arrow_tail,display_layout::colour::black);
-   d.line_out(rot_arrow_point, rot_arrow_head_left,display_layout::colour::black);
-   d.line_out(rot_arrow_point, rot_arrow_head_right,display_layout::colour::black);
-#else
-   int const radius = 50;
-   d.circle_out(pos,radius+1,50,display_layout::colour::black);
-   d.circle_out(pos,radius,50,display_layout::colour::white);
-   d.circle_out(pos,radius-1,50,display_layout::colour::black);
+
+   int const radius = 40;
+   d.circle_out(pos,radius+1,48,display_layout::colour::black);
+   for ( int i = 0; i < 16; ++i){
+      constexpr auto offset = quan::angle::deg{360/32};
+      auto start_angle = quan::angle::deg{360/16} * i + offset;
+      auto end_angle = quan::angle::deg{360/16} * (i+1) + offset;
+      display_layout::colour col =( i & 1)? display_layout::colour::black : display_layout::colour::white;
+      d.arc_out(pos,radius,start_angle,end_angle,3,col);
+   }
+   d.circle_out(pos,radius-1,48,display_layout::colour::black);
 
    auto arrow = wxGetApp().get_document()->get_bitmap("arrow");
    if (arrow){
       display_layout::size_type vect = arrow->get_size()/2;
       d.rotated_bitmap_out(pos,arrow,vect,bearing);
    }
-#endif
-   
 }
 
 }//namespace
