@@ -32,7 +32,8 @@ view::view(wxWindow* parent)
 ,m_document_image_handle{-1}
 ,m_current_image_modified{false}
 ,m_view_mode{view_mode::inBitmaps}
-,m_bearing{0} {
+,m_bearing{0}
+,m_home_bearing{0} {
    //  window_ids::view = this->GetId();
      this->SetWindowStyle(wxVSCROLL | wxHSCROLL);
      this->SetScrollbar(wxVERTICAL,50,10,110);

@@ -23,6 +23,36 @@ void display_layout::set_pixel(pxp const & px,colour c)
          m_image.SetAlpha (px.x, px.y, wxIMAGE_ALPHA_TRANSPARENT);
          break;
       default:
+        assert(false && __LINE__);
          break;
+   }
+}
+
+//raw p
+display_layout::colour display_layout::get_pixel(pxp const & p)
+{
+#if 0
+    auto ch1 = m_image.GetAlpha(p.x,p.y);
+    if ( ch1 == wxIMAGE_ALPHA_TRANSPARENT){
+     // assert(false);
+      return colour::transparent;
+    }
+#endif
+    {
+       unsigned int ch =  m_image.GetRed(p.x,p.y);
+       switch(ch){
+         case 255U:
+           return colour::white;
+          break;
+         case 127U:
+            return colour::grey;
+         break;
+         case 0U:
+            return colour::black;
+         break;
+         default:
+         //   assert(false && __LINE__);
+            return colour::invalid;
+       }
    }
 }

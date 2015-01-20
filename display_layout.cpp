@@ -26,9 +26,12 @@ display_layout::pos_type display_layout::transform_from_raw(pos_type const & raw
 
 display_layout::display_layout() 
 {
-   if (! m_image.HasAlpha()){
-      m_image.SetAlpha();
-   }
+//   if (! m_image.HasAlpha()){
+//      m_image.SetAlpha();
+//   }
+//   if (! m_background_image.HasAlpha()){
+//      m_background_image.SetAlpha();
+//   }
    if (! wxImage::FindHandler (wxBITMAP_TYPE_PNG)) {
          wxImage::AddHandler (new wxPNGHandler);
    }
@@ -37,6 +40,8 @@ display_layout::display_layout()
       wxMessageBox(wxT("bk fail"));
    }
    m_background_image = bkgnd_image;
+
+   // add Alpha to Bkgnd image?
    m_image = bkgnd_image;
    auto display_size = get_display_size();
    auto left_top = transform_from_raw({0,0});

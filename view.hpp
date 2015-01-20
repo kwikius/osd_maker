@@ -66,6 +66,8 @@
       font* get_current_font()const;
       quan::angle::deg get_bearing()const { return m_bearing;}
       void set_bearing( quan::angle::deg const & angle){m_bearing = angle;}
+      quan::angle::deg get_home_bearing()const { return m_home_bearing;}
+      void set_home_bearing( quan::angle::deg const & angle){m_home_bearing = angle;}
    private:
       void OnPaint(wxPaintEvent & event);
       void OnSize(wxSizeEvent & event);
@@ -96,6 +98,7 @@
       display_layout m_display_layout;
 
       quan::angle::deg m_bearing;
+      quan::angle::deg m_home_bearing;
       
    };
 

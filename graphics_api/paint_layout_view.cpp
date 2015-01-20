@@ -4,14 +4,31 @@
 #include "../app.h"
 
 namespace {
-void draw_compass(display_layout & d, quan::angle::deg bearing) // add ofset and dir
+void draw_compass(display_layout & d, 
+         quan::angle::deg const & bearing,
+         quan::angle::deg const & home_bearing) // add ofset and dir
 {
  
    quan::two_d::rotation const rotate{bearing};
-   //auto const display_size = d.get_display_size();
-  // display_layout::pxp constexpr pos = {-70,158};
-   display_layout::pxp constexpr pos = {0,-188};
-  // auto f = wxGetApp().get_view()->get_current_font();
+   
+   // bottom of display
+   //display_layout::pxp constexpr pos = {0,-188};
+   display_layout::pxp constexpr pos = {-240,188};
+   int const radius = 36;
+   d.circle_out(pos,radius+1,48,display_layout::colour::black);
+   for ( int i = 0; i < 16; ++i){
+      constexpr auto offset = quan::angle::deg{360/32};
+      auto start_angle = quan::angle::deg{360/16} * i + offset;
+      auto end_angle = quan::angle::deg{360/16} * (i+1) + offset;
+      display_layout::colour col =( i & 1)? display_layout::colour::black : display_layout::colour::white;
+      d.arc_out(pos,radius,start_angle,end_angle,3,col);
+   }
+   d.circle_out(pos,radius-1,48,display_layout::colour::black);
+#if 0
+   d.circle_out(pos,radius-2,48,display_layout::colour::black);
+   //d.circle_out(pos,radius-3,48,display_layout::colour::grey);
+   d.flood_fill(pos,display_layout::colour::black);
+#endif
    auto f =  wxGetApp().get_document()->get_font("MWOSD");
    if (f){
       display_layout::size_type const char_size{f->get_char_width(),f->get_char_height()};
@@ -35,17 +52,12 @@ void draw_compass(display_layout & d, quan::angle::deg bearing) // add ofset and
          }
       }
    }
-
-   int const radius = 36;
-   d.circle_out(pos,radius+1,48,display_layout::colour::black);
-   for ( int i = 0; i < 16; ++i){
-      constexpr auto offset = quan::angle::deg{360/32};
-      auto start_angle = quan::angle::deg{360/16} * i + offset;
-      auto end_angle = quan::angle::deg{360/16} * (i+1) + offset;
-      display_layout::colour col =( i & 1)? display_layout::colour::black : display_layout::colour::white;
-      d.arc_out(pos,radius,start_angle,end_angle,3,col);
+   
+   auto home_arrow = wxGetApp().get_document()->get_bitmap("copy_1_arrow");
+   if (home_arrow){
+      display_layout::size_type vect = home_arrow->get_size()/2;
+      d.rotated_bitmap_out(pos,home_arrow,vect,home_bearing);
    }
-   d.circle_out(pos,radius-1,48,display_layout::colour::black);
 
    auto arrow = wxGetApp().get_document()->get_bitmap("arrow");
    if (arrow){
@@ -54,6 +66,26 @@ void draw_compass(display_layout & d, quan::angle::deg bearing) // add ofset and
    }
 }
 
+  
+void test_fill(display_layout & d)
+{
+   typedef display_layout::pxp  pxp;
+   display_layout::colour col = display_layout::colour::black;
+   int len = 20;
+   pxp p0{ -len, len};
+   pxp p1{len,len};
+   pxp p2{len,-len};
+   pxp p3{-len,-len};
+
+   d.line_out(p0,p1,col);
+   d.line_out(p1,p2,col);
+   d.line_out(p2,p3,col);
+   d.line_out(p3,p0,col);
+
+   pxp centre {0,0};
+   d.flood_fill(centre,col);
+   
+}
 }//namespace
 
 void view::paint_layout_view(wxPaintEvent & event)
@@ -65,14 +97,16 @@ void view::paint_layout_view(wxPaintEvent & event)
          m_display_layout.text_out({0,0},"HELLO WORLD",f);
      }
 
-     m_display_layout.line_out({-100,0},{0,0},display_layout::colour::white);
+    // m_display_layout.line_out({-100,0},{0,0},display_layout::colour::white);
 
-     m_display_layout.line_out({0,0},{0,-100},display_layout::colour::black);
+    // m_display_layout.line_out({0,0},{0,-100},display_layout::colour::black);
 
-      draw_compass(m_display_layout,get_bearing());
+      draw_compass(m_display_layout,get_bearing(),get_home_bearing());
+
+    // test_fill(m_display_layout);
       
-//     auto image_size = m_display_layout.get_display_size();
-//     m_display_layout.rescale(image_size*2);
+//    auto image_size = m_display_layout.get_display_size();
+//    m_display_layout.rescale(image_size*4);
 
      wxBitmap bitmap{m_display_layout.get_image()};
      wxPaintDC dc(this);

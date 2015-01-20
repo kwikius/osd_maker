@@ -79,7 +79,7 @@ main_frame::main_frame (wxFrame *frame, const wxString& title, wxSize const & si
 
      Timer= new wxTimer{this,idTimer};
 //    update rate of 1/50th sec
-     Timer->Start(100,wxTIMER_CONTINUOUS);
+     Timer->Start(20,wxTIMER_CONTINUOUS);
    
    // m_sp_in_thread = new sp_in_thread(this);
    //  m_sp_in_thread->Create();
@@ -315,11 +315,19 @@ void main_frame::OnTimer (wxTimerEvent &event)
    auto view = wxGetApp().get_view();
    if ( view->get_view_mode() == ::view::view_mode::inLayouts){
       auto bearing = wxGetApp().get_view()->get_bearing();
-      bearing += quan::angle::deg{ 1};
+      bearing += quan::angle::deg{ 2};
       if ( bearing > quan::angle::deg{360}){
          bearing -= quan::angle::deg{360};
       }
       view->set_bearing(bearing);
+
+      auto home_bearing = wxGetApp().get_view()->get_home_bearing();
+      home_bearing += quan::angle::deg{ 2.2};
+      if ( home_bearing > quan::angle::deg{360}){
+         home_bearing -= quan::angle::deg{360};
+      }
+      view->set_home_bearing(home_bearing);
+
       view->Refresh();
    }
    

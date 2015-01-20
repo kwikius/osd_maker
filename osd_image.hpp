@@ -19,6 +19,9 @@ struct osd_image{
     };
     virtual size_type get_size()const=0;
     virtual bool get_pixel_colour( pos_type const & p, colour & c) const=0;
+    colour get_pixel_colour(pos_type const & p) 
+    { colour col = colour::invalid; get_pixel_colour(p,col); return col;}
+      
     virtual bool set_pixel_colour( pos_type const & p, colour c)=0;
     virtual osd_image* clone() const = 0;
     virtual void destroy() = 0;
