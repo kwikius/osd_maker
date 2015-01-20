@@ -16,7 +16,7 @@ void draw_compass(display_layout & d, quan::angle::deg bearing) // add ofset and
    if (f){
       display_layout::size_type const char_size{f->get_char_width(),f->get_char_height()};
       display_layout::pos_type const  char_offset = - char_size /2;
-      constexpr auto font_radius = 32;
+      constexpr auto font_radius = 28;
       constexpr char compass_char[]{'N','S','E','W'};
       constexpr display_layout::pos_type compass_vector[] {
             {0,font_radius}
@@ -36,7 +36,7 @@ void draw_compass(display_layout & d, quan::angle::deg bearing) // add ofset and
       }
    }
 
-   int const radius = 40;
+   int const radius = 36;
    d.circle_out(pos,radius+1,48,display_layout::colour::black);
    for ( int i = 0; i < 16; ++i){
       constexpr auto offset = quan::angle::deg{360/32};
