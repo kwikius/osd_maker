@@ -19,6 +19,7 @@ struct display_layout{
    typedef osd_image::colour colour;
    void set_pixel(pxp const & px,colour c);
    void bitmap_out(pxp const & pos, osd_image* image);
+   void rotated_bitmap_out(pxp const & pos, osd_image* image, pxp const & rotation_centre, quan::angle::deg const & angle);
    void text_out( pxp const & pos,std::string const & str, font* font_in);
    void line_out(pxp const & from, pxp const & to,colour c);
    void arc_out(pxp const & pos_in,uint32_t  radius, quan::angle::deg const & start_angle,quan::angle::deg const & end_angle, uint32_t numsegs, colour c);

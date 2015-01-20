@@ -34,6 +34,7 @@ struct document {
      wxString get_project_file_path(){ return m_project_file_path;}
      // doc doesnt relinquish ownership of image
      osd_image* get_image( int handle)const ;
+     osd_bitmap* get_bitmap( std::string const & name)const ;
      font* get_font(int handle) const;
      font* get_font( std::string const & name)const;
      // doc takes ownership of image which was created on heap

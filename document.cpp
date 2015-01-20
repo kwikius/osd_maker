@@ -26,6 +26,9 @@ using quan::gx::wxwidgets::to_wxString;
 osd_image* document::get_image( int handle)const 
 {return m_resources->find_osd_image(handle);}
 
+osd_bitmap* document::get_bitmap( std::string const & name)const 
+{return m_resources->find_bitmap_by_name(name);}
+
 font* document::get_font(int handle) const
 {return m_resources->find_font(handle);}
 
@@ -123,11 +126,15 @@ bool document::open_project (wxString const & path)
                }
                std::string font_name = full_name.substr(6, dirsep - 6);
                font * home_font = temp_resources->find_font_by_name(font_name);
+               bool new_font = false;
                if ( home_font == nullptr){
+                 // need to sort size 
                  home_font = new font{font_name,osd_image::size_type{0,0},0};
+                 new_font = true;
                  temp_resources->add_font(home_font);
                } 
                std::string font_element_index_str = full_name.substr(dirsep +5,full_name.length() - (dirsep + 9));
+               
                for ( auto c : font_element_index_str){
                   if ( !::isdigit(c)){
                         wxMessageBox(wxT("Invalid font char file"));
@@ -139,9 +146,16 @@ bool document::open_project (wxString const & path)
                // TODO check not too big
                char font_element_name[] = {'\'', static_cast<char>(font_element_pos),'\'','\0'};
                wxImage font_elem_image(zipin,wxBITMAP_TYPE_PNG);
+                
+               
                osd_bitmap * elem_bmp = ConvertTo_osd_bitmap(font_element_name,font_elem_image);
                int font_elem_handle = temp_resources->add_font_element(elem_bmp);
                home_font->set_handle_at(font_element_pos, font_elem_handle);
+               if ( new_font){
+                  home_font->set_char_size(elem_bmp->get_size());
+                  new_font = false;
+               }
+               //TODO else check that all elements are same size
              }
          }
       }

@@ -77,9 +77,9 @@ main_frame::main_frame (wxFrame *frame, const wxString& title, wxSize const & si
    
 //#endif // wxUSE_STATUSBAR
 
-   //  Timer= new wxTimer{this,idTimer};
-   // update rate of 1/5th sec
-   //  Timer->Start(200,wxTIMER_CONTINUOUS);
+     Timer= new wxTimer{this,idTimer};
+//    update rate of 1/50th sec
+     Timer->Start(100,wxTIMER_CONTINUOUS);
    
    // m_sp_in_thread = new sp_in_thread(this);
    //  m_sp_in_thread->Create();
@@ -310,12 +310,19 @@ void main_frame::OnOpenProject (wxCommandEvent &event)
    wxGetApp().get_document()->open_project (path);
 }
 
-/*
- Timer represents the update rate of the  airborne telemetry unit
-*/
 void main_frame::OnTimer (wxTimerEvent &event)
 {
-
+   auto view = wxGetApp().get_view();
+   if ( view->get_view_mode() == ::view::view_mode::inLayouts){
+      auto bearing = wxGetApp().get_view()->get_bearing();
+      bearing += quan::angle::deg{ 1};
+      if ( bearing > quan::angle::deg{360}){
+         bearing -= quan::angle::deg{360};
+      }
+      view->set_bearing(bearing);
+      view->Refresh();
+   }
+   
 }
 
 void main_frame::OnAbout (wxCommandEvent &event)

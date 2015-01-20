@@ -61,7 +61,12 @@
 		<Unit filename="font.hpp" />
 		<Unit filename="fontmap_dialog.hpp" />
 		<Unit filename="graphics_api/arc.cpp" />
+		<Unit filename="graphics_api/bitmap_out.cpp" />
+		<Unit filename="graphics_api/circle_out.cpp" />
 		<Unit filename="graphics_api/line_out.cpp" />
+		<Unit filename="graphics_api/paint_layout_view.cpp" />
+		<Unit filename="graphics_api/set_pixel.cpp" />
+		<Unit filename="graphics_api/text_out.cpp" />
 		<Unit filename="info_on_fonts.txt" />
 		<Unit filename="main_frame.cpp" />
 		<Unit filename="main_frame.h" />

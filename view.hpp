@@ -6,6 +6,7 @@
 #include <quan/three_d/vect.hpp>
 #include <quan/length.hpp>
 #include <quan/reciprocal_length.hpp>
+#include <quan/angle.hpp>
 #include <quan/gx/wxwidgets/graphics_context.hpp>
 #include <quan/gx/simple_drawing_view.hpp>
 #include <quan/gx/simple_device_window.hpp>
@@ -63,6 +64,8 @@
       view_mode get_view_mode() const{ return m_view_mode;}
       void set_view_mode(view_mode mode) ;//{m_view_mode = mode;}
       font* get_current_font()const;
+      quan::angle::deg get_bearing()const { return m_bearing;}
+      void set_bearing( quan::angle::deg const & angle){m_bearing = angle;}
    private:
       void OnPaint(wxPaintEvent & event);
       void OnSize(wxSizeEvent & event);
@@ -81,7 +84,6 @@
       void on_bitmaps_char(wxKeyEvent & event);
       vect2_d m_cur_mouse_pos;
       bool m_mouse_is_down;
-      
 
       DECLARE_EVENT_TABLE()
       
@@ -92,6 +94,8 @@
       view_mode m_view_mode;
       
       display_layout m_display_layout;
+
+      quan::angle::deg m_bearing;
       
    };
 
