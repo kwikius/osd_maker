@@ -14,7 +14,6 @@
 #include "document.hpp"
 #include "drawing.hpp"
 #include "osd_image.hpp"
-
 #include "display_layout.hpp"
 
    struct view : wxWindow{

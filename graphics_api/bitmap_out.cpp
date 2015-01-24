@@ -17,7 +17,7 @@ void display_layout::bitmap_out(pxp const & pos_in, osd_image* image)
        // wont overwrite stuff
          // may need an option
           if ( c != osd_image::colour::transparent){
-            set_pixel(raw_pos_out,c); 
+            set_pixel_raw(raw_pos_out,c); 
           }
       }
    }
@@ -37,10 +37,27 @@ void display_layout::rotated_bitmap_out(pxp const & pos, osd_image* image, pxp c
           image->get_pixel_colour(raw_px,c);
           if ( c != osd_image::colour::transparent){
              pxp rvect = pxp{x,y} - rotation_centre;
+#if 0
              pxp raw_out_pos = transform_to_raw(rotate(rvect) + pos);
-             set_pixel(raw_out_pos,c); 
+             set_pixel_raw(raw_out_pos,c); 
+#else
+             auto rotated = rotate(rvect);
+             pxp rotated_i = {
+                  static_cast<int>(rotated.x + static_cast<QUAN_FLOAT_TYPE>(0.5)) + pos.x,
+                  static_cast<int>(rotated.y + static_cast<QUAN_FLOAT_TYPE>(0.5)) + pos.y
+             };
+             set_pixel_raw(transform_to_raw(rotated_i),c);
+#endif
+            
+
           }
       }
    }
+
+/*
+ ;
+          
+             ; 
+*/
   
 }

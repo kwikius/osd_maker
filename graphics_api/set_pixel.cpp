@@ -3,7 +3,7 @@
 /*
  pxp is raw coordinate
 */
-void display_layout::set_pixel(pxp const & px,colour c)
+void display_layout::set_pixel_raw(pxp const & px,colour c)
 {
    switch (c) {
       case colour::black:

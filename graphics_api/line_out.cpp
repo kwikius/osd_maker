@@ -35,11 +35,11 @@ void display_layout::line_out(pxp const & p0_in_full, pxp const & p1_in_full, co
 
 	for (int32_t x = p0.x ;x < p1.x ; ++x) {
 		if (!steep) {
-// can use ll_set_pixel here ( unchecked)
-         set_pixel({x,y},c);
+// can use ll_set_pixel_raw here ( unchecked)
+         set_pixel_raw({x,y},c);
          // asm volatile ("nop":::);
       }else{
-			set_pixel({y,x},c);
+			set_pixel_raw({y,x},c);
           // asm volatile ("nop":::);
 		}
 		error -= deltay;

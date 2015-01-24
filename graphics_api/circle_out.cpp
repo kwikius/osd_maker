@@ -12,9 +12,8 @@ void display_layout::circle_out(pxp const & centre, int radius, int numsegs, col
          auto s1 = sin(angle1);
          auto c2 = cos(angle2);
          auto s2 = sin(angle2);
-         pxp const from{c1 * radius,s1 * radius};
-         pxp const to {c2 * radius, s2 * radius};
+         pxp const from{c1 * radius +0.5,s1 * radius +0.5};
+         pxp const to  {c2 * radius +0.5,s2 * radius +0.5};
          line_out(from + centre ,to + centre,c);
    }
-  
 }

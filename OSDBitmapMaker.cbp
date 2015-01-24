@@ -43,6 +43,8 @@
 		<Unit filename="Makefile" />
 		<Unit filename="README" />
 		<Unit filename="TODO.txt" />
+		<Unit filename="aircraft/aircraft.cpp" />
+		<Unit filename="aircraft/aircraft.hpp" />
 		<Unit filename="app.cpp" />
 		<Unit filename="app.h" />
 		<Unit filename="bitmap_preview.cpp" />
@@ -51,6 +53,9 @@
 		<Unit filename="bitmap_resource.hpp" />
 		<Unit filename="bitmap_tree.cpp" />
 		<Unit filename="bitmap_tree.hpp" />
+		<Unit filename="display1/display.hpp" />
+		<Unit filename="display1/draw_artificial_horizon.cpp" />
+		<Unit filename="display1/draw_compass.cpp" />
 		<Unit filename="display_layout.cpp" />
 		<Unit filename="display_layout.hpp" />
 		<Unit filename="document.cpp" />

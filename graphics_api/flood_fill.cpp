@@ -1,7 +1,7 @@
 #include "../display_layout.hpp"
 
 #include <stack>
-
+// add a maxcount var in case of spills?
 void display_layout::flood_fill(pxp const & start_pos, colour new_colour)
 {
    //assert ( new_colour == colour::black && __LINE__);
@@ -31,7 +31,7 @@ void display_layout::flood_fill(pxp const & start_pos, colour new_colour)
       auto n = stack.top();
      // assert ( (n == raw_pxp) && __LINE__);
       stack.pop();
-      set_pixel(n,new_colour);
+      set_pixel_raw(n,new_colour);
 
       if ( n.x > 0){
          auto west = pxp {n.x-1,n.y};
