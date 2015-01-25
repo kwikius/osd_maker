@@ -24,6 +24,13 @@
 #include "main_frame_splitter.hpp"
 #include "sp_in_thread.hpp"
 
+#include "dialogs/new_bitmap_dialog.hpp"
+#include <quan/gx/wxwidgets/from_wxString.hpp>
+#include <quan/gx/wxwidgets/to_wxString.hpp>
+
+using quan::gx::wxwidgets::from_wxString;
+using quan::gx::wxwidgets::to_wxString;
+
 //helper functions
 enum wxbuildinfoformat {
    short_f, long_f
@@ -59,7 +66,8 @@ BEGIN_EVENT_TABLE (main_frame, wxFrame)
    EVT_MENU (wxID_NEW, main_frame::OnNewProject)
    EVT_MENU (wxID_OPEN, main_frame::OnOpenProject)
    EVT_MENU (wxID_SAVE, main_frame::OnSaveProject)
-   EVT_MENU (idImportImage, main_frame::OnImportImage)
+   EVT_MENU (idImportBitmap, main_frame::OnImportBitmap)
+   EVT_MENU (idNewBitmap, main_frame::OnNewBitmap)
    EVT_MENU (idImportFont, main_frame::OnImportFont)
    EVT_MENU (idCommitViewToTree, main_frame::OnCommitViewToTree)
    EVT_TIMER (idTimer, main_frame::OnTimer)
@@ -99,7 +107,7 @@ void main_frame::enable_menu_item (int id, bool b)
 
 void main_frame::enable_import_image (bool b)
 {
-   enable_menu_item (idImportImage, b);
+   enable_menu_item (idImportBitmap, b);
 }
 void main_frame::enable_import_font (bool b)
 {
@@ -132,10 +140,14 @@ void main_frame::create_menus()
    projectMenu->Append (wxID_SAVEAS, _ ("&Save Project As...\tShift+Ctrl+S"), _ ("Save Project As"));
    projectMenu->Append (idMenuQuit, _ ("&Quit\tCtrl+Q"), _ ("Quit the Application"));
    
-   wxMenu* fileMenu = new wxMenu (_T (""));
-   mbar->Append (fileMenu, _ ("&Import"));
-   fileMenu->Append (idImportImage, _ ("&Image..."), _ ("Import Image File"));
-   fileMenu->Append (idImportFont, _ ("&Font..."), _ ("Import Font File"));
+   wxMenu* bitmapMenu = new wxMenu (_T (""));
+   mbar->Append (bitmapMenu, _ ("&Bitmap"));
+   bitmapMenu->Append (idNewBitmap, _ ("&New..."), _ ("New Bitmap"));
+   bitmapMenu->Append (idImportBitmap, _ ("&Import..."), _ ("Import Bitmap"));
+
+   wxMenu* fontMenu = new wxMenu (_T (""));
+   mbar->Append (fontMenu, _ ("&Font")); 
+   fontMenu->Append (idImportFont, _ ("&Import..."), _ ("Import Font"));
    
    wxMenu* viewMenu = new wxMenu (_T (""));
    mbar->Append (viewMenu, _ ("&View"));
@@ -236,7 +248,31 @@ void main_frame::OnImportFont (wxCommandEvent &event)
       }
 }
 
-void main_frame::OnImportImage (wxCommandEvent &event)
+void main_frame::OnNewBitmap (wxCommandEvent &event)
+{
+   new_bitmap_dialog dlg(this);
+   quan::two_d::vect<long> size;
+   
+   if ( dlg.ShowModal() == wxID_OK){
+      if (! dlg.m_x_text->GetValue().ToLong(&size.x)){
+         wxMessageBox(wxT("invalid number in x"));
+         return;
+      }
+      if (! dlg.m_y_text->GetValue().ToLong(&size.y)){
+         wxMessageBox(wxT("invalid number in y"));
+         return;
+      }
+      wxString wxname = dlg.m_name_text->GetValue(); //
+      std::string name = from_wxString<char>(wxname);
+      if ( wxGetApp().get_document()->get_bitmap(name) != nullptr){
+         wxMessageBox(wxT("Bitmap name already exists"));
+         return;
+      }
+      wxGetApp().get_document()->add_new_bitmap(name,size);
+   }
+}
+
+void main_frame::OnImportBitmap (wxCommandEvent &event)
 {
    auto & app = wxGetApp();
    auto doc = app.get_document();

@@ -31,13 +31,13 @@ void draw_compass (display_layout & d,
    d.flood_fill (pos, display_layout::colour::black);
 #endif
    
-   auto home_arrow = wxGetApp().get_document()->get_bitmap ("copy_1_arrow");
+   auto home_arrow = wxGetApp().get_document()->get_bitmap ("home_arrow");
    if (home_arrow) {
          display_layout::size_type vect = home_arrow->get_size() / 2;
          d.rotated_bitmap_out (pos, home_arrow, vect, home_bearing);
       }
       
-   auto arrow = wxGetApp().get_document()->get_bitmap ("arrow");
+   auto arrow = wxGetApp().get_document()->get_bitmap ("compass_arrow");
    if (arrow) {
          display_layout::size_type vect = arrow->get_size() / 2;
          d.rotated_bitmap_out (pos, arrow, vect, bearing);

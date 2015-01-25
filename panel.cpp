@@ -1,5 +1,6 @@
 #define wxUSE_CHOICEDLG 1
 #include <wx/choicdlg.h>
+#include <wx/textdlg.h>
 
 #include <quan/gx/wxwidgets/from_wxString.hpp>
 #include <quan/gx/wxwidgets/to_wxString.hpp>
@@ -8,6 +9,9 @@
 #include "panel.hpp"
 #include "bitmap_tree.hpp"
 #include "bitmap_preview.hpp"
+
+using quan::gx::wxwidgets::from_wxString;
+using quan::gx::wxwidgets::to_wxString;
 
 namespace {
 struct osd_bitmap_handle : public wxTreeItemData {
@@ -25,7 +29,6 @@ struct osd_font_handle : public wxTreeItemData {
 };
 
 } // namespace 
-
 
 
 void panel::reset()
@@ -208,6 +211,31 @@ void panel::on_layout_dir_activated(wxTreeEvent & event)
    //wxMessageBox(wxT("layouts"));
 }
 
+void panel::rename_bitmap(wxTreeEvent & event)
+{
+  int handle = -1;
+  if ( !get_bitmap_handle( event,handle)){
+      return;
+  }
+
+  osd_image* abc_bmp = wxGetApp().get_document()->get_image(handle);
+  osd_bitmap* bmp = dynamic_cast<osd_bitmap*>(abc_bmp);
+  if ( bmp == nullptr){
+      return ;
+  }
+  wxString old_name = to_wxString(bmp->get_name());
+  // do a text dialog to get name
+  wxTextEntryDialog dlg(this,wxT("Rename Bitmap"),wxT("Enter new name for bitmap"),old_name);
+
+  if ( dlg.ShowModal() == wxID_OK){
+    wxString wx_new_text = dlg.GetValue();
+    wxTreeItemId id = event.GetItem();
+    m_bitmap_tree->SetItemText(id, wx_new_text);
+    bmp->set_name(from_wxString<char>(wx_new_text));
+    wxGetApp().get_document()->set_modified(true);
+  }
+}
+
 void panel::OnTreeItemRightClick(wxTreeEvent & event)
 {
   int handle = -1;
@@ -231,8 +259,19 @@ void panel::OnTreeItemRightClick(wxTreeEvent & event)
   };
 
   if (dlg.ShowModal() == wxID_OK){
-      auto result = dlg.GetSelection();
-      wxMessageBox(wxString::Format(wxT("result = %d"),result));
+      int result = dlg.GetSelection();
+
+      switch (result){
+         case 0:
+            rename_bitmap(event);
+
+         break;
+         case 1:
+        //  delete
+         break;
+
+      }
+      
   }
 }
 

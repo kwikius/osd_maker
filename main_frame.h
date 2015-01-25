@@ -36,7 +36,8 @@ class main_frame: public wxFrame
         {
             idMenuQuit = 1000,
             idMenuAbout,
-            idImportImage,
+            idNewBitmap,
+            idImportBitmap,
             idImportFont,
             idTimer,
             idCommitViewToTree
@@ -46,7 +47,8 @@ class main_frame: public wxFrame
         void OnCloseProject(wxCloseEvent& event);
         void OnQuit(wxCommandEvent& event);
         void OnAbout(wxCommandEvent& event);
-        void OnImportImage(wxCommandEvent & event);
+        void OnNewBitmap(wxCommandEvent & event);
+        void OnImportBitmap(wxCommandEvent & event);
         void OnImportFont(wxCommandEvent & event);
         void OnSaveProject(wxCommandEvent & event);
         void OnCommitViewToTree(wxCommandEvent & event);

@@ -47,6 +47,7 @@ struct osd_bitmap : osd_image{
    
    size_type get_size() const { return m_size;}
    std::string const & get_name() const { return m_name;}
+   void set_name (std::string const & name){ m_name = name;}
    bool get_pixel_colour( pos_type const & p, colour & c) const;
    bool set_pixel_colour( pos_type const & p, colour c);
    void destroy() { delete this;}

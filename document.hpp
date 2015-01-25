@@ -31,6 +31,7 @@ struct document {
      bool open_project(wxString const & path);
      bool load_mcm_font_file (wxString const & path);
      bool load_png_file(wxString const &path);
+     bool add_new_bitmap(std::string const & name, osd_image::size_type size);
      wxString get_project_file_path(){ return m_project_file_path;}
      // doc doesnt relinquish ownership of image
      osd_image* get_image( int handle)const ;

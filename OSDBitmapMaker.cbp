@@ -53,9 +53,13 @@
 		<Unit filename="bitmap_resource.hpp" />
 		<Unit filename="bitmap_tree.cpp" />
 		<Unit filename="bitmap_tree.hpp" />
+		<Unit filename="constants.hpp" />
+		<Unit filename="dialogs/new_bitmap_dialog.hpp" />
 		<Unit filename="display1/display.hpp" />
+		<Unit filename="display1/draw_altitude.cpp" />
 		<Unit filename="display1/draw_artificial_horizon.cpp" />
 		<Unit filename="display1/draw_compass.cpp" />
+		<Unit filename="display1/draw_home.cpp" />
 		<Unit filename="display_layout.cpp" />
 		<Unit filename="display_layout.hpp" />
 		<Unit filename="document.cpp" />

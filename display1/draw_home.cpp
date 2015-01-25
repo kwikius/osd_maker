@@ -22,7 +22,7 @@ void draw_home(display_layout & d)
    // and put the distance to home
    // retrieve wanted units
    char buf[30];
-   int ret = sprintf( buf,"home:%5u m",d_m);
+   int ret = sprintf( buf,"HOME:%5u M",d_m);
    auto f = wxGetApp().get_view()->get_current_font();
    if ( f){
       d.text_out({-290,210},buf,f);

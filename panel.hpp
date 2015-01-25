@@ -14,6 +14,7 @@ struct panel : wxWindow// wxPanel
   void add_font_handle(std::string const & name, int handle);
   bool get_bitmap_handle(wxTreeEvent & event, int & result_out)const;
   bool get_font_handle(wxTreeEvent & event, int & result_out)const;
+  
   void reset();
 private:
    enum class selection_type{ Unknown, Font, FontDir, Bitmap, BitmapDir, LayoutDir};
@@ -25,6 +26,7 @@ private:
    void on_font_dir_activated( wxTreeEvent& event);
    void OnTreeItemActivated(wxTreeEvent & event);
    void OnTreeItemRightClick(wxTreeEvent & event);
+   void rename_bitmap(wxTreeEvent & event);
    enum
    {
       idMenuQuit = 1000,

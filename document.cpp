@@ -37,6 +37,17 @@ font* document::get_font( std::string const & name)const
     return m_resources->find_font_by_name(name);
 }
 
+bool document::add_new_bitmap(std::string const & name, osd_image::size_type size)
+{
+   if(get_bitmap(name) == nullptr){
+       auto bmp = new osd_bitmap(name,size);
+       add_bitmap(bmp);  
+       return true;
+   }else{
+      return false;
+   }
+}
+
 void document::add_bitmap(osd_bitmap* bmp)
 {
    assert((bmp != nullptr) && __LINE__);
