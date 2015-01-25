@@ -57,6 +57,7 @@
 
          return m_document_image_handle;
       }
+      bool resize_image( quan::two_d::box<int> new_size);
       void set_modified(bool val);
       bool is_modified()const { return m_current_image_modified;}
       enum class view_mode {Unknown, inBitmaps, inLayouts};
@@ -67,6 +68,7 @@
       void set_bearing( quan::angle::deg const & angle){m_bearing = angle;}
       quan::angle::deg get_home_bearing()const { return m_home_bearing;}
       void set_home_bearing( quan::angle::deg const & angle){m_home_bearing = angle;}
+      
    private:
       void OnPaint(wxPaintEvent & event);
       void OnSize(wxSizeEvent & event);
@@ -74,6 +76,7 @@
       void OnHScroll(wxScrollWinEvent & event);
       void OnVScroll(wxScrollWinEvent & event);
       void OnMouseLeftDown(wxMouseEvent & event);
+      void OnMouseRightDown(wxMouseEvent & event);
       void OnMouseLeftUp(wxMouseEvent & event);
       void OnMouseMove(wxMouseEvent & event);
       void OnChar(wxKeyEvent & event);

@@ -11,6 +11,7 @@
 #include "document.hpp"
 #include "fontmap_dialog.hpp"
 #include "bitmap_preview.hpp"
+#include "dialogs/new_bitmap_dialog.hpp"
 
 BEGIN_EVENT_TABLE(view,wxWindow)
 
@@ -18,6 +19,7 @@ BEGIN_EVENT_TABLE(view,wxWindow)
      EVT_SIZE(view::OnSize)
      EVT_SCROLLWIN(view::OnScroll)
      EVT_LEFT_DOWN(view::OnMouseLeftDown)
+     EVT_RIGHT_DOWN(view::OnMouseRightDown)
      EVT_LEFT_UP(view::OnMouseLeftUp)
      EVT_MOTION(view::OnMouseMove)
      EVT_CHAR(view::OnChar)
@@ -53,6 +55,36 @@ font* view::get_current_font()const
 //TODO disable scrollbars or some other stuff with them
 void view::set_view_mode(view_mode mode) 
 {m_view_mode = mode;}
+
+bool view::resize_image( quan::two_d::box<int> new_size)
+{
+   if ( m_view_mode != view_mode::inBitmaps){
+     wxMessageBox(wxT("1"));
+      return false;
+   }
+   // check its a bmp
+   if (  m_current_image == nullptr){
+       wxMessageBox(wxT("2"));
+      return false;
+   }
+   if ( m_current_image->get_image_type() != osd_image::image_type::Bitmap){
+       wxMessageBox(wxT("3"));
+      return false;
+   }
+   osd_bitmap* bmp = dynamic_cast<osd_bitmap*>(m_current_image);
+   if ( ! bmp){
+       wxMessageBox(wxT("4"));
+      return false;
+   }
+   if (! bmp->resize(new_size)){
+       wxMessageBox(wxT("5"));
+      return false;
+   }
+   this->set_modified (true);
+   wxGetApp().get_main_frame()->enable_save_project(true);
+   this->Refresh();
+   return true;
+}
 
 void view::reset()
 {
@@ -386,6 +418,13 @@ void view::OnMouseLeftDown(wxMouseEvent & event)
 /*
    get image pixel if any
 */
+
+void view::OnMouseRightDown( wxMouseEvent & event)
+{
+
+  new_bitmap_dialog dlg(this);
+  dlg.ShowModal();
+}
 
 void view::OnChar(wxKeyEvent & event)
 {

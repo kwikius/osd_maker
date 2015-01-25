@@ -40,7 +40,8 @@ class main_frame: public wxFrame
             idImportBitmap,
             idImportFont,
             idTimer,
-            idCommitViewToTree
+            idCommitViewToTree,
+            idResizeViewBitmap
         };
         void OnNewProject(wxCommandEvent & event);
         void OnOpenProject(wxCommandEvent & event);
@@ -52,7 +53,7 @@ class main_frame: public wxFrame
         void OnImportFont(wxCommandEvent & event);
         void OnSaveProject(wxCommandEvent & event);
         void OnCommitViewToTree(wxCommandEvent & event);
-        
+        void OnResizeViewBitmap(wxCommandEvent & event);
         void OnTimer(wxTimerEvent& event);
         
         DECLARE_EVENT_TABLE()

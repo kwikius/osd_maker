@@ -17,10 +17,10 @@ void draw_altitude(display_layout & d)
    // and put the distance to home
    // retrieve wanted units
    char buf[30];
-   int ret = sprintf( buf," ALT:%5u M",alt_m);
+   sprintf( buf,"ALT:%5u M",alt_m);
    auto f = wxGetApp().get_view()->get_current_font();
    if ( f){
-      d.text_out({-290,190},buf,f);
+      d.text_out({-310,175},buf,f);
    }
 
 }

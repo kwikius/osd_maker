@@ -78,6 +78,7 @@ bool document::is_modified() const
 void document::set_modified (bool val)
 {
    this->m_is_modified = val;
+   wxGetApp().get_main_frame()->enable_save_project(true);
 }
  
 bool document::open_project (wxString const & path)

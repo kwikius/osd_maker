@@ -54,6 +54,9 @@
 		<Unit filename="bitmap_tree.cpp" />
 		<Unit filename="bitmap_tree.hpp" />
 		<Unit filename="constants.hpp" />
+		<Unit filename="dialogs/bitmap_resize_dialog.cpp" />
+		<Unit filename="dialogs/bitmap_resize_dialog.hpp" />
+		<Unit filename="dialogs/new_bitmap_dialog.cpp" />
 		<Unit filename="dialogs/new_bitmap_dialog.hpp" />
 		<Unit filename="display1/display.hpp" />
 		<Unit filename="display1/draw_altitude.cpp" />

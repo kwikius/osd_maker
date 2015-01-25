@@ -4,6 +4,7 @@
 #include <vector>
 #include <wx/image.h>
 #include <quan/two_d/vect.hpp>
+#include <quan/two_d/box.hpp>
 
 //struct osd_null_image;
 struct osd_image{
@@ -44,6 +45,13 @@ struct osd_bitmap : osd_image{
       m_size{size_in}, 
       m_data{size_in.x * size_in.y,colour::transparent}
    {}
+
+   // box is new size overlaid on old assuming old is at 0,0
+   // N.B bitmap is text mode
+   // bottom is at the top of the box as dispalyed
+   // and top is at bottom
+   // ie top is a larger integer value than bottom
+   bool resize(quan::two_d::box<int> const & new_size);
    
    size_type get_size() const { return m_size;}
    std::string const & get_name() const { return m_name;}

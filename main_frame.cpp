@@ -25,6 +25,8 @@
 #include "sp_in_thread.hpp"
 
 #include "dialogs/new_bitmap_dialog.hpp"
+#include "dialogs/bitmap_resize_dialog.hpp"
+
 #include <quan/gx/wxwidgets/from_wxString.hpp>
 #include <quan/gx/wxwidgets/to_wxString.hpp>
 
@@ -70,6 +72,7 @@ BEGIN_EVENT_TABLE (main_frame, wxFrame)
    EVT_MENU (idNewBitmap, main_frame::OnNewBitmap)
    EVT_MENU (idImportFont, main_frame::OnImportFont)
    EVT_MENU (idCommitViewToTree, main_frame::OnCommitViewToTree)
+   EVT_MENU (idResizeViewBitmap,main_frame::OnResizeViewBitmap)
    EVT_TIMER (idTimer, main_frame::OnTimer)
 END_EVENT_TABLE()
 
@@ -152,6 +155,7 @@ void main_frame::create_menus()
    wxMenu* viewMenu = new wxMenu (_T (""));
    mbar->Append (viewMenu, _ ("&View"));
    viewMenu->Append (idCommitViewToTree, _ ("Commit view to live-tree"));
+   viewMenu->Append(idResizeViewBitmap,  _ ("Resize current bitmap"));
    
    wxMenu* helpMenu = new wxMenu (_T (""));
    mbar->Append (helpMenu, _ ("&Help"));
@@ -189,6 +193,31 @@ bool main_frame::Destroy()
             }
       }
    return wxFrame::Destroy();
+}
+
+void main_frame::OnResizeViewBitmap(wxCommandEvent & event)
+{
+//  {5,-5,-5,0};
+//  
+   auto view = wxGetApp().get_view();
+   if (view->have_image() && (view->get_view_mode() == ::view::view_mode::inBitmaps)){
+   bitmap_resize_dialog dlg(this);
+   if ( dlg.ShowModal() == wxID_OK){
+      quan::two_d::box<long> new_size;
+      dlg.m_left_incr->GetValue().ToLong(&new_size.left);
+      dlg.m_top_incr->GetValue().ToLong(&new_size.top);
+      dlg.m_right_incr->GetValue().ToLong(&new_size.right);
+      dlg.m_bottom_incr->GetValue().ToLong(&new_size.bottom);
+
+      quan::two_d::box<int> new_size1;
+      new_size1.top  =static_cast<int>(new_size.top *-1);
+      new_size1.bottom =static_cast<int>(new_size.bottom *-1);
+      new_size1.left  =static_cast<int>(new_size.left);
+      new_size1.right =static_cast<int>(new_size.right);
+      wxGetApp().get_view()->resize_image(new_size1);
+   }
+   }
+   
 }
 
 void main_frame::OnCommitViewToTree (wxCommandEvent & event)
@@ -366,7 +395,6 @@ void main_frame::OnTimer (wxTimerEvent &event)
 
       view->Refresh();
    }
-   
 }
 
 void main_frame::OnAbout (wxCommandEvent &event)
@@ -374,4 +402,3 @@ void main_frame::OnAbout (wxCommandEvent &event)
    wxString msg = wxbuildinfo (long_f);
    wxMessageBox (msg, _ ("Welcome to..."));
 }
-

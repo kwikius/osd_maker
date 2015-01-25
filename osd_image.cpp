@@ -3,11 +3,48 @@
 
 #include "osd_image.hpp"
 
+/*
+box represents how far to move each part
+As  bitmap is text mode
+bottom >= top
+*/
+bool osd_bitmap::resize (quan::two_d::box<int> const & new_box)
+{
+   quan::two_d::vect<int> cur_size = this->get_size();
+   // size of new box
+   
+   quan::two_d::vect<int> new_size{ 
+         cur_size.x + new_box.right - new_box.left
+         ,cur_size.y + new_box.bottom - new_box.top
+   };
+                    
+   
+   osd_bitmap temp_bmp{this->get_name(),new_size};
+   // temp_bmp is constructed with all cells transparent
+   for (int y = 0 ; y < new_size.y; ++y) {
+      int const old_bitmap_y = y + new_box.top;
+      if ( (old_bitmap_y >= 0) && ( old_bitmap_y < cur_size.y) ) {
+         for (int x = 0; x < new_size.x; ++x) {
+           int const old_bitmap_x = x + new_box.left;
+           if ( ( old_bitmap_x >= 0) && ( old_bitmap_x < cur_size.x)) {
+                 colour c;
+                 this->get_pixel_colour({old_bitmap_x,old_bitmap_y},c);
+                 temp_bmp.set_pixel_colour({x,y},c);
+            }
+         }
+      }
+   }
+   this->m_data = temp_bmp.m_data;
+   this->m_size = temp_bmp.m_size;
+   return true;
+}
+
+
 osd_bitmap* ConvertTo_osd_bitmap (std::string const & name, wxImage const& image)
 {
    osd_image::size_type bitmap_size {image.GetWidth(), image.GetHeight() };
    osd_bitmap * bmp = new osd_bitmap {name, bitmap_size};
-
+   
    for (uint32_t y = 0; y < bitmap_size.y; ++y) {
          for (uint32_t x = 0; x < bitmap_size.x; ++x) {
                osd_image::colour  colour = osd_image::colour::transparent;
@@ -131,4 +168,5 @@ bool osd_bitmap::set_pixel_colour (pos_type const & p, osd_image::colour c)
    m_data.at (idx) = c;
    return true;
 }
+ 
  
