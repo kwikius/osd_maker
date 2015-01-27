@@ -28,8 +28,14 @@ void display_layout::set_pixel_raw(pxp const & px,colour c)
    }
 }
 
+// transformed
+void display_layout::set_pixel( pxp const & px, colour c)
+{
+   set_pixel_raw(transform_to_raw(px),c);
+}
+
 //raw p
-display_layout::colour display_layout::get_pixel(pxp const & p)
+display_layout::colour display_layout::get_pixel_raw(pxp const & p)
 {
 #if 0
     auto ch1 = m_image.GetAlpha(p.x,p.y);

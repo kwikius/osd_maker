@@ -1,6 +1,9 @@
 
 #include "../display_layout.hpp"
 
+/*
+normalised arc end angle > start angle
+*/
 void display_layout::normalised_arc(pxp const & centre, uint32_t radius, quan::angle::deg const & start_angle,
       quan::angle::deg const & end_angle, uint32_t numsegs, colour c)
 {

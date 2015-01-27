@@ -1,5 +1,4 @@
 
-
 #include "../view.hpp"
 #include "../display1/display.hpp"
 #include "../aircraft/aircraft.hpp"
@@ -12,17 +11,9 @@ void view::paint_layout_view(wxPaintEvent & event)
      draw_artificial_horizon(m_display_layout,the_aircraft.get_attitude());
      draw_home(m_display_layout);
      draw_altitude( m_display_layout);
-     // LHS
-     // home
-     // altitude
-     // velocity
-     // Sats
-     // mavlink
-     
-    // RHS
-    // Battery
-    // RSSI
-    // Mode
+
+    m_display_layout.arc1_out({0,0},100,quan::angle::deg{170}, 
+         quan::angle::deg{179},display_layout::colour::black);
 
      wxBitmap bitmap{m_display_layout.get_image()};
      wxPaintDC dc(this);

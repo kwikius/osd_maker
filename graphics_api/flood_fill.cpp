@@ -6,7 +6,7 @@ void display_layout::flood_fill(pxp const & start_pos, colour new_colour)
 {
    //assert ( new_colour == colour::black && __LINE__);
    pxp raw_pxp = transform_to_raw(start_pos);
-   if ( get_pixel(raw_pxp) == new_colour){
+   if ( get_pixel_raw(raw_pxp) == new_colour){
       return;
    } 
    
@@ -35,25 +35,25 @@ void display_layout::flood_fill(pxp const & start_pos, colour new_colour)
 
       if ( n.x > 0){
          auto west = pxp {n.x-1,n.y};
-         if ( get_pixel(west) != new_colour){
+         if ( get_pixel_raw(west) != new_colour){
             stack.push(west);
          }
       } 
       if ( n.x < static_cast<int>((image_size.x -1))){
          auto east = pxp {n.x+1,n.y};
-         if ( get_pixel(east) != new_colour){
+         if ( get_pixel_raw(east) != new_colour){
             stack.push(east);
          }
       }
       if ( n.y > 0){
          auto north = pxp {n.x,n.y -1};
-         if ( get_pixel(north) != new_colour){
+         if ( get_pixel_raw(north) != new_colour){
             stack.push(north);
          }
       }
       if( n.y < static_cast<int>((image_size.y -1))){
        auto south = pxp {n.x,n.y+1};
-       if ( get_pixel(south) != new_colour){
+       if ( get_pixel_raw(south) != new_colour){
             stack.push(south);
        }
       }

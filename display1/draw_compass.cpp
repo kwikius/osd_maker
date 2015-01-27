@@ -14,7 +14,8 @@ void draw_compass (display_layout & d,
    display_layout::pxp constexpr pos = {0,-188};
    //display_layout::pxp constexpr pos = { -240, 188};
    int constexpr radius = 36;
-   d.circle_out (pos, radius + 2, 48, display_layout::colour::black);
+  // d.circle_out (pos, radius + 2, 48, display_layout::colour::black);
+   d.circle1_out (pos, radius + 2,display_layout::colour::black);
    for (int i = 0; i < 16; ++i) {
          constexpr auto offset = quan::angle::deg {360 / 32};
          auto basic_angle = quan::angle::deg { (360 * i) / 16};
@@ -24,7 +25,8 @@ void draw_compass (display_layout & d,
          d.arc_out (pos, radius + 1, start_angle, end_angle, 3, col);
          d.arc_out (pos, radius, start_angle, end_angle, 3, col);
       }
-   d.circle_out (pos, radius - 1, 48, display_layout::colour::black);
+  // d.circle_out (pos, radius - 1, 48, display_layout::colour::black);
+   d.circle1_out (pos, radius - 1,  display_layout::colour::black);
 #if 0
    d.circle_out (pos, radius - 2, 48, display_layout::colour::black);
    //d.circle_out(pos,radius-3,48,display_layout::colour::grey);

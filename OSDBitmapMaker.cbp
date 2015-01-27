@@ -73,7 +73,9 @@
 		<Unit filename="font.hpp" />
 		<Unit filename="fontmap_dialog.hpp" />
 		<Unit filename="graphics_api/arc.cpp" />
+		<Unit filename="graphics_api/arc1.cpp" />
 		<Unit filename="graphics_api/bitmap_out.cpp" />
+		<Unit filename="graphics_api/circle1_out.cpp" />
 		<Unit filename="graphics_api/circle_out.cpp" />
 		<Unit filename="graphics_api/flood_fill.cpp" />
 		<Unit filename="graphics_api/line_out.cpp" />
