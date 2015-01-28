@@ -1,5 +1,5 @@
+#if 0
 #include "../display_layout.hpp"
-
 
 void display_layout::circle_out(pxp const & centre, int radius, int numsegs, colour c)
 {
@@ -17,3 +17,4 @@ void display_layout::circle_out(pxp const & centre, int radius, int numsegs, col
          line_out(from + centre ,to + centre,c);
    }
 }
+#endif

@@ -1,4 +1,4 @@
-
+#if 0
 #include "../display_layout.hpp"
 
 /*
@@ -51,7 +51,8 @@ void display_layout::arc_out(pxp const & centre, uint32_t radius, quan::angle::d
          normalised_arc(centre,radius, start_angle, quan::angle::deg{360}, first_segs,c);
          normalised_arc(centre,radius, quan::angle::deg{0},end_angle, last_segs,c);
       }
-}    
+} 
+#endif   
 
 
 
