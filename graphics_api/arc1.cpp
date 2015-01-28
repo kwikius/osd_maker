@@ -139,7 +139,6 @@ namespace {
       int start_octant = find_octant (start_point);
       int end_octant = find_octant (end_point);
        
-#if 1
       if ( start_octant == end_octant){
          float const start_slope
          = (start_octant & 1)
@@ -172,13 +171,13 @@ namespace {
             plot_arc_1st_octant1 (mid_mask,d,centre,radius,0,1,c);
          }
           float const start_slope1
-            = (end_octant & 1)
-           ? 1
+            = ((end_octant & 1) == 0)
+           ? 0
            : tan (map_angle_to_zero_octant (end_angle, end_octant));
           float const end_slope1
-            = (end_octant & 1)
+            = ((end_octant & 1) == 0)
             ? tan (map_angle_to_zero_octant (end_angle, end_octant))
-            : 0;
+            : 1;
           int end_mask = 1 << end_octant;
           plot_arc_1st_octant1 (end_mask,d,centre,radius,start_slope1, end_slope1,c);
 
@@ -188,65 +187,6 @@ namespace {
          // do end octant edge to angle ( angle to 45)
       }
 
-#else
-
-///////////////////////////////////////////////////////////////////////
-      int x = radius;
-      int y = 0;
-      int re = 1 - x;
-      
-          float const start_slope
-         = (start_octant & 1)
-           ? tan (map_angle_to_zero_octant (end_angle, start_octant))
-           : tan (map_angle_to_zero_octant (start_angle, start_octant));
-         float const end_slope
-            = (start_octant & 1)
-           ? tan (map_angle_to_zero_octant (start_angle, end_octant))
-           : tan (map_angle_to_zero_octant (end_angle, end_octant));
-       while (x >= y) {
-               if ( (static_cast<float> (y) / x) >= start_slope) {
-               
-                     switch (start_octant) {
-                           case 0:
-                              d.set_pixel (centre + pxp {x, y}, c);
-                              break;
-                           case 1:
-                              d.set_pixel (centre + pxp {y, x}, c);
-                              break;
-                           case 2:
-                              d.set_pixel (centre + pxp { -y, x}, c);
-                              break;
-                           case 3:
-                              d.set_pixel (centre + pxp { -x, y}, c);
-                              break;
-                           case 4:
-                              d.set_pixel (centre + pxp { -x, -y}, c);
-                              break;
-                           case 5:
-                              d.set_pixel (centre + pxp { -y, -x}, c);
-                              break;
-                           case 6:
-                              d.set_pixel (centre + pxp {y, -x}, c);
-                              break;
-                           case 7:
-                              d.set_pixel (centre + pxp {x, -y}, c);
-                              break;
-                        }
-                        
-                  }
-               if ( (static_cast<float> (y) / x) > end_slope) {
-                     break;
-                  }
-               ++y;
-               if (re < 0) {
-                     re += 2 * (y + 1);
-                  }
-               else {
-                     --x;
-                     re += 2 * (y - x + 1);
-                  }
-            }
-#endif
    }
 } // namespace
    

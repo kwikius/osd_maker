@@ -22,8 +22,12 @@ void draw_compass (display_layout & d,
          auto start_angle = basic_angle - offset;
          auto end_angle = basic_angle + offset;
          display_layout::colour col = (i & 1) ? display_layout::colour::white : display_layout::colour::black;
+/*
          d.arc_out (pos, radius + 1, start_angle, end_angle, 3, col);
          d.arc_out (pos, radius, start_angle, end_angle, 3, col);
+*/
+        d.arc1_out (pos, radius + 1, start_angle, end_angle,  col);
+         d.arc1_out (pos, radius, start_angle, end_angle,  col);
       }
   // d.circle_out (pos, radius - 1, 48, display_layout::colour::black);
    d.circle1_out (pos, radius - 1,  display_layout::colour::black);
