@@ -61,6 +61,7 @@ void document::add_bitmap(osd_bitmap* bmp)
    }
    frame->enable_save_project (true);
    frame->enable_save_project_as (true);
+   this->set_modified(true);
 }
 
 void document::set_image(int handle, osd_image* image)
@@ -68,6 +69,7 @@ void document::set_image(int handle, osd_image* image)
   assert(image && __LINE__);
   assert( (handle != -1) && __LINE__);
   m_resources->set_image_handle(handle,image);
+  this->set_modified(true);
 }
  
 bool document::is_modified() const

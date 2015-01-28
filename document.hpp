@@ -41,12 +41,9 @@ struct document {
      // doc takes ownership of image which was created on heap
      void set_image(int handle, osd_image* image);
      // Take ownership of bitmap which was created on heap
-  
-private:
-
      void add_bitmap(osd_bitmap*);
+private:
     // void add_font ( font*);
-
      bool ll_save_project(wxString const & path);
      quan::two_d::vect<quan::length::mm> m_page_size;
      quan::two_d::vect<quan::length::mm> m_pixel_size; // {mm{10},mm{10}};

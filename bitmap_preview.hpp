@@ -19,9 +19,11 @@
    private:
       void OnGridCellLeftDblClick(wxGridEvent& event);
       void OnGridCellRightClick(wxGridEvent& event);
+      int get_sel_font_element_handle(wxGridEvent & event)const ;
       DECLARE_EVENT_TABLE()
       wxGrid* m_grid;
       int m_current_font_handle;
+      void export_font_element_as_bitmap(int handle);
    };
 
 #endif // OSD_BITMAP_MAKER_BITMAP_PREVIEW_HPP_INCLUDED
