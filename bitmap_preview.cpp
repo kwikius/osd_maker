@@ -9,6 +9,7 @@
 #include "view.hpp"
 #include "bitmap_preview.hpp"
 #include "font.hpp"
+#include "grid_cell_bmp_renderer.hpp"
 
 void bitmap_preview::reset()
 {
@@ -18,6 +19,16 @@ void bitmap_preview::reset()
 void bitmap_preview::set_font_handle(int font_handle)
 {
    m_current_font_handle = font_handle;
+   this->Refresh();
+}
+
+font * bitmap_preview::get_font()const
+{
+   if (m_current_font_handle == -1){
+      return nullptr;
+   }
+
+   return wxGetApp().get_document()->get_font(m_current_font_handle);
 }
 
 BEGIN_EVENT_TABLE(bitmap_preview,wxWindow)
@@ -35,11 +46,8 @@ END_EVENT_TABLE()
 
 void bitmap_preview::OnGridCellLeftDblClick(wxGridEvent& event)
 {
-   if (m_current_font_handle == -1){
-      return;
-   }
 
-   font* selected_font = wxGetApp().get_document()->get_font(m_current_font_handle);
+   font* selected_font = this->get_font();
   // assert(( selected_font != nullptr ) &&__LINE__);
    if (selected_font == nullptr){
       return;
@@ -81,6 +89,8 @@ bitmap_preview::bitmap_preview(wxWindow* parent)
   m_grid->SetRowLabelSize(0);
   m_grid->SetColLabelSize(0);
   m_grid->DisableDragGridSize();
+  auto renderer = new grid_cell_bmp_renderer{};
+  m_grid->SetDefaultRenderer(renderer);
   for ( int y = 0; y < num_rows; ++y){
     for ( int x = 0; x < num_cols; ++x){
       int ar_pos = y * num_cols + x;
@@ -90,7 +100,8 @@ bitmap_preview::bitmap_preview(wxWindow* parent)
             m_grid->SetReadOnly(y,x);
       }
     }
-  }      
+  }  
+  this->Refresh();    
 }
 
 #if 0
