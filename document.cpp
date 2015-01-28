@@ -200,6 +200,7 @@ bool document::open_project (wxString const & path)
       } 
       int new_font_handle = this->m_resources->add_font(new_font);
       wxGetApp().get_panel()->add_font_handle(new_font->get_name(),new_font_handle);
+       
    }
    // TODO delete temp_resource;
   

@@ -83,6 +83,11 @@ void panel::add_font_handle(std::string const & name, int handle)
       ,-1
       ,new osd_font_handle{handle}
    );
+   auto font_preview  = wxGetApp().get_bitmap_preview();
+   int preview_handle = font_preview->get_font_handle();
+   if ( preview_handle == -1){
+      wxGetApp().get_bitmap_preview()->set_font_handle(handle);
+   }
 }
 
 panel::panel (wxWindow* parent)

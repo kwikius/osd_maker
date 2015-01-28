@@ -18,6 +18,7 @@
       void reset();
    private:
       void OnGridCellLeftDblClick(wxGridEvent& event);
+      void OnGridCellRightClick(wxGridEvent& event);
       DECLARE_EVENT_TABLE()
       wxGrid* m_grid;
       int m_current_font_handle;

@@ -421,9 +421,9 @@ void view::OnMouseLeftDown(wxMouseEvent & event)
 
 void view::OnMouseRightDown( wxMouseEvent & event)
 {
-
-  new_bitmap_dialog dlg(this);
-  dlg.ShowModal();
+ // could do rename etc here ?
+  //new_bitmap_dialog dlg(this);
+  //dlg.ShowModal();
 }
 
 void view::OnChar(wxKeyEvent & event)
