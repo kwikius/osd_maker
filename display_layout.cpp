@@ -39,6 +39,7 @@ display_layout::display_layout()
    if (!bkgnd_image.IsOk()){
       wxMessageBox(wxT("bk fail"));
    }
+   bkgnd_image.Resize(wxSize{384,288},wxPoint{-50,-50});
    m_background_image = bkgnd_image;
 
    // add Alpha to Bkgnd image?

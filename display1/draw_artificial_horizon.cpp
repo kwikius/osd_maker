@@ -37,10 +37,10 @@ Perspective transform
 
 void draw_artificial_horizon( display_layout & d, attitude_t const & attitude)
 {
-   constexpr int width = 256;
-   constexpr int outer_h_bar_len = 32;
-   constexpr int outer_stop_height = 16;
-   int centre_rad = 10;
+   constexpr int width = 127;
+   constexpr int outer_h_bar_len = 16;
+   constexpr int outer_stop_height = 8;
+   int centre_rad = 5;
    typedef display_layout::pxp pxp_t;
    typedef display_layout::colour colour;
    pxp_t left_end{-width/2,0};

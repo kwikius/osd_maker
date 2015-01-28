@@ -11,10 +11,10 @@ void view::paint_layout_view(wxPaintEvent & event)
      draw_artificial_horizon(m_display_layout,the_aircraft.get_attitude());
      draw_home(m_display_layout);
      draw_altitude( m_display_layout);
-
+#if 0
     m_display_layout.arc1_out({0,0},100,quan::angle::deg{270}, 
          quan::angle::deg{20},display_layout::colour::black);
-
+#endif
      wxBitmap bitmap{m_display_layout.get_image()};
      wxPaintDC dc(this);
      dc.SetBackground(* wxBLACK_BRUSH); 

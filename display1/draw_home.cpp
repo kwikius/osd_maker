@@ -23,7 +23,8 @@ void draw_home(display_layout & d)
    auto image = wxGetApp().get_document()->get_bitmap ("home_image");
    typedef display_layout::pxp pxp;
    display_layout::size_type vect;
-   pxp pos{-263,200}; 
+ //  pxp pos{-263,200}; 
+    pxp pos{-160,70};
    if (image) {
           vect = image->get_size() / 2;
          d.bitmap_out (pos,image);

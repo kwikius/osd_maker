@@ -10,7 +10,7 @@ void draw_compass (display_layout & d,
 
    quan::two_d::rotation const rotate {bearing};
    
-   display_layout::pxp constexpr pos = {0,-188};
+   display_layout::pxp constexpr pos = {0,-100};
    int constexpr radius = 36;
    d.circle1_out (pos, radius + 2,display_layout::colour::black);
    for (int i = 0; i < 16; ++i) {
