@@ -9,8 +9,7 @@
 
 struct bitmap_resize_dialog : wxDialog{
 
-   enum
-   {
+   enum {
       idResizeBitmapDialog = 1100,
       idLeftIncr,
       idRightIncr,
@@ -27,7 +26,6 @@ struct bitmap_resize_dialog : wxDialog{
    wxButton* cancel_button;
    
    bitmap_resize_dialog(wxWindow * parent);
-
 };
 
 #endif // OSD_BITMAP_MAKER_BITMAP_RESIZE_DIALOG_HPP_INCLUDED

@@ -6,12 +6,7 @@
 #include <wx/sizer.h>
 #include <wx/button.h>
 #include <wx/stattext.h>
-/*
-modal dialog with OK cancel
 
-size of bitmap in x, y
- name of bitmap, name must be unique in bitmap tree
-*/
 struct new_bitmap_dialog : wxDialog{
 
    enum
@@ -31,4 +26,5 @@ struct new_bitmap_dialog : wxDialog{
    
    new_bitmap_dialog(wxWindow * parent);
 };
+
 #endif // NEW_BITMAP_DIALOG_HPP_INCLUDED

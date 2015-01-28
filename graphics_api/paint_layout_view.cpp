@@ -12,8 +12,8 @@ void view::paint_layout_view(wxPaintEvent & event)
      draw_home(m_display_layout);
      draw_altitude( m_display_layout);
 
-    m_display_layout.arc1_out({0,0},100,quan::angle::deg{150}, 
-         quan::angle::deg{350},display_layout::colour::black);
+    m_display_layout.arc1_out({0,0},100,quan::angle::deg{270}, 
+         quan::angle::deg{20},display_layout::colour::black);
 
      wxBitmap bitmap{m_display_layout.get_image()};
      wxPaintDC dc(this);

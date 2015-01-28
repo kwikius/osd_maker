@@ -19,7 +19,6 @@
  along with this program. If not, see <http://www.gnu.org/licenses/>
 */
 
-
 #include <quan/time.hpp>
 #include <quan/length.hpp>
 #include <quan/velocity.hpp>
@@ -28,27 +27,6 @@
 #include <quan/charge.hpp>
 #include <quan/angle.hpp>
 #include <quan/uav/position.hpp>
-//
-//struct location_t{
-//
-// //  quan::time_<uint64_t>::us                             gps_time_stamp;
-//   quan::angle_<int32_t>::deg10e7                        gps_lat;  
-//   quan::angle_<int32_t>::deg10e7                        gps_lon; 
-//  // quan::velocity_<uint16_t>::cm_per_s                   gps_vog;  
-// //  quan::angle_<uint16_t>::cdeg                          gps_cog;
-//   quan::length_<int32_t>::mm                            gps_alt;  
-// //  quan::length_<uint16_t>::cm                           gps_hdop;
-// //  quan::length_<uint16_t>::cm                           gps_vdop; 
-// };
-
-
-/*
-struct gps_t{
-   uint8_t num_sats;
-   uint8_t fix_type;
-   bool  has_home;
-};
-*/
 
 /*
 See http://gentlenav/googlecode.com/files/DCMdraft2.pdf 
@@ -61,7 +39,7 @@ and then apply the following rotations:
 2. Rotate the body about its ybody axis through the pitch angle thetaY
 3. Rotate the body about its xbody axis through the roll angle thetaX 
 
-The rotation matrix R =
+The rotation matrix R =   // (untested!)
  [ 
   cos(thetaY) * cos(thetaZ) , 
       sin(thetaX) * sin(thetaY) * cos(thetaZ) - cos(thetaX) * sin(thetaZ),
@@ -83,6 +61,7 @@ struct attitude_t{
    attitude_t():pitch{0},roll{0},yaw{0}{}
 };
 
+// use for array of batteries
 struct battery{
    battery(std::string const & name,quan::charge_<float>::mA_h const & capacity)
    : m_name{name}, m_capacity{capacity}

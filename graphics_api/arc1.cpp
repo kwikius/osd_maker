@@ -2,6 +2,18 @@
 #include <quan/atan.hpp>
 
 namespace {
+
+   quan::angle::deg normalise_angle ( quan::angle::deg const & angle_in)
+   {
+      auto angle = angle_in;
+      while ( angle >= quan::angle::deg{360}){
+            angle -= quan::angle::deg{360};
+      }
+      while (angle < quan::angle::deg{0}){
+          angle += quan::angle::deg{360};
+      }
+      return angle;
+   }
    // which octant is point in
    // -1 for none
    // (0) for octant from 0 to 44.9 deg
@@ -103,6 +115,7 @@ namespace {
 /*
 this really only required for first and last octants
 */
+      
    void plot_arc_1st_octant1 (
       int mask,          // see plot_octants_mask above
       display_layout& d,
@@ -134,7 +147,8 @@ this really only required for first and last octants
       }
    }
 
-   void plot_arc_1st_octant (
+   // normalised_arc
+   void normalised_arc (
       display_layout& d,
       display_layout::pxp const & centre,
       int radius,
@@ -149,6 +163,13 @@ this really only required for first and last octants
       
       int start_octant = find_octant (start_point);
       int end_octant = find_octant (end_point);
+      //Hack.. when end_angle is 360 and start angle < 326 
+      // then end_octant will prob go to 0
+      // so bump it back to 7 otherwise violates always anticlockwise
+      // from start angle to end _angle
+      if (( end_octant == 0) && ( start_octant != 0)){
+         end_octant = 7;
+      }
        
       if ( start_octant == end_octant){
          float const start_slope
@@ -198,12 +219,21 @@ this really only required for first and last octants
 void display_layout::arc1_out (
    pxp const & pos,
    uint32_t radius,
-   quan::angle::deg const & start_angle,
-   quan::angle::deg const & end_angle,
+   quan::angle::deg const & start_angle_in,
+   quan::angle::deg const & end_angle_in,
    colour c
 )
 {
-   plot_arc_1st_octant (*this, pos, radius, start_angle, end_angle, c);
+   auto const start_angle = normalise_angle(start_angle_in);
+   auto const end_angle = normalise_angle(end_angle_in);
+   if ( end_angle != start_angle){
+      if ( end_angle > start_angle){
+         normalised_arc(*this,pos,radius,start_angle, end_angle, c);
+      }else{
+         normalised_arc(*this,pos,radius, start_angle, quan::angle::deg{360},c);
+         normalised_arc(*this,pos,radius, quan::angle::deg{0},end_angle,c);
+      }
+   }
 }
 
  

@@ -54,8 +54,7 @@ void draw_artificial_horizon( display_layout & d, attitude_t const & attitude)
       d.line_out(rotate(right_end+ pxp_t{0,i}), rotate(right_end + pxp_t{-outer_h_bar_len,i}),c);
       d.line_out(rotate(pxp_t{left_end.x - i,outer_stop_height/2}),rotate(pxp_t{left_end.x - i,-outer_stop_height/2}),c);
       d.line_out(rotate(pxp_t{right_end.x +i,outer_stop_height/2}),rotate(pxp_t{right_end.x +i,-outer_stop_height/2}),c);
-    //  d.circle_out({0,0},centre_rad+i,8,c);
-       d.circle1_out({0,0},centre_rad+i,c);
+      d.circle1_out({0,0},centre_rad+i,c);
       d.line_out(rotate(pxp_t{-20,i}),rotate(pxp_t{-centre_rad -1 ,i}), c);
       d.line_out(rotate(pxp_t{20,i}),rotate(pxp_t{centre_rad +1,i}), c); 
    }
