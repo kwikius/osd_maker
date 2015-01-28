@@ -12,7 +12,7 @@ namespace {
    {
       if ( (pos.x == 0) && (pos.y == 0)) {
             return 0;
-         }
+      }
       if (pos.y >= 0) {
             if (pos.x >= 0) {
                   if (pos.y < pos.x) {
@@ -51,7 +51,7 @@ namespace {
          }
    }
    
-   // mapping angle to octant in tricky way, od numbered octants are mirrored
+   // mapping angle to octant.. tricky !, odd numbered octants are mirrored around 45degree line
    quan::angle::deg map_angle_to_zero_octant (quan::angle::deg const & angle, int quadrant)
    {
       if (quadrant & 1) {
@@ -62,7 +62,15 @@ namespace {
          }
    }
 
-   void plotoctants_mask (uint32_t mask, display_layout& d, display_layout::pxp const & centre, int x, int y, display_layout::colour c)
+/*
+   each bit  set in mask says to draw relevant octant
+   Prob could do this betetr by first octant to draw, second ocatcnt to draw?
+   then go through array of set_pixel_octant functions?
+*/
+   void plotoctants_mask (uint32_t mask, 
+         display_layout& d, 
+         display_layout::pxp const & centre, int x, 
+         int y, display_layout::colour c)
    {
       typedef display_layout::pxp pxp;
       
@@ -92,13 +100,16 @@ namespace {
       }
    }
 
+/*
+this really only required for first and last octants
+*/
    void plot_arc_1st_octant1 (
-      int mask,
+      int mask,          // see plot_octants_mask above
       display_layout& d,
       display_layout::pxp const & centre,
       int radius,
-      float start_slope,
-      float end_slope,
+      float start_slope,   // start slope in octant 0, always between 0 to 1
+      float end_slope,      //end slope in octant 0, always between 0 to 1 and < than start slope
       display_layout::colour c
    ){
 
@@ -152,7 +163,6 @@ namespace {
          int mask = 1 << start_octant;
          plot_arc_1st_octant1 (mask,d,centre,radius,start_slope,end_slope,c);
      }else {
- 
          float const start_slope0
          = (start_octant & 1)
            ? 0
@@ -163,6 +173,7 @@ namespace {
            : 1;
          int start_mask = 1 << start_octant;
          plot_arc_1st_octant1 (start_mask,d,centre,radius,start_slope0,end_slope0,c);
+           // if centre sections
          if ( (end_octant - start_octant) > 1){
             int mid_mask = 0;
             for ( int i = start_octant + 1 ; i < (end_octant); ++i){
@@ -180,17 +191,10 @@ namespace {
             : 1;
           int end_mask = 1 << end_octant;
           plot_arc_1st_octant1 (end_mask,d,centre,radius,start_slope1, end_slope1,c);
-
-         
-          // start octant goes to an octant edge but which one?
-         //do mid octants if any edge to edge ( 0 to 45)
-         // do end octant edge to angle ( angle to 45)
       }
-
    }
 } // namespace
    
- 
 void display_layout::arc1_out (
    pxp const & pos,
    uint32_t radius,
@@ -199,16 +203,7 @@ void display_layout::arc1_out (
    colour c
 )
 {
-   //need a function to plot a full quadrant or sets of them
-   // get start quadrant
-   // get start quadrant
-   // if start quadrant == end quadrant {
    plot_arc_1st_octant (*this, pos, radius, start_angle, end_angle, c);
 }
-// else {
-// plot start angle to end of start quadrant
-// if mid quadrants then plot those
-// then plot from start of last quadrant to end angle
- 
-//}
+
  
