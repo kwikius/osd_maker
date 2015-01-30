@@ -73,6 +73,7 @@ void bitmap_preview::export_font_element_as_bitmap(int handle)
       new_bitmap->set_name(name);
       new_bitmap->set_image_type(osd_image::image_type::Bitmap);
       wxGetApp().get_document()->add_bitmap(new_bitmap);
+      wxGetApp().get_document()->set_modified(true);
   }
 }
 

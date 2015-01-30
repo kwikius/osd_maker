@@ -145,8 +145,9 @@ void main_frame::create_menus()
    
    wxMenu* bitmapMenu = new wxMenu (_T (""));
    mbar->Append (bitmapMenu, _ ("&Bitmap"));
-   bitmapMenu->Append (idNewBitmap, _ ("&New..."), _ ("New Bitmap"));
-   bitmapMenu->Append (idImportBitmap, _ ("&Import..."), _ ("Import Bitmap"));
+   bitmapMenu->Append(idNewBitmap, _ ("&New..."), _ ("New Bitmap"));
+   bitmapMenu->Append(idImportBitmap, _ ("&Import..."), _ ("Import Bitmap"));
+   bitmapMenu->Append(idResizeViewBitmap,  _ ("Resize current bitmap..."));
 
    wxMenu* fontMenu = new wxMenu (_T (""));
    mbar->Append (fontMenu, _ ("&Font")); 
@@ -155,8 +156,7 @@ void main_frame::create_menus()
    wxMenu* viewMenu = new wxMenu (_T (""));
    mbar->Append (viewMenu, _ ("&View"));
    viewMenu->Append (idCommitViewToTree, _ ("Commit view to live-tree"));
-   viewMenu->Append(idResizeViewBitmap,  _ ("Resize current bitmap"));
-   
+  
    wxMenu* helpMenu = new wxMenu (_T (""));
    mbar->Append (helpMenu, _ ("&Help"));
    helpMenu->Append (idMenuAbout, _ ("&About"), _ ("Show info about this application"));
