@@ -1,8 +1,8 @@
-#include "../display_layout.hpp"
+#include "osd_device.hpp"
 
 #include <stack>
 // add a maxcount var in case of spills?
-void display_layout::flood_fill(pxp const & start_pos, colour new_colour)
+void osd_device::flood_fill(pxp const & start_pos, colour new_colour)
 {
    //assert ( new_colour == colour::black && __LINE__);
    pxp raw_pxp = transform_to_raw(start_pos);

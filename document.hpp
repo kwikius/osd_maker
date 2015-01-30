@@ -2,19 +2,20 @@
 #define QUANTRACKER_SIM_DOCUMENT_HPP_INCLUDED
 
 #include <vector>
+#include <map>
+#include <set>
 
 #include <wx/wx.h>
 #include <wx/image.h>
 #include <wx/treectrl.h>
+
 #include <quan/two_d/vect.hpp>
 #include <quan/length.hpp>
 
-#include "osd_image.hpp"
-#include "font.hpp"
-#include <map>
-#include <set>
+#include "graphics_api/osd_image.hpp"
+#include "graphics_api/font.hpp"
 
-struct bitmap_resource_t;
+struct osd_object_database;
 
 struct document {
      document();
@@ -49,7 +50,7 @@ private:
      quan::two_d::vect<quan::length::mm> m_pixel_size; // {mm{10},mm{10}};
      wxString m_project_file_path;
      wxString m_project_name;
-     bitmap_resource_t* m_resources;
+     osd_object_database* m_database;
      bool m_is_modified;
 };
 

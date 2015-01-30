@@ -3,7 +3,7 @@
 #include "../aircraft/aircraft.hpp"
 #include "display.hpp"
 //#include "../view.hpp"
-//#include "../app.h"
+//#include "../osd_bmp_app.hpp"
 
 /*
 See http://gentlenav/googlecode.com/files/DCMdraft2.pdf 
@@ -35,14 +35,14 @@ Perspective transform
 
 */
 
-void draw_artificial_horizon( display_layout & d, attitude_t const & attitude)
+void draw_artificial_horizon( osd_device & d, attitude_t const & attitude)
 {
    constexpr int width = 127;
    constexpr int outer_h_bar_len = 16;
    constexpr int outer_stop_height = 8;
    int centre_rad = 5;
-   typedef display_layout::pxp pxp_t;
-   typedef display_layout::colour colour;
+   typedef osd_device::pxp pxp_t;
+   typedef osd_device::colour colour;
    pxp_t left_end{-width/2,0};
    pxp_t right_end{width/2,0};
 
@@ -50,12 +50,12 @@ void draw_artificial_horizon( display_layout & d, attitude_t const & attitude)
 
    for ( int i = -1; i < 2; ++i){
       const colour c = (i)?colour::black:colour::white;
-      d.line_out(rotate(left_end + pxp_t{1,i}), rotate(left_end + pxp_t{outer_h_bar_len ,i}), c);
-      d.line_out(rotate(right_end+ pxp_t{0,i}), rotate(right_end + pxp_t{-outer_h_bar_len,i}),c);
-      d.line_out(rotate(pxp_t{left_end.x - i,outer_stop_height/2}),rotate(pxp_t{left_end.x - i,-outer_stop_height/2}),c);
-      d.line_out(rotate(pxp_t{right_end.x +i,outer_stop_height/2}),rotate(pxp_t{right_end.x +i,-outer_stop_height/2}),c);
-      d.circle1_out({0,0},centre_rad+i,c);
-      d.line_out(rotate(pxp_t{-20,i}),rotate(pxp_t{-centre_rad -1 ,i}), c);
-      d.line_out(rotate(pxp_t{20,i}),rotate(pxp_t{centre_rad +1,i}), c); 
+      d.line(rotate(left_end + pxp_t{1,i}), rotate(left_end + pxp_t{outer_h_bar_len ,i}), c);
+      d.line(rotate(right_end+ pxp_t{0,i}), rotate(right_end + pxp_t{-outer_h_bar_len,i}),c);
+      d.line(rotate(pxp_t{left_end.x - i,outer_stop_height/2}),rotate(pxp_t{left_end.x - i,-outer_stop_height/2}),c);
+      d.line(rotate(pxp_t{right_end.x +i,outer_stop_height/2}),rotate(pxp_t{right_end.x +i,-outer_stop_height/2}),c);
+      d.circle({0,0},centre_rad+i,c);
+      d.line(rotate(pxp_t{-20,i}),rotate(pxp_t{-centre_rad -1 ,i}), c);
+      d.line(rotate(pxp_t{20,i}),rotate(pxp_t{centre_rad +1,i}), c); 
    }
 }

@@ -1,0 +1,13 @@
+
+Font is an array of bitmaps indexed by an integer handle
+thus font['a'] would return the bitmap for ascci 'a'
+Out of range chars will return ? TBD
+default OSD code_space is the ASCII "printable characters" numbers
+from 0x20 to 0x7E
+
+Serialisation
+Each font is held as a separate directory under the Project_namefonts directory
+
+
+
+

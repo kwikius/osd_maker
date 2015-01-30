@@ -1,9 +1,9 @@
-#include "../display_layout.hpp"
+#include "osd_device.hpp"
 
 /*
  pxp is raw coordinate
 */
-void display_layout::set_pixel_raw(pxp const & px,colour c)
+void osd_device::set_pixel_raw(pxp const & px,colour c)
 {
    switch (c) {
       case colour::black:
@@ -29,13 +29,13 @@ void display_layout::set_pixel_raw(pxp const & px,colour c)
 }
 
 // transformed
-void display_layout::set_pixel( pxp const & px, colour c)
+void osd_device::set_pixel( pxp const & px, colour c)
 {
    set_pixel_raw(transform_to_raw(px),c);
 }
 
 //raw p
-display_layout::colour display_layout::get_pixel_raw(pxp const & p)
+osd_device::colour osd_device::get_pixel_raw(pxp const & p)
 {
 #if 0
     auto ch1 = m_image.GetAlpha(p.x,p.y);

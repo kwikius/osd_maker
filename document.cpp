@@ -12,29 +12,29 @@
 #include <quan/gx/wxwidgets/from_wxString.hpp>
 #include <quan/gx/wxwidgets/to_wxString.hpp>
 
-#include "app.h"
+#include "osd_bmp_app.hpp"
 #include "document.hpp"
-#include "bitmap_resource.hpp"
-#include "main_frame.h"
-#include "view.hpp"
-#include "panel.hpp"
-#include "font.hpp"
+#include "document/osd_object_database.hpp"
+#include "gui/main_frame.hpp"
+#include "gui/view.hpp"
+#include "gui/panel.hpp"
+#include "graphics_api/font.hpp"
 
 using quan::gx::wxwidgets::from_wxString;
 using quan::gx::wxwidgets::to_wxString;
 
 osd_image* document::get_image( int handle)const 
-{return m_resources->find_osd_image(handle);}
+{return m_database->find_osd_image(handle);}
 
 osd_bitmap* document::get_bitmap( std::string const & name)const 
-{return m_resources->find_bitmap_by_name(name);}
+{return m_database->find_bitmap_by_name(name);}
 
 font* document::get_font(int handle) const
-{return m_resources->find_font(handle);}
+{return m_database->find_font(handle);}
 
 font* document::get_font( std::string const & name)const
 {
-    return m_resources->find_font_by_name(name);
+    return m_database->find_font_by_name(name);
 }
 
 bool document::add_new_bitmap(std::string const & name, osd_image::size_type size)
@@ -51,8 +51,8 @@ bool document::add_new_bitmap(std::string const & name, osd_image::size_type siz
 void document::add_bitmap(osd_bitmap* bmp)
 {
    assert((bmp != nullptr) && __LINE__);
-   assert( ! m_resources->find_bitmap_by_name(bmp->get_name()));
-   int handle = m_resources->add_bitmap(bmp);
+   assert( ! m_database->find_bitmap_by_name(bmp->get_name()));
+   int handle = m_database->add_bitmap(bmp);
    wxGetApp().get_panel()->add_bitmap_handle(bmp->get_name(), handle);
    auto view = wxGetApp().get_view();
    auto frame = wxGetApp().get_main_frame();
@@ -68,7 +68,7 @@ void document::set_image(int handle, osd_image* image)
 {
   assert(image && __LINE__);
   assert( (handle != -1) && __LINE__);
-  m_resources->set_image_handle(handle,image);
+  m_database->set_image_handle(handle,image);
   //this->set_modified(true);
 }
  
@@ -109,7 +109,7 @@ bool document::open_project (wxString const & path)
    }
    int num_entries = zipin.GetTotalEntries();
 
-   auto temp_resources = new bitmap_resource_t;
+   auto temp_resources = new osd_object_database;
    for ( int i = 0; i < num_entries; ++i){
       wxZipEntry* entry = zipin.GetNextEntry();
       assert(entry && __LINE__);
@@ -197,10 +197,10 @@ bool document::open_project (wxString const & path)
          assert(new_font->get_handle_at( j, temp_image_handle) && __LINE__);
          osd_bitmap* font_elem = temp_resources->move_font_element(temp_image_handle);
          assert (( font_elem != nullptr && __LINE__));
-         int elem_handle = m_resources->add_font_element(font_elem);
+         int elem_handle = m_database->add_font_element(font_elem);
          new_font->set_handle_at(j, elem_handle);
       } 
-      int new_font_handle = this->m_resources->add_font(new_font);
+      int new_font_handle = this->m_database->add_font(new_font);
       wxGetApp().get_panel()->add_font_handle(new_font->get_name(),new_font_handle);
        
    }
@@ -243,9 +243,9 @@ bool document::ll_save_project (wxString const & path)
    }else{
          wxZipOutputStream zipout {out};
          zipout.PutNextDirEntry(wxT("fonts"));
-         for (size_t i = 0; i < m_resources->get_num_fonts(); ++i) {
+         for (size_t i = 0; i < m_database->get_num_fonts(); ++i) {
             int font_handle =-1;
-            assert( m_resources->get_font_handle_at(i,font_handle) && __LINE__) ;
+            assert( m_database->get_font_handle_at(i,font_handle) && __LINE__) ;
             font * cur_font = get_font(font_handle);
             assert( cur_font != nullptr && __LINE__);
             wxString dirname = wxT("fonts/");
@@ -257,7 +257,7 @@ bool document::ll_save_project (wxString const & path)
                int image_handle = -1;
                assert(cur_font->get_handle_at(j, image_handle) && __LINE__);
                assert ((image_handle != -1) && __LINE__);
-               osd_image * osd_image = m_resources->find_osd_image(image_handle);
+               osd_image * osd_image = m_database->find_osd_image(image_handle);
                assert( osd_image && __LINE__);
                osd_bitmap* bmp = dynamic_cast<osd_bitmap*>(osd_image);
                assert(bmp && __LINE__);
@@ -269,10 +269,10 @@ bool document::ll_save_project (wxString const & path)
             }
          }
          zipout.PutNextDirEntry(wxT("bitmaps"));
-         for (size_t i = 0; i < m_resources->get_num_bitmaps(); ++i) {
+         for (size_t i = 0; i < m_database->get_num_bitmaps(); ++i) {
                int handle = -1;
-               assert(m_resources->get_bitmap_handle_at(i,handle) && __LINE__);
-               osd_image * osd_image = m_resources->find_osd_image(handle);
+               assert(m_database->get_bitmap_handle_at(i,handle) && __LINE__);
+               osd_image * osd_image = m_database->find_osd_image(handle);
                assert( osd_image && __LINE__);
                osd_bitmap* bmp = dynamic_cast<osd_bitmap*>(osd_image);
                assert(bmp && __LINE__);
@@ -293,15 +293,15 @@ bool document::ll_save_project (wxString const & path)
 document::document()
    : m_page_size {quan::length::mm{500}, quan::length::mm{500}}
 , m_pixel_size {quan::length::mm{10}, quan::length::mm{10}}
-, m_resources {new bitmap_resource_t}, m_is_modified {false}
+, m_database {new osd_object_database}, m_is_modified {false}
 {}
 
 void document::reset()
 {
-  if ( m_resources){
-   delete m_resources;
+  if ( m_database){
+   delete m_database;
   }
-  m_resources = new bitmap_resource_t;
+  m_database = new osd_object_database;
   m_is_modified = false;
   m_project_name = wxT("");
   m_project_file_path = wxT("");
@@ -324,7 +324,7 @@ bool document::load_png_file (wxString const & path)
       from_wxString<char>(path)
    );
    name = quan::fs::strip_file_extension(name);
-   name = m_resources->make_unique_bitmap_name(name);
+   name = m_database->make_unique_bitmap_name(name);
    osd_bitmap * bmp = ConvertTo_osd_bitmap(name,image);
    this->add_bitmap(bmp);
    this->set_modified(true);
@@ -461,14 +461,14 @@ bool document::load_mcm_font_file (wxString const & path)
       from_wxString<char>(path)
    );
    name = quan::fs::strip_file_extension(name);
-   name = m_resources->make_unique_font_name(name);
+   name = m_database->make_unique_font_name(name);
    
    auto new_font = new font{name,size,begin};
    int first_handle = -1;
    for ( int ch = begin; ch < end; ++ch){
       try{
          auto elem = font_chars.at(ch-begin);
-         int handle = m_resources->add_font_element(elem);
+         int handle = m_database->add_font_element(elem);
          if ( ch == '8'){
             first_handle = handle;
          }
@@ -481,7 +481,7 @@ bool document::load_mcm_font_file (wxString const & path)
       }
    }
 
-   int font_handle = m_resources->add_font(new_font);
+   int font_handle = m_database->add_font(new_font);
    
    if (! wxGetApp().get_view()->have_image()) {
       wxGetApp().get_view()->copy_to_current_image (first_handle);

@@ -1,11 +1,13 @@
-#include "display.hpp"
-#include "../aircraft/aircraft.hpp"
-#include "../constants.hpp"
 #include <cstdio>
-#include "../app.h"
-#include "../view.hpp"
 
-void draw_home(display_layout & d)
+#include "../osd_bmp_app.hpp"
+#include "../gui/view.hpp"
+#include "../aircraft/aircraft.hpp"
+
+#include "display.hpp"
+#include "constants.hpp"
+
+void draw_home(osd_device & d)
 {
    auto const & aircraft_position = the_aircraft.get_position();
    auto const & home_position = the_aircraft.get_home_position();
@@ -21,18 +23,18 @@ void draw_home(display_layout & d)
 #endif
    auto d_m = static_cast<uint32_t> (distance.numeric_value() + 0.5);
    auto image = wxGetApp().get_document()->get_bitmap ("home_image");
-   typedef display_layout::pxp pxp;
-   display_layout::size_type vect;
+   typedef osd_device::pxp pxp;
+   osd_device::size_type vect;
  //  pxp pos{-263,200}; 
     pxp pos{-160,70};
    if (image) {
           vect = image->get_size() / 2;
-         d.bitmap_out (pos,image);
+         d.bitmap (pos,image);
    }
    char buf[30];
    sprintf( buf,"%5u M",d_m);
    auto f = wxGetApp().get_view()->get_current_font();
    if ( f){
-      d.text_out(pos + pxp{vect.x,0},buf,f);
+      d.text(pos + pxp{vect.x,0},buf,f);
    }
 }
