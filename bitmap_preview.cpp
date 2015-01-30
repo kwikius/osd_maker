@@ -1,5 +1,8 @@
-//#include <cctype>
-
+/*
+Actually font_preview so 
+TODO rename
+Shows font elements in a window
+*/
 #include <wx/bitmap.h>
 #include <wx/rawbmp.h>
 #include <quan/max.hpp>
