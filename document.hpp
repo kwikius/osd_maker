@@ -34,6 +34,7 @@ struct document {
      bool load_png_file(wxString const &path);
      bool add_new_bitmap(std::string const & name, osd_image::size_type size);
      wxString get_project_file_path(){ return m_project_file_path;}
+     osd_object_database const & get_database() { return *m_database;}
      // doc doesnt relinquish ownership of image
      osd_image* get_image( int handle)const ;
      osd_bitmap* get_bitmap( std::string const & name)const ;
