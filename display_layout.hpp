@@ -38,9 +38,6 @@ struct display_layout{
   // bool set_background(wxString const & filename);
    wxImage const & get_image()const;
    private:
-//   void normalised_arc(pxp const & pos_in,uint32_t radius, quan::angle::deg const & start_angle,
-//         quan::angle::deg const & end_angle, uint32_t numsegs, colour c);
-
    wxImage m_background_image;
    wxImage m_image;
    quan::two_d::box<int> m_display_rect;
