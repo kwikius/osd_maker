@@ -36,7 +36,7 @@ void draw_compass (osd_device & d,
    auto home_arrow = wxGetApp().get_document()->get_bitmap ("home_arrow");
    if (home_arrow) {
       osd_device::size_type vect = home_arrow->get_size() / 2;
-      d.rotated_bitmap_out (pos, home_arrow, vect, home_bearing);
+      d.rotated_bitmap_out (pos, home_arrow, vect, bearing - home_bearing);
    }
       
    auto arrow = wxGetApp().get_document()->get_bitmap ("compass_arrow");

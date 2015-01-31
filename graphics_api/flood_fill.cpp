@@ -1,7 +1,10 @@
 #include "osd_device.hpp"
-
 #include <stack>
 // add a maxcount var in case of spills?
+ // return a count
+ // if count ret == max_count
+ // prob overflow
+// sounds good
 void osd_device::flood_fill(pxp const & start_pos, colour new_colour)
 {
    //assert ( new_colour == colour::black && __LINE__);

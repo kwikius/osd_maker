@@ -47,10 +47,12 @@
 		<Unit filename="display1/draw_artificial_horizon.cpp" />
 		<Unit filename="display1/draw_compass.cpp" />
 		<Unit filename="display1/draw_home.cpp" />
+		<Unit filename="display1/on_draw.cpp" />
 		<Unit filename="document.cpp" />
 		<Unit filename="document.hpp" />
 		<Unit filename="document/mcm_file.cpp" />
 		<Unit filename="document/osd_object_database.cpp" />
+		<Unit filename="document/osd_object_database.hpp" />
 		<Unit filename="graphics_api/arc.cpp" />
 		<Unit filename="graphics_api/bitmap.cpp" />
 		<Unit filename="graphics_api/circle.cpp" />

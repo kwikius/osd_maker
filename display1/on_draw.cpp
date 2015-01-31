@@ -11,7 +11,7 @@ void draw_altitude(osd_device & d);
 
 void display1_on_draw( osd_device & d,aircraft const & a, osd_object_database const &db)
 {
-     draw_compass(d,quan::angle::deg{20},quan::angle::deg{300});
+     draw_compass(d,quan::angle::deg{20},quan::angle::deg{90});
      draw_artificial_horizon(d,the_aircraft.get_attitude());
      draw_home(d);
      draw_altitude(d);
