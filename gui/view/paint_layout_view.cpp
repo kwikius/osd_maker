@@ -6,18 +6,18 @@
 
 void view::paint_layout_view(wxPaintEvent & event)
 {
-#if 1
+
     m_osd_device.clear();
-     // call pf(m_osd_device,the_aircraft_params, resources);
-    display1_on_draw(
-         m_osd_device,
-         the_aircraft, wxGetApp().get_document()->get_database());
-#else
-     
 
+    if ( (this->m_pfn_set_osd_on_draw_params != nullptr)   
+        && ( this->m_pfn_osd_on_draw != nullptr)){
 
-#endif     
-
+         m_pfn_set_osd_on_draw_params(
+            &wxGetApp().get_document()->get_database(),&the_aircraft
+         );
+         m_pfn_osd_on_draw(m_osd_device);
+    }
+    
      wxBitmap bitmap{m_osd_device.get_image()};
      wxPaintDC dc(this);
      dc.SetBackground(* wxBLACK_BRUSH); 

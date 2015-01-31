@@ -28,6 +28,7 @@
 #include <quan/angle.hpp>
 #include <quan/uav/position.hpp>
 
+
 /*
 See http://gentlenav/googlecode.com/files/DCMdraft2.pdf 
 
@@ -72,6 +73,7 @@ struct battery{
    quan::charge::mA_h get_charge_remaining() const{ return m_charge_remaining;}
    quan::charge::mA_h get_capacity()const{return m_capacity;}
    
+   
    private:
    std::string                         m_name;
    quan::voltage_<float>::V            m_voltage;
@@ -88,24 +90,34 @@ struct aircraft{
    position_type const & get_position() const { return m_position;}
    position_type const & get_home_position() const { return m_home_position;}
    attitude_t const & get_attitude() const { return m_attitude;}
+   quan::angle_<float>::deg const & get_heading()const { return m_heading;}
+   void set_heading(quan::angle_<float>::deg const & value_in)
+   {
+      auto value = value_in;
+      while( value > quan::angle::deg{360}){
+         value -= quan::angle::deg{360};
+      }
+      while( value < quan::angle::deg{0}){
+         value += quan::angle::deg{360};
+      }
+      this->m_heading = value;
+   }
    private:
-         
    position_type                       m_position;
    position_type                       m_home_position;
    attitude_t                          m_attitude;
      
-   quan::angle_<float>::deg            heading;              
-   quan::velocity_<float>::m_per_s     airspeed;            
-   quan::velocity_<float>::m_per_s     groundspeed;
+   quan::angle_<float>::deg            m_heading;              
+   quan::velocity_<float>::m_per_s     m_airspeed;            
+   quan::velocity_<float>::m_per_s     m_groundspeed;
 
       // ADD rc output values              
   public:               
    aircraft():
      // throttle{0},
-      heading{0}
-      ,airspeed{0}
-      ,groundspeed{0}
-
+      m_heading{0}
+      ,m_airspeed{0}
+      ,m_groundspeed{0}
    {}
 
    private:

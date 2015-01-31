@@ -10,6 +10,7 @@
 #include <quan/gx/wxwidgets/graphics_context.hpp>
 #include <quan/gx/simple_drawing_view.hpp>
 #include <quan/gx/simple_device_window.hpp>
+#include "../aircraft/aircraft.hpp"
 
 #include "../osd_bmp_app.hpp"
 #include "../document.hpp"
@@ -91,6 +92,8 @@
       bool m_mouse_is_down;
 
       DECLARE_EVENT_TABLE()
+
+      void setup_draw_fn();
       
       osd_image* m_current_image;
       int m_document_image_handle;
@@ -102,6 +105,13 @@
 
       quan::angle::deg m_bearing;
       quan::angle::deg m_home_bearing;
+
+      typedef  void (*pfn_set_osd_on_draw_params) (
+      osd_object_database const * db, aircraft const * a);
+      
+      typedef  void (*pfn_osd_on_draw)( osd_device & d);
+      pfn_set_osd_on_draw_params m_pfn_set_osd_on_draw_params;    
+      pfn_osd_on_draw m_pfn_osd_on_draw;
       
    };
 

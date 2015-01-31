@@ -29,6 +29,7 @@ struct document {
      void set_modified( bool );
      void set_project_name(wxString const & str) { m_project_name = str;}
      bool save_project();
+     bool save_project_as(wxString const & path);
      bool open_project(wxString const & path);
      bool load_mcm_font_file (wxString const & path);
      bool load_png_file(wxString const &path);

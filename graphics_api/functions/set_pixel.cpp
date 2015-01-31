@@ -1,4 +1,5 @@
-#include "osd_device.hpp"
+
+#include "../osd_device.hpp"
 
 /*
  pxp is raw coordinate

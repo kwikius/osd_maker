@@ -39,6 +39,12 @@ void panel::reset()
    m_project_tree->SetSize(20,20,200,200); 
 }
 
+void panel::set_project_name(wxString const & str)
+{
+  auto root = m_project_tree->GetRootItem();
+  m_project_tree->SetItemText(root,str);
+}
+
 // todo add modes for font and bitmaps parents selected
 // need to change view mode if necessary
 panel::selection_type panel::get_selection_type( wxTreeEvent & event)

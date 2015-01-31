@@ -1,5 +1,5 @@
 
-#include "osd_device.hpp"
+#include "../osd_device.hpp"
 //from web.engr.oregonstate.edu/~sllu/bcircle.pdf
 
 namespace {

@@ -1,8 +1,8 @@
 
-#include "../osd_bmp_app.hpp"
-#include "../document.hpp"
+#include "../../osd_bmp_app.hpp"
+#include "../../document.hpp"
 
-#include "osd_device.hpp"
+#include "../osd_device.hpp"
 
 // pos in transformed coords
 // text origin is at lower left of first character

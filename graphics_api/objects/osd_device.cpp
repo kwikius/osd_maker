@@ -1,8 +1,8 @@
 
-#include "../osd_bmp_app.hpp"
-#include "../document.hpp"
+#include "../../osd_bmp_app.hpp"
+#include "../../document.hpp"
 
-#include "osd_device.hpp"
+#include "../osd_device.hpp"
 
 wxImage const & osd_device::get_image()const
 {

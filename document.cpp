@@ -9,6 +9,7 @@
 
 #include <quan/fs/get_basename.hpp>
 #include <quan/fs/strip_file_extension.hpp>
+
 #include <quan/gx/wxwidgets/from_wxString.hpp>
 #include <quan/gx/wxwidgets/to_wxString.hpp>
 
@@ -204,10 +205,16 @@ bool document::open_project (wxString const & path)
       wxGetApp().get_panel()->add_font_handle(new_font->get_name(),new_font_handle);
        
    }
-   // TODO delete temp_resource;
+   // TODO delete temp_resources;
   
    this->m_project_file_path = path;
    wxGetApp().get_main_frame()->SetTitle(path);
+   std::string std_path 
+      = quan::fs::strip_file_extension(
+            quan::fs::get_basename(from_wxString<char>(path))
+      );
+   
+   wxGetApp().get_panel()->set_project_name(to_wxString(std_path));
    return true;
 }
 
@@ -232,6 +239,25 @@ bool document::save_project()
       save_path = fd.GetPath();
    }
    return ll_save_project (save_path);
+}
+
+bool document::save_project_as(wxString const & path)
+{
+   if (ll_save_project(path) ){
+      // TODO set project name, tree name etc
+
+   this->m_project_file_path = path;
+     wxGetApp().get_main_frame()->SetTitle(path);
+     std::string std_path 
+      = quan::fs::strip_file_extension(
+            quan::fs::get_basename(from_wxString<char>(path))
+      );
+   
+     wxGetApp().get_panel()->set_project_name(to_wxString(std_path));
+     return true;
+   }else{
+      return false;
+   }
 }
  
 bool document::ll_save_project (wxString const & path)

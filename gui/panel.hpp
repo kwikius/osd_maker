@@ -12,9 +12,9 @@ struct panel : wxWindow// wxPanel
   panel (wxWindow * parent);
   void add_bitmap_handle(std::string const & name, int handle); 
   void add_font_handle(std::string const & name, int handle);
+  void set_project_name(wxString const & str);
   bool get_bitmap_handle(wxTreeEvent & event, int & result_out)const;
   bool get_font_handle(wxTreeEvent & event, int & result_out)const;
-  
   void reset();
 private:
    enum class selection_type{ Unknown, Font, FontDir, Bitmap, BitmapDir, LayoutDir};

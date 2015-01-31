@@ -19,6 +19,7 @@
 #include <quan/gx/wxwidgets/to_wxString.hpp>
 #include "../document.hpp"
 //#include "sp_in_thread.hpp"
+#include "../aircraft/aircraft.hpp"
 
 #include "../osd_bmp_app.hpp"
 
@@ -67,6 +68,7 @@ BEGIN_EVENT_TABLE (main_frame, wxFrame)
    EVT_MENU (wxID_NEW, main_frame::OnNewProject)
    EVT_MENU (wxID_OPEN, main_frame::OnOpenProject)
    EVT_MENU (wxID_SAVE, main_frame::OnSaveProject)
+   EVT_MENU (wxID_SAVEAS,main_frame::OnSaveProjectAs)
    EVT_MENU (idImportBitmap, main_frame::OnImportBitmap)
    EVT_MENU (idNewBitmap, main_frame::OnNewBitmap)
    EVT_MENU (idImportFont, main_frame::OnImportFont)
@@ -334,6 +336,22 @@ void main_frame::OnSaveProject (wxCommandEvent &event)
    wxGetApp().get_document()->save_project();
 }
 
+void main_frame::OnSaveProjectAs (wxCommandEvent &event)
+{
+   wxFileDialog fd(
+      this,
+      wxT("Save OSD Project File"), 
+      wxT(""), 
+      wxT(""),
+      wxT("ZIP files (*.zip)|*.zip"),
+      wxFD_SAVE | wxFD_OVERWRITE_PROMPT
+   );
+
+   if ( fd.ShowModal() == wxID_OK){
+     wxGetApp().get_document()->save_project_as(fd.GetPath());
+   }
+}
+
 void main_frame::clear()
 {
    wxGetApp().get_panel()->reset();
@@ -380,21 +398,23 @@ void main_frame::OnTimer (wxTimerEvent &event)
 {
    auto view = wxGetApp().get_view();
    if ( view->get_view_mode() == ::view::view_mode::inLayouts){
-      auto bearing = wxGetApp().get_view()->get_bearing();
+      auto bearing = the_aircraft.get_heading();
       bearing += quan::angle::deg{ 2};
       if ( bearing > quan::angle::deg{360}){
          bearing -= quan::angle::deg{360};
       }
-      view->set_bearing(bearing);
+      the_aircraft.set_heading(bearing);
 
-      auto home_bearing = wxGetApp().get_view()->get_home_bearing();
-      home_bearing += quan::angle::deg{ 2.2};
-      if ( home_bearing > quan::angle::deg{360}){
-         home_bearing -= quan::angle::deg{360};
-      }
-      view->set_home_bearing(home_bearing);
-
-      view->Refresh();
+//      auto home_bearing = wxGetApp().get_view()->get_home_bearing();
+//      home_bearing += quan::angle::deg{ 2.2};
+//      if ( home_bearing > quan::angle::deg{360}){
+//         home_bearing -= quan::angle::deg{360};
+//      }
+//      view->set_home_bearing(home_bearing);
+//
+       
+       view->Refresh();
+    
    }
 }
 

@@ -8,10 +8,11 @@
 /*
 draw_element( osd_device d, aircraft_params params, resources r)
 */
-void draw_compass (osd_device & d,
-                   quan::angle::deg const & bearing,
-                   quan::angle::deg const & home_bearing) // add ofset and dir
+void draw_compass (osd_device & d) // add ofset and dir
 {
+
+   quan::angle::deg const bearing{20};
+   quan::angle::deg const home_bearing{120};
 
    quan::two_d::rotation const rotate {bearing};
    

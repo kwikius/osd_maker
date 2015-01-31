@@ -1,7 +1,7 @@
 
 #include <quan/atan.hpp>
 
-#include "osd_device.hpp"
+#include "../osd_device.hpp"
 
 namespace {
 

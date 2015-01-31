@@ -1,5 +1,6 @@
 
 #include <cctype>
+#include <dlfcn.h>
 
 #include <quan/gx/primitives/simple_line.hpp>
 
@@ -33,14 +34,42 @@ view::view(wxWindow* parent)
 ,m_current_image_modified{false}
 ,m_view_mode{view_mode::inBitmaps}
 ,m_bearing{0}
-,m_home_bearing{0} {
+,m_home_bearing{0}
+,m_pfn_set_osd_on_draw_params{nullptr}
+,m_pfn_osd_on_draw{nullptr} {
    //  window_ids::view = this->GetId();
      this->SetWindowStyle(wxVSCROLL | wxHSCROLL);
      this->SetScrollbar(wxVERTICAL,50,10,110);
      this->SetScrollbar(wxHORIZONTAL,50,10,110);
      this->m_drawing_view.set_scale(1);
      this->SetFocus();
+     setup_draw_fn();
 }
+
+void view::setup_draw_fn()
+{
+  dlerror();
+  void * handle = dlopen("/home/andy/cpp/projects/osd_draw/osd_draw.so",RTLD_LAZY);
+  if ( !handle){
+      wxMessageBox(wxString::Format(wxT("load dll failed with %s"), dlerror()));
+  }else{
+      
+      dlerror(); // osd_on_draw
+      *(void**) (&m_pfn_osd_on_draw) = dlsym(handle,"osd_on_draw");
+      char* error = dlerror();
+      if (error){
+         wxMessageBox(wxString::Format(wxT("load dll failed with %s"), error));
+      }else{
+         dlerror(); //set_osd_on_draw_params
+         *(void**) (&m_pfn_set_osd_on_draw_params) = dlsym(handle,"set_osd_on_draw_params");
+         error = dlerror();
+         if (error){
+            wxMessageBox(wxString::Format(wxT("load dll failed with %s"), error));
+         }
+      }
+   }
+}
+
 font* view::get_current_font()const
 {
     int font_handle = wxGetApp().get_font_preview()->get_font_handle();

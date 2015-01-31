@@ -1,6 +1,6 @@
 #include <quan/two_d/rotation.hpp>
 
-#include "osd_device.hpp"
+#include "../osd_device.hpp"
 
 void osd_device::bitmap(pxp const & pos_in, osd_image* image)
 {

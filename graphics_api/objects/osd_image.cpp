@@ -1,7 +1,7 @@
 #include <wx/bitmap.h>
 #include <wx/rawbmp.h>
 
-#include "osd_image.hpp"
+#include "../osd_image.hpp"
 
 /*
 box represents how far to move each part

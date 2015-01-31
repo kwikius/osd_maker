@@ -52,6 +52,7 @@ class main_frame: public wxFrame
         void OnImportBitmap(wxCommandEvent & event);
         void OnImportFont(wxCommandEvent & event);
         void OnSaveProject(wxCommandEvent & event);
+        void OnSaveProjectAs(wxCommandEvent & event);
         void OnCommitViewToTree(wxCommandEvent & event);
         void OnResizeViewBitmap(wxCommandEvent & event);
         void OnTimer(wxTimerEvent& event);

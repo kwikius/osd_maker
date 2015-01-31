@@ -5,7 +5,7 @@
 
 #include <quan/two_d/clip.hpp>
 
-#include "osd_device.hpp"
+#include "../osd_device.hpp"
 
 void osd_device::line(pxp const & p0_in_full, pxp const & p1_in_full, colour c )
 {

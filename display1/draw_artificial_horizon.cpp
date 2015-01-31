@@ -35,7 +35,7 @@ Perspective transform
 
 */
 
-void draw_artificial_horizon( osd_device & d, attitude_t const & attitude)
+void draw_artificial_horizon( osd_device & d)
 {
    constexpr int width = 127;
    constexpr int outer_h_bar_len = 16;
