@@ -53,64 +53,12 @@
 		<Unit filename="aircraft/aircraft.cpp" />
 		<Unit filename="aircraft/aircraft.hpp" />
 		<Unit filename="constants.hpp" />
-		<Unit filename="display1/display.hpp">
-			<Option target="Debug" />
-			<Option target="Release" />
-		</Unit>
-		<Unit filename="display1/draw_altitude.cpp">
-			<Option target="Debug" />
-			<Option target="Release" />
-		</Unit>
-		<Unit filename="display1/draw_artificial_horizon.cpp">
-			<Option target="Debug" />
-			<Option target="Release" />
-		</Unit>
-		<Unit filename="display1/draw_compass.cpp">
-			<Option target="Debug" />
-			<Option target="Release" />
-		</Unit>
-		<Unit filename="display1/draw_home.cpp">
-			<Option target="Debug" />
-			<Option target="Release" />
-		</Unit>
-		<Unit filename="display1/on_draw.cpp">
-			<Option target="Debug" />
-			<Option target="Release" />
-		</Unit>
 		<Unit filename="document.cpp" />
 		<Unit filename="document.hpp" />
 		<Unit filename="document/mcm_file.cpp" />
 		<Unit filename="document/osd_object_database.cpp" />
 		<Unit filename="document/osd_object_database.hpp" />
 		<Unit filename="graphics_api/font.hpp" />
-		<Unit filename="graphics_api/functions/arc.cpp">
-			<Option target="Debug" />
-			<Option target="Release" />
-		</Unit>
-		<Unit filename="graphics_api/functions/bitmap.cpp">
-			<Option target="Debug" />
-			<Option target="Release" />
-		</Unit>
-		<Unit filename="graphics_api/functions/circle.cpp">
-			<Option target="Debug" />
-			<Option target="Release" />
-		</Unit>
-		<Unit filename="graphics_api/functions/flood_fill.cpp">
-			<Option target="Debug" />
-			<Option target="Release" />
-		</Unit>
-		<Unit filename="graphics_api/functions/line.cpp">
-			<Option target="Debug" />
-			<Option target="Release" />
-		</Unit>
-		<Unit filename="graphics_api/functions/set_pixel.cpp">
-			<Option target="Debug" />
-			<Option target="Release" />
-		</Unit>
-		<Unit filename="graphics_api/functions/text.cpp">
-			<Option target="Debug" />
-			<Option target="Release" />
-		</Unit>
 		<Unit filename="graphics_api/info_on_fonts.txt" />
 		<Unit filename="graphics_api/objects/osd_device.cpp" />
 		<Unit filename="graphics_api/objects/osd_image.cpp" />
@@ -139,6 +87,7 @@
 		<Unit filename="gui/view/drawing.cpp" />
 		<Unit filename="gui/view/drawing.hpp" />
 		<Unit filename="gui/view/paint_layout_view.cpp" />
+		<Unit filename="gui/workflow.dot" />
 		<Unit filename="osd_bmp_app.cpp" />
 		<Unit filename="osd_bmp_app.hpp" />
 		<Unit filename="../../../website/quan-trunk/quan/fs/get_basename.hpp" />
@@ -151,6 +100,8 @@
 		<Unit filename="../../../website/quan-trunk/quan/two_d/rotation.hpp">
 			<Option target="&lt;{~None~}&gt;" />
 		</Unit>
+		<Unit filename="../../../website/quan-trunk/quan/uav/attitude.hpp" />
+		<Unit filename="../../../website/quan-trunk/quan/uav/battery.hpp" />
 		<Unit filename="../../../website/quan-trunk/quan/uav/fletcher16.hpp" />
 		<Unit filename="../../../website/quan-trunk/quan_matters/src/gx/static_rgb_colours.cpp" />
 		<Unit filename="../../../website/quan-trunk/quan_matters/src/serial_port.cpp" />
