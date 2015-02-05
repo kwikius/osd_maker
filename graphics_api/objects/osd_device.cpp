@@ -4,12 +4,12 @@
 
 #include "../osd_device.hpp"
 
-wxImage const & osd_device::get_image()const
+wxImage const & osd_device::get_bitmap()const
 {
    return m_image;
 }
 
-void osd_device::rescale(osd_image::size_type const & new_size)
+void osd_device::rescale(osd_bitmap::size_type const & new_size)
 {
    m_image.Rescale(new_size.x, new_size.y);
 }

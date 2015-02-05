@@ -1,7 +1,7 @@
 #include <wx/bitmap.h>
 #include <wx/rawbmp.h>
 
-#include "../osd_image.hpp"
+#include "../osd_bitmap.hpp"
 
 /*
 box represents how far to move each part
@@ -27,8 +27,7 @@ bool osd_bitmap::resize (quan::two_d::box<int> const & new_box)
          for (int x = 0; x < new_size.x; ++x) {
            int const old_bitmap_x = x + new_box.left;
            if ( ( old_bitmap_x >= 0) && ( old_bitmap_x < cur_size.x)) {
-                 colour c;
-                 this->get_pixel_colour({old_bitmap_x,old_bitmap_y},c);
+                 colour c =this->get_pixel_colour({old_bitmap_x,old_bitmap_y});
                  temp_bmp.set_pixel_colour({x,y},c);
             }
          }
@@ -42,26 +41,26 @@ bool osd_bitmap::resize (quan::two_d::box<int> const & new_box)
 
 osd_bitmap* ConvertTo_osd_bitmap (std::string const & name, wxImage const& image)
 {
-   osd_image::size_type bitmap_size {image.GetWidth(), image.GetHeight() };
+   osd_bitmap::size_type bitmap_size {image.GetWidth(), image.GetHeight() };
    osd_bitmap * bmp = new osd_bitmap {name, bitmap_size};
    
-   for (uint32_t y = 0; y < bitmap_size.y; ++y) {
-         for (uint32_t x = 0; x < bitmap_size.x; ++x) {
-               osd_image::colour  colour = osd_image::colour::transparent;
+   for (int32_t y = 0; y < bitmap_size.y; ++y) {
+         for (int32_t x = 0; x < bitmap_size.x; ++x) {
+               osd_bitmap::colour  colour = osd_bitmap::colour::transparent;
                if (!image.IsTransparent (x, y)) {
                      uint8_t red = image.GetRed (x, y);
                      uint8_t green = image.GetGreen (x, y);
                      uint8_t blue = image.GetBlue (x, y);
                      float mono = (red * 0.2126 + green * 0.7152 + blue * 0.0722) / 255;
                      if (mono < 1. / 4) {
-                           colour = osd_image::colour::black;
+                           colour = osd_bitmap::colour::black;
                         }
                      else {
                            if (mono < 1. / 2) {
-                                 colour = osd_image::colour::grey;
+                                 colour = osd_bitmap::colour::grey;
                               }
                            else {
-                                 colour = osd_image::colour::white;
+                                 colour = osd_bitmap::colour::white;
                               }
                         }
                   }
@@ -80,17 +79,15 @@ osd_bitmap* ConvertTo_osd_bitmap (std::string const & name, wxImage const& image
 //    black = 0b01,
 //    white = 0b10,
 // transparent = 0b11
-wxBitmap* ConvertTo_wxBitmap (osd_image const& in, wxColour const* (&colours) [4])
+wxBitmap* ConvertTo_wxBitmap (osd_bitmap const& in, wxColour const* (&colours) [4])
 {
-   osd_image::size_type size = in.get_size();
+   osd_bitmap::size_type size = in.get_size();
    auto bmp = new wxBitmap (size.x, size.y);
    assert (bmp && __LINE__);
    wxNativePixelData pixels (*bmp);
-   for (size_t y = 0; y < size.y; ++y) {
-         for (size_t x = 0; x < size.x; ++x) {
-               osd_image::colour c;
-               in.get_pixel_colour ( {x, y}, c);
-               assert ( (c != osd_image::colour::invalid) && __LINE__);
+   for (int32_t y = 0; y < size.y; ++y) {
+         for (int32_t x = 0; x < size.x; ++x) {
+               osd_bitmap::colour c =in.get_pixel_colour ({x, y});
                auto const idx = static_cast<uint32_t> (c);
                assert ( (idx < 4) && __LINE__);
                wxColour const * colour = colours[idx];
@@ -111,28 +108,27 @@ wxBitmap* ConvertTo_wxBitmap (osd_image const& in, wxColour const* (&colours) [4
  
 // caller owns the reulting imag
 //call delete to free
-wxImage* ConvertTo_wxImage (osd_image const& in)
+wxImage* ConvertTo_wxImage (osd_bitmap const& in)
 {
-   osd_image::size_type size = in.get_size();
+   osd_bitmap::size_type size = in.get_size();
    auto img = new wxImage (size.x, size.y);
    assert (img && __LINE__);
    if (!img->HasAlpha()) {
          img->SetAlpha();
       }
-   for (size_t y = 0; y < size.y; ++y) {
-         for (size_t x = 0; x < size.x; ++x) {
-               osd_image::colour c;
-               in.get_pixel_colour ( {x, y}, c);
+   for (int32_t y = 0; y < size.y; ++y) {
+         for (int32_t x = 0; x < size.x; ++x) {
+               osd_bitmap::colour c =in.get_pixel_colour ({x, y});
                switch (c) {
-                     case osd_image::colour::black:
+                     case osd_bitmap::colour::black:
                         img->SetRGB (x, y, 0, 0, 0);
                         img->SetAlpha (x, y, wxIMAGE_ALPHA_OPAQUE);
                         break;
-                     case osd_image::colour::white:
+                     case osd_bitmap::colour::white:
                         img->SetRGB (x, y, 255, 255, 255);
                         img->SetAlpha (x, y, wxIMAGE_ALPHA_OPAQUE);
                         break;
-                     case osd_image::colour::grey:
+                     case osd_bitmap::colour::grey:
                         img->SetRGB (x, y, 127, 127, 127);
                         img->SetAlpha (x, y, wxIMAGE_ALPHA_OPAQUE);
                         break;
@@ -147,23 +143,19 @@ wxImage* ConvertTo_wxImage (osd_image const& in)
    
 }
  
-bool osd_bitmap::get_pixel_colour (pos_type const & p, osd_image::colour & c) const
+osd_bitmap::colour osd_bitmap::get_pixel_colour (pos_type const & p) const
 {
    if ( (p.x >= m_size.x) || (p.y >= m_size.y)) {
-         return false;
-      }
+         return colour::transparent;
+   }
    auto idx = p.y * m_size.x + p.x;
-   c = m_data.at (idx);
-   return true;
+   return m_data.at (idx);
 }
-bool osd_bitmap::set_pixel_colour (pos_type const & p, osd_image::colour c)
+bool osd_bitmap::set_pixel_colour (pos_type const & p, osd_bitmap::colour c)
 {
-   if (c == colour::invalid) {
-         return false;
-      }
    if ( (p.x >= m_size.x) || (p.y >= m_size.y)) {
          return false;
-      }
+   }
    auto idx = p.y * m_size.x + p.x;
    m_data.at (idx) = c;
    return true;

@@ -41,17 +41,17 @@ struct aircraft{
    quan::velocity_<float>::m_per_s const & get_airspeed()const { return m_airspeed;}
    quan::velocity_<float>::m_per_s const & get_groundspeed()const { return m_groundspeed;}
    // bool hav_airspeed
-//   void set_heading(quan::angle_<float>::deg const & value_in)
-//   {
-//      auto value = value_in;
-//      while( value > quan::angle::deg{360}){
-//         value -= quan::angle::deg{360};
-//      }
-//      while( value < quan::angle::deg{0}){
-//         value += quan::angle::deg{360};
-//      }
-//      this->m_heading = value;
-//   }
+   void set_heading(quan::angle_<float>::deg const & value_in)
+   {
+      auto value = value_in;
+      while( value > quan::angle::deg{360}){
+         value -= quan::angle::deg{360};
+      }
+      while( value < quan::angle::deg{0}){
+         value += quan::angle::deg{360};
+      }
+      this->m_heading = value;
+   }
    private:
    position_type                       m_position;
    position_type                       m_home_position;

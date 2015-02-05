@@ -24,7 +24,7 @@ wxGridCellRenderer* grid_cell_bmp_renderer::Clone() const
 }
 
 namespace {
- wxColour const * colour_array[4] = {wxLIGHT_GREY,wxBLACK,wxWHITE,wxBLUE};
+ wxColour const * colour_array[4] = {wxLIGHT_GREY,wxWHITE,wxBLACK,wxBLUE};
 
 }
 
@@ -47,7 +47,7 @@ void grid_cell_bmp_renderer::Draw( wxGrid & grid,
       int bmp_handle = -1;
       if (selected_font->get_handle_at(ascii_char, bmp_handle)){
          // get th bitmap at the handle
-         osd_image* image = wxGetApp().get_document()->get_image(bmp_handle);
+         osd_bitmap* image = wxGetApp().get_document()->get_bitmap(bmp_handle);
          if ( image){
             
             // convert to a bitmap

@@ -86,24 +86,24 @@ void view::set_view_mode(view_mode mode)
 bool view::resize_image( quan::two_d::box<int> new_size)
 {
    if ( m_view_mode != view_mode::inBitmaps){
-     wxMessageBox(wxT("1"));
+    // wxMessageBox(wxT("1"));
       return false;
    }
    // check its a bmp
    if (  m_current_image == nullptr){
-       wxMessageBox(wxT("2"));
+      // wxMessageBox(wxT("2"));
       return false;
    }
-   if ( m_current_image->get_image_type() != osd_image::image_type::Bitmap){
-       wxMessageBox(wxT("3"));
-      return false;
-   }
-   osd_bitmap* bmp = dynamic_cast<osd_bitmap*>(m_current_image);
-   if ( ! bmp){
-       wxMessageBox(wxT("4"));
-      return false;
-   }
-   if (! bmp->resize(new_size)){
+//   if ( m_current_image->get_image_type() != osd_bitmap::image_type::Bitmap){
+//       wxMessageBox(wxT("3"));
+//      return false;
+//   }
+//   osd_bitmap* bmp = dynamic_cast<osd_bitmap*>(m_current_image);
+//   if ( ! bmp){
+//       wxMessageBox(wxT("4"));
+//      return false;
+//   }
+   if (! m_current_image->resize(new_size)){
        wxMessageBox(wxT("5"));
       return false;
    }
@@ -126,7 +126,7 @@ void view::reset()
 void view::sync_to_document()
 {
    auto doc = wxGetApp().get_document();
-   osd_image* image = this->clone_current_image();
+   osd_bitmap* image = this->clone_current_image();
    int image_handle = this->get_doc_image_handle();
 //## need to 
 //   osd_bitmap* bmp = dynamic_cast<osd_bitmap*> (image);
@@ -190,7 +190,7 @@ void view::set_modified(bool val)
 
 void view::copy_to_current_image( int handle)
 {
-   auto image = wxGetApp().get_document()->get_image(handle);
+   auto image = wxGetApp().get_document()->get_bitmap(handle);
    assert ( (image != nullptr) && __LINE__);
    if ( m_current_image != nullptr){
       m_current_image->destroy();
@@ -211,19 +211,19 @@ double view::get_scale()
    return m_drawing_view.get_scale();
 }
 
-quan::gx::abc_color::ptr view::get_colour(osd_image::colour colour_id)
+quan::gx::abc_color::ptr view::get_colour(osd_bitmap::colour colour_id)
 {
      switch( colour_id) {
-     case osd_image::colour::black :
+     case osd_bitmap::colour::black :
           return quan::gx::rgb::colors::black;
           break;
-     case osd_image::colour::white :
+     case osd_bitmap::colour::white :
           return quan::gx::rgb::colors::white;
           break;
-     case osd_image::colour::grey :
+     case osd_bitmap::colour::grey :
           return quan::gx::rgb::colors::gray;
           break;
-     case osd_image::colour::transparent :
+     case osd_bitmap::colour::transparent :
      default:
           return quan::gx::rgb::colors::blue;
           break;
@@ -245,7 +245,7 @@ void view::paint_bitmap_view(wxPaintEvent & event)
  
      if( m_current_image != nullptr) {
           auto doc = wxGetApp().get_document();
-          osd_image::size_type num_pixels = m_current_image->get_size();
+          osd_bitmap::size_type num_pixels = m_current_image->get_size();
 
           // should be view or config
           vect2_mm pixel_size = doc->get_pixel_size_mm();
@@ -257,7 +257,7 @@ void view::paint_bitmap_view(wxPaintEvent & event)
           vect2_mm px_pos {-bitmap_size.x/2,bitmap_size.y/2};
           vect2_mm cur_px_pos = px_pos;
           wc.draw_filled_box( {frame,mm{},quan::gx::rgb::colors::blue});
-          for ( size_t y = 0; y <=num_pixels.y; ++y) {
+          for ( int32_t y = 0; y <=num_pixels.y; ++y) {
                quan::gx::primitives::simple_line<mm> line {
                     {-bitmap_size.x,px_pos.y - pixel_size.y * y},
                     { bitmap_size.x,px_pos.y - pixel_size.y * y},
@@ -266,7 +266,7 @@ void view::paint_bitmap_view(wxPaintEvent & event)
                };
                wc.draw_line(line);
           }
-          for ( size_t x = 0; x <=num_pixels.x; ++x) {
+          for ( int32_t x = 0; x <=num_pixels.x; ++x) {
                quan::gx::primitives::simple_line<mm> line {
                     {px_pos.x + pixel_size.x * x,bitmap_size.y},
                     {px_pos.x + pixel_size.x * x,-bitmap_size.y},
@@ -277,13 +277,12 @@ void view::paint_bitmap_view(wxPaintEvent & event)
           }
  
           mm border {1};
-          for ( size_t y = 0; y <num_pixels.y; ++y) {
+          for ( int32_t y = 0; y <num_pixels.y; ++y) {
  
-               for ( size_t x = 0; x <num_pixels.x; ++x) {
+               for ( int32_t x = 0; x <num_pixels.x; ++x) {
                     // add color
-                    osd_image::colour colour;
-                   // doc->get_pixel_colour(current_index,osd_image::pos_type {x,y},colour);
-                    m_current_image->get_pixel_colour(osd_image::pos_type {x,y},colour);
+                    osd_bitmap::colour colour
+                     = m_current_image->get_pixel_colour(osd_bitmap::pos_type {x,y});
                     quan::two_d::box<mm> cur_px_box {
                          cur_px_pos.x + border,
                          cur_px_pos.y - border,
@@ -323,7 +322,7 @@ void view::paint_layout_view(wxPaintEvent & event)
      auto image_size = m_osd_device.get_display_size();
      m_osd_device.rescale(image_size*2);
 
-     wxBitmap bitmap{m_osd_device.get_image()};
+     wxBitmap bitmap{m_osd_device.get_bitmap()};
      wxPaintDC dc(this);
      dc.SetBackground(* wxBLACK_BRUSH); 
      dc.Clear();
@@ -394,7 +393,7 @@ void view::OnVScroll(wxScrollWinEvent & event)
    if returns true then event_pos is over a valid image pixel
    The image pixel is put int result_pos
 */
-bool view::get_image_pixel(vect2_d const & event_pos, osd_image::pos_type & result_pos)
+bool view::get_image_pixel(vect2_d const & event_pos, osd_bitmap::pos_type & result_pos)
 {
       if ( ! m_current_image){
          return false;
@@ -414,17 +413,17 @@ bool view::get_image_pixel(vect2_d const & event_pos, osd_image::pos_type & resu
      auto drawing_pos = ic.device_to_drawing(event_pos);
      auto doc = wxGetApp().get_document();
  
-     osd_image::size_type num_pixels = m_current_image->get_size();
+     osd_bitmap::size_type num_pixels = m_current_image->get_size();
   
     // doc->get_bitmap_size(current_index,num_pixels);
      vect2_mm pixel_size = doc->get_pixel_size_mm();
      // bitmap always centered
      vect2_mm bitmap_size {num_pixels.x * pixel_size.x,num_pixels.y * pixel_size.y};
      vect2_mm offset {-bitmap_size.x/2 + pixel_size.x/2,bitmap_size.y/2 -pixel_size.y/2};
-     for ( size_t y = 0; y <num_pixels.y; ++y) {
+     for ( int32_t y = 0; y <num_pixels.y; ++y) {
           mm py = offset.y  - pixel_size.y * y;
           if ( quan::abs( drawing_pos.y - py) < (pixel_size.y /2)) {
-               for ( size_t x = 0; x <num_pixels.x; ++x) {
+               for ( int32_t x = 0; x <num_pixels.x; ++x) {
                     mm px = offset.x + pixel_size.x * x;
                     if ( quan::abs( drawing_pos.x - px) < (pixel_size.x /2)) {
                          result_pos.x = x;
@@ -467,38 +466,36 @@ void view::on_bitmaps_char(wxKeyEvent & event)
      if (m_current_image == nullptr){
          return;
      }
-     osd_image::pos_type result_pos;
+     osd_bitmap::pos_type result_pos;
      if ( m_mouse_is_down &&
                (get_image_pixel(m_cur_mouse_pos,result_pos) == true)
         ) {
           int ch = toupper(event.GetKeyCode());
-          osd_image::colour new_colour = osd_image::colour::invalid;
+          osd_bitmap::colour cur_colour 
+            = m_current_image->get_pixel_colour(result_pos);
+          osd_bitmap::colour new_colour = cur_colour;
           switch(ch) {
           case 'B':
-               new_colour = osd_image::colour::black;
+               new_colour = osd_bitmap::colour::black;
                break;
           case 'W':
-               new_colour = osd_image::colour::white;
+               new_colour = osd_bitmap::colour::white;
                break;
           case 'T':
-               new_colour = osd_image::colour::transparent;
+               new_colour = osd_bitmap::colour::transparent;
                break;
           case 'G':
-               new_colour = osd_image::colour::grey;
+               new_colour = osd_bitmap::colour::grey;
                break;
           default:
                break;
           }
-          if ( new_colour != osd_image::colour::invalid) {
-               osd_image::colour cur_colour = osd_image::colour::invalid;
-               m_current_image->get_pixel_colour(result_pos, cur_colour);
-               if ( new_colour != cur_colour){
-                  m_current_image->set_pixel_colour(result_pos, new_colour);
-                  this->set_modified(true);
-                  wxGetApp().get_main_frame()->enable_save_project(true);
-                  wxGetApp().get_main_frame()->enable_save_project_as(true);
-                  this->Refresh();
-               }
+          if ( new_colour != cur_colour){
+            m_current_image->set_pixel_colour(result_pos, new_colour);
+            this->set_modified(true);
+            wxGetApp().get_main_frame()->enable_save_project(true);
+            wxGetApp().get_main_frame()->enable_save_project_as(true);
+            this->Refresh();
           }
      }else {
           int ch = event.GetKeyCode();

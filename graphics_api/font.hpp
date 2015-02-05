@@ -3,18 +3,26 @@
 
 
 #include <vector>
+#include <quan/uav/osd/basic_font.hpp>
 
-#include "osd_image.hpp"
+#include "osd_bitmap.hpp"
 
-struct font{
-   //static constexpr int begin = 32 ;// ( 0x20); first ( space)
-   //static constexpr int end = 127; //( 0x7F) one after last
-   font(std::string const & name_in, osd_image::size_type size_in, int begin)
+struct font : quan::uav::osd::basic_font{
+    typedef quan::uav::osd::size_type size_type;
+    typedef quan::uav::osd::bitmap_ptr bitmap_ptr;
+
+   font(std::string const & name_in, size_type size_in, int begin)
    : m_name{name_in},m_size{size_in}, m_begin{begin}
    {
        assert( m_begin >= 0 && __LINE__);
    }
-   int get_begin()const{return m_begin;}
+  // satisfy abc
+   int32_t get_begin()const{return m_begin;}
+   int32_t get_num_elements()const {return m_elements.size();}
+   int32_t get_char_height()const { return m_size.y;}
+   int32_t get_char_width() const {return m_size.x;}
+   bitmap_ptr       get_char_at(int32_t i)const ;
+   // ~satisfy abc
    ~font(){}
    std::string const & get_name()const {return m_name;}
    // index of the value nb not zero index but char index
@@ -38,16 +46,14 @@ struct font{
       m_elements.at(pos) = val;
       return true;
    }
-   size_t get_num_elements()const {return m_elements.size();}
-   size_t get_char_height()const { return m_size.y;}
-   size_t get_char_width() const {return m_size.x;}
-   void set_char_size(osd_image::size_type const & size){ m_size = size;}
+
+   void set_char_size(osd_bitmap::size_type const & size){ m_size = size;}
 private:
    font & operator = ( font const &) = delete;
    font ( font const &) = delete;
    std::vector <int> m_elements;
    std::string m_name;
-   osd_image::size_type m_size;
+   size_type m_size;
    int m_begin;
 };
 

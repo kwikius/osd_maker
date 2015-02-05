@@ -405,14 +405,6 @@ void main_frame::OnTimer (wxTimerEvent &event)
       }
       the_aircraft.set_heading(bearing);
 
-//      auto home_bearing = wxGetApp().get_view()->get_home_bearing();
-//      home_bearing += quan::angle::deg{ 2.2};
-//      if ( home_bearing > quan::angle::deg{360}){
-//         home_bearing -= quan::angle::deg{360};
-//      }
-//      view->set_home_bearing(home_bearing);
-//
-       
        view->Refresh();
     
    }

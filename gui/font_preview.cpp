@@ -9,7 +9,7 @@
 
 #include "../osd_bmp_app.hpp"
 #include "../document.hpp"
-#include "../graphics_api/osd_image.hpp"
+#include "../graphics_api/osd_bitmap.hpp"
 #include "../graphics_api/font.hpp"
 
 #include "view.hpp"
@@ -48,7 +48,7 @@ END_EVENT_TABLE()
 void font_preview::export_font_element_as_bitmap(int handle)
 {
    // get a name
-  osd_image* image = wxGetApp().get_document()->get_image(handle);
+  osd_bitmap* image = wxGetApp().get_document()->get_bitmap(handle);
   if ( image == nullptr){
       return ;
   }
@@ -70,7 +70,6 @@ void font_preview::export_font_element_as_bitmap(int handle)
       
       osd_bitmap* new_bitmap = bmp->clone();
       new_bitmap->set_name(name);
-      new_bitmap->set_image_type(osd_image::image_type::Bitmap);
       wxGetApp().get_document()->add_bitmap(new_bitmap);
       wxGetApp().get_document()->set_modified(true);
   }

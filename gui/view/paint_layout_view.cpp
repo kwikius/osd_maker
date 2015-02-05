@@ -18,7 +18,7 @@ void view::paint_layout_view(wxPaintEvent & event)
          m_pfn_osd_on_draw(m_osd_device);
     }
     
-     wxBitmap bitmap{m_osd_device.get_image()};
+     wxBitmap bitmap{m_osd_device.get_bitmap()};
      wxPaintDC dc(this);
      dc.SetBackground(* wxBLACK_BRUSH); 
      dc.Clear();

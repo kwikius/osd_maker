@@ -28,7 +28,7 @@ osd_bitmap* osd_object_database::find_bitmap_by_name(std::string const & name_in
 
     for( auto handle : m_bitmaps){
          assert(( handle != -1) && __LINE__);
-         auto image = find_osd_image(handle);
+         auto image = find_osd_bitmap(handle);
          assert(( image != nullptr) && __LINE__);
          auto bmp = dynamic_cast<osd_bitmap*>( image);
          if(bmp && (name_in == bmp->get_name())){
@@ -90,7 +90,7 @@ std::string osd_object_database::make_unique_bitmap_name(std::string const & nam
       // search through bitmaps looking for name
       for( auto handle : m_bitmaps){
          assert(( handle != -1) && __LINE__);
-         auto image = find_osd_image(handle);
+         auto image = find_osd_bitmap(handle);
          assert((image != nullptr ) && __LINE__);
          auto bmp = dynamic_cast<osd_bitmap*>( image);
          assert( bmp && __LINE__);
@@ -118,11 +118,11 @@ std::string osd_object_database::make_unique_bitmap_name(std::string const & nam
 
 // image was created on heap or by clone
 // resource container takes ownership
-void osd_object_database::set_image_handle(int handle, osd_image* image)
+void osd_object_database::set_image_handle(int handle, osd_bitmap* image)
 {
       assert(( handle != -1) && __LINE__);
       assert(( image != nullptr) && __LINE__);
-      osd_image* old_image = find_osd_image(handle);
+      osd_bitmap* old_image = find_osd_bitmap(handle);
       assert((old_image != nullptr) && __LINE__);
       
       old_image->destroy();
@@ -159,7 +159,7 @@ bool osd_object_database::free_handle (int handle)
 }
 
 // can find bitmaps and font elements
-osd_image* osd_object_database::find_osd_image(int handle)const
+osd_bitmap* osd_object_database::find_osd_bitmap(int handle)const
 {
    auto iter = m_osd_image_map.find(handle);
    if(iter != m_osd_image_map.end()){
@@ -187,7 +187,7 @@ osd_bitmap* osd_object_database::move_osd_bitmap(int handle)
    if(iter == m_osd_image_map.end()){
       return nullptr;
    };
-   osd_image* image = iter->second;
+   osd_bitmap* image = iter->second;
    m_osd_image_map.erase(iter);
 
    osd_bitmap* bmp = dynamic_cast<osd_bitmap*>(image);
@@ -212,7 +212,7 @@ osd_bitmap* osd_object_database::move_font_element(int handle)
    if(iter == m_osd_image_map.end()){
       return nullptr;
    };
-   osd_image* image = iter->second;
+   osd_bitmap* image = iter->second;
    m_osd_image_map.erase(iter);
 
    osd_bitmap* bmp = dynamic_cast<osd_bitmap*>(image);
