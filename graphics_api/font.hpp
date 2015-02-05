@@ -5,7 +5,7 @@
 #include <vector>
 #include <quan/uav/osd/basic_font.hpp>
 
-#include "osd_bitmap.hpp"
+#include <quan/uav/osd/dynamic/bitmap.hpp>
 
 struct font : quan::uav::osd::basic_font{
     typedef quan::uav::osd::size_type size_type;
@@ -47,7 +47,7 @@ struct font : quan::uav::osd::basic_font{
       return true;
    }
 
-   void set_char_size(osd_bitmap::size_type const & size){ m_size = size;}
+   void set_char_size(size_type const & size){ m_size = size;}
 private:
    font & operator = ( font const &) = delete;
    font ( font const &) = delete;

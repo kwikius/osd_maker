@@ -23,14 +23,15 @@ bool osd_object_database::get_font_handle_at(size_t i, int & handle_out) const
    return true;
 }
 
-osd_bitmap* osd_object_database::find_bitmap_by_name(std::string const & name_in)const
+osd_object_database::dynamic_bitmap* 
+osd_object_database::find_bitmap_by_name(std::string const & name_in)const
 {
 
     for( auto handle : m_bitmaps){
          assert(( handle != -1) && __LINE__);
          auto image = find_osd_bitmap(handle);
          assert(( image != nullptr) && __LINE__);
-         auto bmp = dynamic_cast<osd_bitmap*>( image);
+         auto bmp = dynamic_cast<dynamic_bitmap*>( image);
          if(bmp && (name_in == bmp->get_name())){
              return bmp;
          }
@@ -92,7 +93,7 @@ std::string osd_object_database::make_unique_bitmap_name(std::string const & nam
          assert(( handle != -1) && __LINE__);
          auto image = find_osd_bitmap(handle);
          assert((image != nullptr ) && __LINE__);
-         auto bmp = dynamic_cast<osd_bitmap*>( image);
+         auto bmp = dynamic_cast<dynamic_bitmap*>( image);
          assert( bmp && __LINE__);
          if(name_out == bmp->get_name()){
             name_unique = false;
@@ -118,11 +119,11 @@ std::string osd_object_database::make_unique_bitmap_name(std::string const & nam
 
 // image was created on heap or by clone
 // resource container takes ownership
-void osd_object_database::set_image_handle(int handle, osd_bitmap* image)
+void osd_object_database::set_image_handle(int handle, dynamic_bitmap* image)
 {
       assert(( handle != -1) && __LINE__);
       assert(( image != nullptr) && __LINE__);
-      osd_bitmap* old_image = find_osd_bitmap(handle);
+      dynamic_bitmap* old_image = find_osd_bitmap(handle);
       assert((old_image != nullptr) && __LINE__);
       
       old_image->destroy();
@@ -159,7 +160,8 @@ bool osd_object_database::free_handle (int handle)
 }
 
 // can find bitmaps and font elements
-osd_bitmap* osd_object_database::find_osd_bitmap(int handle)const
+osd_object_database::dynamic_bitmap* 
+osd_object_database::find_osd_bitmap(int handle)const
 {
    auto iter = m_osd_image_map.find(handle);
    if(iter != m_osd_image_map.end()){
@@ -180,17 +182,18 @@ font* osd_object_database::find_font(int handle)const
 }
 
 // after iterating and moving do clean_bitmap_handles() to remove dead handles
-osd_bitmap* osd_object_database::move_osd_bitmap(int handle)
+osd_object_database::dynamic_bitmap* 
+osd_object_database::move_osd_bitmap(int handle)
 {
    assert(handle != -1);
    auto iter = m_osd_image_map.find(handle);
    if(iter == m_osd_image_map.end()){
       return nullptr;
    };
-   osd_bitmap* image = iter->second;
+   dynamic_bitmap* image = iter->second;
    m_osd_image_map.erase(iter);
 
-   osd_bitmap* bmp = dynamic_cast<osd_bitmap*>(image);
+   dynamic_bitmap* bmp = dynamic_cast<dynamic_bitmap*>(image);
    assert(bmp && __LINE__);
    bool handle_invalidated = false;
    for ( auto iter = m_bitmaps.begin(), end = m_bitmaps.end(); iter != end; ++iter){
@@ -205,17 +208,18 @@ osd_bitmap* osd_object_database::move_osd_bitmap(int handle)
    return bmp;
 }
 
-osd_bitmap* osd_object_database::move_font_element(int handle)
+osd_object_database::dynamic_bitmap* 
+osd_object_database::move_font_element(int handle)
 {
    assert(handle != -1);
    auto iter = m_osd_image_map.find(handle);
    if(iter == m_osd_image_map.end()){
       return nullptr;
    };
-   osd_bitmap* image = iter->second;
+   dynamic_bitmap* image = iter->second;
    m_osd_image_map.erase(iter);
 
-   osd_bitmap* bmp = dynamic_cast<osd_bitmap*>(image);
+   dynamic_bitmap* bmp = dynamic_cast<dynamic_bitmap*>(image);
    assert(bmp && __LINE__);
    
    assert(free_handle(handle) && __LINE__);
@@ -258,7 +262,7 @@ bool osd_object_database::clean_bitmap_handles()
    return true;
 }
 // can only add bitmaps not font elements
-int osd_object_database::add_bitmap( osd_bitmap* bmp)
+int osd_object_database::add_bitmap( dynamic_bitmap* bmp)
 {
    int new_handle = get_new_handle();
    m_osd_image_map.insert({new_handle,bmp});
@@ -267,7 +271,7 @@ int osd_object_database::add_bitmap( osd_bitmap* bmp)
 }
 
 // assume its already part of the font
-int osd_object_database::add_font_element( osd_bitmap* bmp)
+int osd_object_database::add_font_element( dynamic_bitmap* bmp)
 {
    int new_handle = get_new_handle();
    m_osd_image_map.insert({new_handle,bmp});

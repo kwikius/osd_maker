@@ -229,8 +229,8 @@ void panel::rename_bitmap(wxTreeEvent & event)
       return;
   }
 
-  osd_bitmap* abc_bmp = wxGetApp().get_document()->get_bitmap(handle);
-  osd_bitmap* bmp = dynamic_cast<osd_bitmap*>(abc_bmp);
+  view::dynamic_bitmap* abc_bmp = wxGetApp().get_document()->get_bitmap(handle);
+  view::dynamic_bitmap* bmp = dynamic_cast<view::dynamic_bitmap*>(abc_bmp);
   if ( bmp == nullptr){
       return ;
   }

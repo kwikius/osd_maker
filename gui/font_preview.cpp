@@ -9,7 +9,7 @@
 
 #include "../osd_bmp_app.hpp"
 #include "../document.hpp"
-#include "../graphics_api/osd_bitmap.hpp"
+#include <quan/uav/osd/dynamic/bitmap.hpp>
 #include "../graphics_api/font.hpp"
 
 #include "view.hpp"
@@ -48,11 +48,11 @@ END_EVENT_TABLE()
 void font_preview::export_font_element_as_bitmap(int handle)
 {
    // get a name
-  osd_bitmap* image = wxGetApp().get_document()->get_bitmap(handle);
+  document::dynamic_bitmap* image = wxGetApp().get_document()->get_bitmap(handle);
   if ( image == nullptr){
       return ;
   }
-  osd_bitmap* bmp = dynamic_cast<osd_bitmap*> (image);
+  document::dynamic_bitmap* bmp = dynamic_cast<document::dynamic_bitmap*> (image);
   if(  bmp == nullptr){
       return;
   }
@@ -68,7 +68,7 @@ void font_preview::export_font_element_as_bitmap(int handle)
          return;
       }
       
-      osd_bitmap* new_bitmap = bmp->clone();
+      document::dynamic_bitmap* new_bitmap = bmp->clone();
       new_bitmap->set_name(name);
       wxGetApp().get_document()->add_bitmap(new_bitmap);
       wxGetApp().get_document()->set_modified(true);

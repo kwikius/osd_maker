@@ -12,12 +12,15 @@
 #include <quan/two_d/vect.hpp>
 #include <quan/length.hpp>
 
-#include "graphics_api/osd_bitmap.hpp"
+#include <quan/uav/osd/dynamic/bitmap.hpp>
 #include "graphics_api/font.hpp"
 
 struct osd_object_database;
 
 struct document {
+
+     typedef quan::uav::osd::dynamic::bitmap dynamic_bitmap;
+
      document();
      void reset();
      quan::two_d::vect<quan::length::mm> const &
@@ -33,18 +36,18 @@ struct document {
      bool open_project(wxString const & path);
      bool load_mcm_font_file (wxString const & path);
      bool load_png_file(wxString const &path);
-     bool add_new_bitmap(std::string const & name, osd_bitmap::size_type size);
+     bool add_new_bitmap(std::string const & name, dynamic_bitmap::size_type size);
      wxString get_project_file_path(){ return m_project_file_path;}
      osd_object_database const & get_database() { return *m_database;}
      // doc doesnt relinquish ownership of image
-     osd_bitmap* get_bitmap( int handle)const ;
-     osd_bitmap* get_bitmap( std::string const & name)const ;
+     dynamic_bitmap* get_bitmap( int handle)const ;
+     dynamic_bitmap* get_bitmap( std::string const & name)const ;
      font* get_font(int handle) const;
      font* get_font( std::string const & name)const;
      // doc takes ownership of image which was created on heap
-     void set_image(int handle, osd_bitmap* image);
+     void set_image(int handle, dynamic_bitmap* image);
      // Take ownership of bitmap which was created on heap
-     void add_bitmap(osd_bitmap*);
+     void add_bitmap(dynamic_bitmap*);
 private:
     // void add_font ( font*);
      bool ll_save_project(wxString const & path);

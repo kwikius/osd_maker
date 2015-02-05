@@ -47,11 +47,11 @@ void grid_cell_bmp_renderer::Draw( wxGrid & grid,
       int bmp_handle = -1;
       if (selected_font->get_handle_at(ascii_char, bmp_handle)){
          // get th bitmap at the handle
-         osd_bitmap* image = wxGetApp().get_document()->get_bitmap(bmp_handle);
+         document::dynamic_bitmap* image = wxGetApp().get_document()->get_bitmap(bmp_handle);
          if ( image){
             
             // convert to a bitmap
-            auto bmp = ConvertTo_wxBitmap(*image, colour_array);
+            auto bmp = quan::uav::osd::dynamic::ConvertTo_wxBitmap(*image, colour_array);
             wxImage image = bmp->ConvertToImage();
             wxSize is {image.GetWidth(),image.GetHeight()};
             image.Rescale(is.x * 2, is.y * 2);

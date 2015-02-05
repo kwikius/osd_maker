@@ -15,7 +15,7 @@
 #include "../osd_bmp_app.hpp"
 #include "../document.hpp"
 #include "view/drawing.hpp"
-#include "../graphics_api/osd_bitmap.hpp"
+#include <quan/uav/osd/dynamic/bitmap.hpp>
 #include "../graphics_api/osd_device.hpp"
 
    struct view : wxWindow{
@@ -34,8 +34,10 @@
       typedef quan::two_d::vect<per_mm>       vect2_per_mm;
       typedef quan::three_d::vect<mm>             vect3_mm;
 
-      bool get_image_pixel(vect2_d const & event_pos, osd_bitmap::pos_type & result_pos);
-      quan::gx::abc_color::ptr get_colour(osd_bitmap::colour colour_id);
+      typedef quan::uav::osd::dynamic::bitmap dynamic_bitmap;
+
+      bool get_image_pixel(vect2_d const & event_pos, quan::uav::osd::pxp_type & result_pos);
+      quan::gx::abc_color::ptr get_colour(quan::uav::osd::colour_type colour_id);
       // returns result of yes no cancel messgaebox
       int sync_hmi_view();
       void sync_to_document();
@@ -44,7 +46,7 @@
       // copy image refeed by handle to view for display
       void copy_to_current_image(int handle);
       // make a heap copy of current view image
-      osd_bitmap* clone_current_image()const
+      dynamic_bitmap* clone_current_image()const
       {
          assert(have_image()&& __LINE__);
          return m_current_image->clone();
@@ -95,7 +97,7 @@
 
       void setup_draw_fn();
       
-      osd_bitmap* m_current_image;
+      dynamic_bitmap* m_current_image;
       int m_document_image_handle;
      // int m_last_font_handle;
       bool m_current_image_modified;

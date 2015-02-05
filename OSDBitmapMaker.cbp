@@ -60,9 +60,8 @@
 		<Unit filename="document/osd_object_database.hpp" />
 		<Unit filename="graphics_api/font.hpp" />
 		<Unit filename="graphics_api/info_on_fonts.txt" />
-		<Unit filename="graphics_api/objects/osd_bitmap.cpp" />
+		<Unit filename="graphics_api/objects/font.cpp" />
 		<Unit filename="graphics_api/objects/osd_device.cpp" />
-		<Unit filename="graphics_api/osd_bitmap.hpp" />
 		<Unit filename="graphics_api/osd_device.hpp" />
 		<Unit filename="gui/dialogs/bitmap_resize_dialog.cpp" />
 		<Unit filename="gui/dialogs/bitmap_resize_dialog.hpp" />
