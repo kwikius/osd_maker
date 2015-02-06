@@ -10,12 +10,13 @@
 #include <quan/gx/wxwidgets/graphics_context.hpp>
 #include <quan/gx/simple_drawing_view.hpp>
 #include <quan/gx/simple_device_window.hpp>
-#include "../aircraft/aircraft.hpp"
-
+#include <quan/uav/osd/dynamic/bitmap.hpp>
+#include <quan/uav/osd/dynamic/font.hpp>
 #include "../osd_bmp_app.hpp"
 #include "../document.hpp"
 #include "view/drawing.hpp"
-#include <quan/uav/osd/dynamic/bitmap.hpp>
+
+
 #include "../graphics_api/osd_device.hpp"
 
    struct view : wxWindow{
@@ -35,6 +36,7 @@
       typedef quan::three_d::vect<mm>             vect3_mm;
 
       typedef quan::uav::osd::dynamic::bitmap dynamic_bitmap;
+      typedef quan::uav::osd::dynamic::font dynamic_font;
 
       bool get_image_pixel(vect2_d const & event_pos, quan::uav::osd::pxp_type & result_pos);
       quan::gx::abc_color::ptr get_colour(quan::uav::osd::colour_type colour_id);
@@ -67,11 +69,11 @@
       enum class view_mode {Unknown, inBitmaps, inLayouts};
       view_mode get_view_mode() const{ return m_view_mode;}
       void set_view_mode(view_mode mode) ;//{m_view_mode = mode;}
-      font* get_current_font()const;
-      quan::angle::deg get_bearing()const { return m_bearing;}
-      void set_bearing( quan::angle::deg const & angle){m_bearing = angle;}
-      quan::angle::deg get_home_bearing()const { return m_home_bearing;}
-      void set_home_bearing( quan::angle::deg const & angle){m_home_bearing = angle;}
+      dynamic_font* get_current_font()const;
+    //  quan::angle::deg get_bearing()const { return m_bearing;}
+     // void set_bearing( quan::angle::deg const & angle){m_bearing = angle;}
+     // quan::angle::deg get_home_bearing()const { return m_home_bearing;}
+     // void set_home_bearing( quan::angle::deg const & angle){m_home_bearing = angle;}
       
    private:
       void OnPaint(wxPaintEvent & event);
@@ -105,11 +107,8 @@
       
       osd_device m_osd_device;
 
-      quan::angle::deg m_bearing;
-      quan::angle::deg m_home_bearing;
-
       typedef  void (*pfn_set_osd_on_draw_params) (
-      osd_object_database const * db, aircraft const * a);
+      osd_object_database const * db);
       
       typedef  void (*pfn_osd_on_draw)( osd_device & d);
       pfn_set_osd_on_draw_params m_pfn_set_osd_on_draw_params;    

@@ -33,8 +33,6 @@ view::view(wxWindow* parent)
 ,m_document_image_handle{-1}
 ,m_current_image_modified{false}
 ,m_view_mode{view_mode::inBitmaps}
-,m_bearing{0}
-,m_home_bearing{0}
 ,m_pfn_set_osd_on_draw_params{nullptr}
 ,m_pfn_osd_on_draw{nullptr} {
    //  window_ids::view = this->GetId();
@@ -48,7 +46,7 @@ view::view(wxWindow* parent)
 
 void view::setup_draw_fn()
 {
-#if 0
+#if 1
   dlerror();
   void * handle = dlopen("/home/andy/cpp/projects/osd_draw/osd_draw.so",RTLD_LAZY);
   if ( !handle){
@@ -72,7 +70,7 @@ void view::setup_draw_fn()
 #endif
 }
 
-font* view::get_current_font()const
+view::dynamic_font* view::get_current_font()const
 {
     int font_handle = wxGetApp().get_font_preview()->get_font_handle();
     if ( font_handle == -1){

@@ -19,7 +19,6 @@
 #include <quan/gx/wxwidgets/to_wxString.hpp>
 #include "../document.hpp"
 //#include "sp_in_thread.hpp"
-#include "../aircraft/aircraft.hpp"
 
 #include "../osd_bmp_app.hpp"
 
@@ -398,12 +397,12 @@ void main_frame::OnTimer (wxTimerEvent &event)
 {
    auto view = wxGetApp().get_view();
    if ( view->get_view_mode() == ::view::view_mode::inLayouts){
-      auto bearing = the_aircraft.get_heading();
-      bearing += quan::angle::deg{ 2};
-      if ( bearing > quan::angle::deg{360}){
-         bearing -= quan::angle::deg{360};
-      }
-      the_aircraft.set_heading(bearing);
+//      auto bearing = the_aircraft.get_heading();
+//      bearing += quan::angle::deg{ 2};
+//      if ( bearing > quan::angle::deg{360}){
+//         bearing -= quan::angle::deg{360};
+//      }
+//      the_aircraft.set_heading(bearing);
 
        view->Refresh();
     

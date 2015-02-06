@@ -4,7 +4,7 @@
 #include <quan/angle.hpp>
 
 #include "../graphics_api/osd_device.hpp"
-#include "../aircraft/aircraft.hpp"
+//#include "../aircraft/aircraft.hpp"
 #include "../document/osd_object_database.hpp"
 
 /*
@@ -17,6 +17,6 @@ void draw_home(osd_device & d);
 void draw_altitude(osd_device & d);
 */
 
-void display1_on_draw( osd_device & d,aircraft const & a, osd_object_database const &db);
+void display1_on_draw( osd_device & d, osd_object_database const &db);
 
 #endif

@@ -1,13 +1,11 @@
 
+#include <quan/uav/osd/dynamic/font.hpp>
+
 #include "../../osd_bmp_app.hpp"
 #include "../../document.hpp"
-
-#include "../../graphics_api/font.hpp"
-
 #include "../font_preview.hpp"
-
+#include "../../graphics_api/objects/db_bitmap.hpp"
 #include "grid_cell_bmp_renderer.hpp"
-
 
 grid_cell_bmp_renderer::grid_cell_bmp_renderer()
 {}
@@ -41,7 +39,7 @@ void grid_cell_bmp_renderer::Draw( wxGrid & grid,
    int num_cols = grid.GetNumberCols();
    int ascii_char = row * num_cols + col;
 
-   font* selected_font = wxGetApp().get_font_preview()->get_font();
+   db_font* selected_font = wxGetApp().get_font_preview()->get_font();
 
    if (selected_font){
       int bmp_handle = -1;
@@ -51,7 +49,7 @@ void grid_cell_bmp_renderer::Draw( wxGrid & grid,
          if ( image){
             
             // convert to a bitmap
-            auto bmp = quan::uav::osd::dynamic::ConvertTo_wxBitmap(*image, colour_array);
+            auto bmp = ConvertTo_wxBitmap(*image, colour_array);
             wxImage image = bmp->ConvertToImage();
             wxSize is {image.GetWidth(),image.GetHeight()};
             image.Rescale(is.x * 2, is.y * 2);

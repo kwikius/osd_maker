@@ -19,23 +19,23 @@
 #include "gui/main_frame.hpp"
 #include "gui/view.hpp"
 #include "gui/panel.hpp"
-#include "graphics_api/font.hpp"
+
+#include "graphics_api/objects/db_bitmap.hpp"
+
 
 using quan::gx::wxwidgets::from_wxString;
 using quan::gx::wxwidgets::to_wxString;
 
-using quan::uav::osd::dynamic::ConvertTo_osd_bitmap;
-
 document::dynamic_bitmap* document::get_bitmap( int handle)const 
-{return m_database->find_osd_bitmap(handle);}
+{return m_database->find_bitmap_by_handle(handle);}
 
 document::dynamic_bitmap* document::get_bitmap( std::string const & name)const 
 {return m_database->find_bitmap_by_name(name);}
 
-font* document::get_font(int handle) const
-{return m_database->find_font(handle);}
+db_font* document::get_font(int handle) const
+{return m_database->find_font_by_handle(handle);}
 
-font* document::get_font( std::string const & name)const
+db_font* document::get_font( std::string const & name)const
 {
     return m_database->find_font_by_name(name);
 }
@@ -140,11 +140,11 @@ bool document::open_project (wxString const & path)
                   return false;
                }
                std::string font_name = full_name.substr(6, dirsep - 6);
-               font * home_font = temp_resources->find_font_by_name(font_name);
+               db_font * home_font = temp_resources->find_font_by_name(font_name);
                bool new_font = false;
                if ( home_font == nullptr){
                  // need to sort size 
-                 home_font = new font{font_name,dynamic_bitmap::size_type{0,0},0};
+                 home_font = new db_font{font_name,dynamic_bitmap::size_type{0,0},0};
                  new_font = true;
                  temp_resources->add_font(home_font);
                } 
@@ -181,7 +181,7 @@ bool document::open_project (wxString const & path)
    for ( size_t i =0, end = temp_resources->get_num_bitmaps(); i < end; ++i){
       int handle = -1;
       assert(temp_resources->get_bitmap_handle_at(i,handle) && __LINE__);
-      auto bmp = temp_resources->move_osd_bitmap(handle);
+      auto bmp = temp_resources->move_bitmap_by_handle(handle);
       assert(bmp);
       this->add_bitmap(bmp);
    }
@@ -189,14 +189,15 @@ bool document::open_project (wxString const & path)
       int temp_font_handle = -1;
       assert ( temp_resources->get_font_handle_at(i,temp_font_handle) && __LINE__);
       assert (( temp_font_handle != -1) && __LINE__);
-      font* new_font = temp_resources->move_font(temp_font_handle);
+      db_font* new_font = temp_resources->move_font_by_handle(temp_font_handle);
       assert ((new_font != nullptr) && __LINE__);
       for ( size_t j = new_font->get_begin(); 
             j < (new_font->get_num_elements() + static_cast<size_t>(new_font->get_begin()));
             ++j){
          int temp_image_handle = -1;
          assert(new_font->get_handle_at( j, temp_image_handle) && __LINE__);
-         dynamic_bitmap* font_elem = temp_resources->move_font_element(temp_image_handle);
+         dynamic_bitmap* font_elem 
+            = temp_resources->move_font_element_by_handle(temp_image_handle);
          assert (( font_elem != nullptr && __LINE__));
          int elem_handle = m_database->add_font_element(font_elem);
          new_font->set_handle_at(j, elem_handle);
@@ -272,7 +273,7 @@ bool document::ll_save_project (wxString const & path)
          for (size_t i = 0; i < m_database->get_num_fonts(); ++i) {
             int font_handle =-1;
             assert( m_database->get_font_handle_at(i,font_handle) && __LINE__) ;
-            font * cur_font = get_font(font_handle);
+            db_font * cur_font = get_font(font_handle);
             assert( cur_font != nullptr && __LINE__);
             wxString dirname = wxT("fonts/");
             dirname += to_wxString(cur_font->get_name());
@@ -296,7 +297,7 @@ bool document::ll_save_project (wxString const & path)
          for (size_t i = 0; i < m_database->get_num_bitmaps(); ++i) {
                int handle = -1;
                assert(m_database->get_bitmap_handle_at(i,handle) && __LINE__);
-               dynamic_bitmap * bmp = m_database->find_osd_bitmap(handle);
+               dynamic_bitmap * bmp = m_database->find_bitmap_by_handle(handle);
 //               assert( dynamic_bitmap && __LINE__);
 //               dynamic_bitmap* bmp = dynamic_cast<dynamic_bitmap*>(dynamic_bitmap);
                assert(bmp && __LINE__);
@@ -486,7 +487,7 @@ bool document::load_mcm_font_file (wxString const & path)
    name = quan::fs::strip_file_extension(name);
    name = m_database->make_unique_font_name(name);
    
-   auto new_font = new font{name,size,begin};
+   auto new_font = new db_font{name,size,begin};
    int first_handle = -1;
    for ( int ch = begin; ch < end; ++ch){
       try{

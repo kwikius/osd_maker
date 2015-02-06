@@ -50,17 +50,15 @@
 			<Add option="`wx-config --libs`" />
 			<Add library="dl" />
 		</Linker>
-		<Unit filename="aircraft/aircraft.cpp" />
-		<Unit filename="aircraft/aircraft.hpp" />
 		<Unit filename="constants.hpp" />
 		<Unit filename="document.cpp" />
 		<Unit filename="document.hpp" />
 		<Unit filename="document/mcm_file.cpp" />
 		<Unit filename="document/osd_object_database.cpp" />
 		<Unit filename="document/osd_object_database.hpp" />
-		<Unit filename="graphics_api/font.hpp" />
 		<Unit filename="graphics_api/info_on_fonts.txt" />
-		<Unit filename="graphics_api/objects/font.cpp" />
+		<Unit filename="graphics_api/objects/db_font.cpp" />
+		<Unit filename="graphics_api/objects/db_font.hpp" />
 		<Unit filename="graphics_api/objects/osd_device.cpp" />
 		<Unit filename="graphics_api/osd_device.hpp" />
 		<Unit filename="gui/dialogs/bitmap_resize_dialog.cpp" />
@@ -102,8 +100,10 @@
 		<Unit filename="../../../website/quan-trunk/quan/uav/attitude.hpp" />
 		<Unit filename="../../../website/quan-trunk/quan/uav/battery.hpp" />
 		<Unit filename="../../../website/quan-trunk/quan/uav/fletcher16.hpp" />
+		<Unit filename="../../../website/quan-trunk/quan/uav/osd/dynamic/display_device.hpp" />
 		<Unit filename="../../../website/quan-trunk/quan_matters/src/gx/static_rgb_colours.cpp" />
 		<Unit filename="../../../website/quan-trunk/quan_matters/src/serial_port.cpp" />
+		<Unit filename="../../../website/quan-trunk/quan_matters/src/uav/osd/dynamic/bitmap.cpp" />
 		<Unit filename="../../../website/quan-trunk/quan_matters/src/wxwidgets/draw_box.cpp" />
 		<Unit filename="../../../website/quan-trunk/quan_matters/src/wxwidgets/draw_circle.cpp" />
 		<Unit filename="../../../website/quan-trunk/quan_matters/src/wxwidgets/draw_filled_box.cpp" />

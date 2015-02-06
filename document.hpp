@@ -13,13 +13,14 @@
 #include <quan/length.hpp>
 
 #include <quan/uav/osd/dynamic/bitmap.hpp>
-#include "graphics_api/font.hpp"
+#include "graphics_api/objects/db_font.hpp"
 
 struct osd_object_database;
 
 struct document {
 
      typedef quan::uav::osd::dynamic::bitmap dynamic_bitmap;
+     typedef quan::uav::osd::dynamic::font dynamic_font;
 
      document();
      void reset();
@@ -42,8 +43,8 @@ struct document {
      // doc doesnt relinquish ownership of image
      dynamic_bitmap* get_bitmap( int handle)const ;
      dynamic_bitmap* get_bitmap( std::string const & name)const ;
-     font* get_font(int handle) const;
-     font* get_font( std::string const & name)const;
+     db_font* get_font(int handle) const;
+     db_font* get_font(std::string const & name)const;
      // doc takes ownership of image which was created on heap
      void set_image(int handle, dynamic_bitmap* image);
      // Take ownership of bitmap which was created on heap

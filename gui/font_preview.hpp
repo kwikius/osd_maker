@@ -4,17 +4,18 @@
 #include <wx/wx.h>
 #include <wx/grid.h>
 
-#include "../graphics_api/font.hpp"
+#include "../graphics_api/objects/db_font.hpp"
 
    struct font_preview : wxWindow {
       font_preview (wxWindow* parent);
       // void OnPaint(wxPaintEvent & event);
+      typedef quan::uav::osd::dynamic::font dynamic_font;
       enum{
          idGrid = 1000
       };
       void set_font_handle(int font_handle);
       int get_font_handle()const{ return m_current_font_handle;}
-      font * get_font() const;
+      db_font * get_font() const;
       void reset();
    private:
       void OnGridCellLeftDblClick(wxGridEvent& event);

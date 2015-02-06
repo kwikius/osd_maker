@@ -6,11 +6,11 @@
 #include <quan/gx/wxwidgets/from_wxString.hpp>
 #include <quan/gx/wxwidgets/to_wxString.hpp>
 
+#include <quan/uav/osd/dynamic/bitmap.hpp>
+#include "../graphics_api/objects/db_font.hpp"
 
 #include "../osd_bmp_app.hpp"
 #include "../document.hpp"
-#include <quan/uav/osd/dynamic/bitmap.hpp>
-#include "../graphics_api/font.hpp"
 
 #include "view.hpp"
 #include "font_preview.hpp"
@@ -30,7 +30,7 @@ void font_preview::set_font_handle(int font_handle)
    this->Refresh();
 }
 
-font * font_preview::get_font()const
+db_font * font_preview::get_font()const
 {
    if (m_current_font_handle == -1){
       return nullptr;
@@ -111,7 +111,7 @@ void font_preview::OnGridCellRightClick(wxGridEvent& event)
 // -1 if fail
 int font_preview::get_sel_font_element_handle(wxGridEvent & event)const
 {
-  font* selected_font = this->get_font();
+  db_font* selected_font = this->get_font();
   if (selected_font == nullptr){
       return -1;
   }

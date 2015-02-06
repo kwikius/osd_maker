@@ -1,6 +1,25 @@
 
 #include "osd_object_database.hpp"
 
+quan::uav::osd::dynamic::bitmap * osd_object_database::get_bitmap_at(size_t i) const
+{ 
+   int handle = -1;
+   if ( get_bitmap_handle_at(i,handle) == true){
+      return find_bitmap_by_handle(handle);
+   }else{
+      return nullptr;
+   }
+}
+quan::uav::osd::dynamic::font * osd_object_database::get_font_at(size_t i) const
+{
+   int handle = -1;
+   if ( get_font_handle_at(i,handle) == true){
+      return find_font_by_handle(handle);
+   }else{
+      return nullptr;
+   }
+}
+
 bool osd_object_database::get_bitmap_handle_at(size_t i, int & handle_out)const
 {
    if ( i >= get_num_bitmaps()){
@@ -29,7 +48,7 @@ osd_object_database::find_bitmap_by_name(std::string const & name_in)const
 
     for( auto handle : m_bitmaps){
          assert(( handle != -1) && __LINE__);
-         auto image = find_osd_bitmap(handle);
+         auto image = find_bitmap_by_handle(handle);
          assert(( image != nullptr) && __LINE__);
          auto bmp = dynamic_cast<dynamic_bitmap*>( image);
          if(bmp && (name_in == bmp->get_name())){
@@ -39,10 +58,11 @@ osd_object_database::find_bitmap_by_name(std::string const & name_in)const
     return nullptr;
 }
 
-font* osd_object_database::find_font_by_name(std::string const & name_in)const
+db_font* 
+osd_object_database::find_font_by_name(std::string const & name_in)const
 {
     for( auto v : m_font_map){
-         font* f = v.second;
+         db_font* f = v.second;
          if( (name_in == f->get_name())){
              return f;
          }
@@ -58,7 +78,7 @@ std::string osd_object_database::make_unique_font_name(std::string const & name_
       bool name_unique = true;
       // search through font looking for name
       for( auto iter : m_font_map){
-         font* f = iter.second;
+         db_font* f = iter.second;
          assert((f != nullptr ) && __LINE__);
          if(name_out == f->get_name()){
             name_unique = false;
@@ -91,7 +111,7 @@ std::string osd_object_database::make_unique_bitmap_name(std::string const & nam
       // search through bitmaps looking for name
       for( auto handle : m_bitmaps){
          assert(( handle != -1) && __LINE__);
-         auto image = find_osd_bitmap(handle);
+         auto image = find_bitmap_by_handle(handle);
          assert((image != nullptr ) && __LINE__);
          auto bmp = dynamic_cast<dynamic_bitmap*>( image);
          assert( bmp && __LINE__);
@@ -123,7 +143,7 @@ void osd_object_database::set_image_handle(int handle, dynamic_bitmap* image)
 {
       assert(( handle != -1) && __LINE__);
       assert(( image != nullptr) && __LINE__);
-      dynamic_bitmap* old_image = find_osd_bitmap(handle);
+      dynamic_bitmap* old_image = find_bitmap_by_handle(handle);
       assert((old_image != nullptr) && __LINE__);
       
       old_image->destroy();
@@ -161,7 +181,7 @@ bool osd_object_database::free_handle (int handle)
 
 // can find bitmaps and font elements
 osd_object_database::dynamic_bitmap* 
-osd_object_database::find_osd_bitmap(int handle)const
+osd_object_database::find_bitmap_by_handle(int handle)const
 {
    auto iter = m_osd_image_map.find(handle);
    if(iter != m_osd_image_map.end()){
@@ -171,7 +191,8 @@ osd_object_database::find_osd_bitmap(int handle)const
    }
 }
 
-font* osd_object_database::find_font(int handle)const
+db_font* 
+osd_object_database::find_font_by_handle(int handle)const
 {
    auto iter = m_font_map.find(handle);
    if(iter != m_font_map.end()){
@@ -183,7 +204,7 @@ font* osd_object_database::find_font(int handle)const
 
 // after iterating and moving do clean_bitmap_handles() to remove dead handles
 osd_object_database::dynamic_bitmap* 
-osd_object_database::move_osd_bitmap(int handle)
+osd_object_database::move_bitmap_by_handle(int handle)
 {
    assert(handle != -1);
    auto iter = m_osd_image_map.find(handle);
@@ -209,7 +230,7 @@ osd_object_database::move_osd_bitmap(int handle)
 }
 
 osd_object_database::dynamic_bitmap* 
-osd_object_database::move_font_element(int handle)
+osd_object_database::move_font_element_by_handle(int handle)
 {
    assert(handle != -1);
    auto iter = m_osd_image_map.find(handle);
@@ -226,14 +247,14 @@ osd_object_database::move_font_element(int handle)
    return bmp;
 }
 
-font* osd_object_database::move_font(int handle)
+db_font* osd_object_database::move_font_by_handle(int handle)
 {
    assert(handle != -1);
    auto iter = m_font_map.find(handle);
    if(iter == m_font_map.end()){
       return nullptr;
    };
-   font* cur_font = iter->second;
+   db_font* cur_font = iter->second;
    m_font_map.erase(iter);
 
    assert(cur_font && __LINE__);
@@ -278,7 +299,7 @@ int osd_object_database::add_font_element( dynamic_bitmap* bmp)
    return new_handle;
 }
 
-int osd_object_database::add_font( font* f)
+int osd_object_database::add_font( db_font* f)
 {
    int new_handle = get_new_handle();
    m_font_map.insert({new_handle,f});
