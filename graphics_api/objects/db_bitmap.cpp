@@ -32,7 +32,7 @@ ConvertTo_osd_bitmap (std::string const & name, wxImage const& image)
                               }
                         }
                   }
-               bmp->set_pixel_colour ( {x, y}, colour);
+               bmp->set_pixel({x,y},colour);
             }
       }
    return bmp;

@@ -491,7 +491,7 @@ void view::on_bitmaps_char(wxKeyEvent & event)
                break;
           }
           if ( new_colour != cur_colour){
-            m_current_image->set_pixel_colour(result_pos, new_colour);
+            m_current_image->set_pixel(result_pos, new_colour);
             this->set_modified(true);
             wxGetApp().get_main_frame()->enable_save_project(true);
             wxGetApp().get_main_frame()->enable_save_project_as(true);

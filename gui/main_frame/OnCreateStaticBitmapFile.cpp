@@ -26,11 +26,11 @@ void main_frame::OnCreateStaticBitmapFile(wxCommandEvent & event)
    };
    if (dlg.ShowModal() == wxID_OK){
 
-     // do Filedlg  put all in one file
+     // do FileDialog  put all in one file
 
       std::string dir = "/home/andy/cpp/projects/test/dummy/";
 
-      /// pen one file here and put all in it
+      /// Open one file here and put all in it
       /*
          a cpp file
          #include <quan/uav/osd/api.hpp>
@@ -48,12 +48,8 @@ void main_frame::OnCreateStaticBitmapFile(wxCommandEvent & event)
          );
          if ( bmp ){
             std::string bmp_name1 = from_wxString<char>(bmp_name);
-            // check for overwrite open etc
             std::ofstream out (dir + bmp_name1 + ".hpp");
-            // check out ok
-            quan::uav::osd::detail::writable_bitmap wb(bmp);
-            
-            wb.output_header( bmp_name1 + "_type", bmp_name1,out);
+            bmp->output_header( bmp_name1 + "_type", bmp_name1,out);
          }
       }  
    }

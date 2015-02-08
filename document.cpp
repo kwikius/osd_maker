@@ -403,7 +403,7 @@ void  process_mcm_char (uint8_t inval, document::dynamic_bitmap* out,
          break;
       }
       //assert(( colour != colour_type::invalid) && __LINE__ );
-      out->set_pixel_colour(pos,colour);
+      out->set_pixel(pos,colour);
       ++pos.x;
    }
 }
