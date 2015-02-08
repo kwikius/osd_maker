@@ -7,25 +7,16 @@
  * License:
  **************************************************************/
 
-#ifdef WX_PRECOMP
-#include "wx_pch.h"
-#endif
-
-#ifdef __BORLANDC__
-#pragma hdrstop
-#endif //__BORLANDC__
-
 #include <quan/gx/wxwidgets/from_wxString.hpp>
 #include <quan/gx/wxwidgets/to_wxString.hpp>
+
+#include <fstream>
+
 #include "../document.hpp"
-//#include "sp_in_thread.hpp"
 
 #include "../osd_bmp_app.hpp"
-
 #include "main_frame.hpp"
 #include "main_frame_splitter.hpp"
-//#include "../comm/sp_in_thread.hpp"
-
 #include "dialogs/new_bitmap_dialog.hpp"
 #include "dialogs/bitmap_resize_dialog.hpp"
 
@@ -73,6 +64,7 @@ BEGIN_EVENT_TABLE (main_frame, wxFrame)
    EVT_MENU (idImportFont, main_frame::OnImportFont)
    EVT_MENU (idCommitViewToTree, main_frame::OnCommitViewToTree)
    EVT_MENU (idResizeViewBitmap,main_frame::OnResizeViewBitmap)
+   EVT_MENU (idCreateStaticBitmapFile,main_frame::OnCreateStaticBitmapFile)
    EVT_TIMER (idTimer, main_frame::OnTimer)
 END_EVENT_TABLE()
 
@@ -148,6 +140,7 @@ void main_frame::create_menus()
    bitmapMenu->Append(idNewBitmap, _ ("&New..."), _ ("New Bitmap"));
    bitmapMenu->Append(idImportBitmap, _ ("&Import..."), _ ("Import Bitmap"));
    bitmapMenu->Append(idResizeViewBitmap,  _ ("Resize current bitmap..."));
+   bitmapMenu->Append(idCreateStaticBitmapFile,  _ ("Create Static Bitmap Files..."));
 
    wxMenu* fontMenu = new wxMenu (_T (""));
    mbar->Append (fontMenu, _ ("&Font")); 
@@ -251,7 +244,6 @@ void main_frame::OnQuit (wxCommandEvent &event)
    this->Close();
 }
 
-//TODO |MinimOSD Charset(*.mcm)|*.mcm
 void main_frame::OnImportFont (wxCommandEvent &event)
 {
    auto & app = wxGetApp();
@@ -393,6 +385,12 @@ void main_frame::OnOpenProject (wxCommandEvent &event)
    wxGetApp().get_document()->open_project (path);
 }
 
+/*
+  really represents the RTOS loop
+  Check for updated code
+  Check for updated Resources
+  Check for updated Stimulus
+*/
 void main_frame::OnTimer (wxTimerEvent &event)
 {
    auto view = wxGetApp().get_view();

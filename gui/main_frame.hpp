@@ -41,7 +41,8 @@ class main_frame: public wxFrame
             idImportFont,
             idTimer,
             idCommitViewToTree,
-            idResizeViewBitmap
+            idResizeViewBitmap,
+            idCreateStaticBitmapFile
         };
         void OnNewProject(wxCommandEvent & event);
         void OnOpenProject(wxCommandEvent & event);
@@ -55,6 +56,7 @@ class main_frame: public wxFrame
         void OnSaveProjectAs(wxCommandEvent & event);
         void OnCommitViewToTree(wxCommandEvent & event);
         void OnResizeViewBitmap(wxCommandEvent & event);
+        void OnCreateStaticBitmapFile(wxCommandEvent & event);
         void OnTimer(wxTimerEvent& event);
         
         DECLARE_EVENT_TABLE()

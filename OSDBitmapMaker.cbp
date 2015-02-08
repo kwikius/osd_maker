@@ -57,6 +57,8 @@
 		<Unit filename="document/osd_object_database.cpp" />
 		<Unit filename="document/osd_object_database.hpp" />
 		<Unit filename="graphics_api/info_on_fonts.txt" />
+		<Unit filename="graphics_api/objects/db_bitmap.cpp" />
+		<Unit filename="graphics_api/objects/db_bitmap.hpp" />
 		<Unit filename="graphics_api/objects/db_font.cpp" />
 		<Unit filename="graphics_api/objects/db_font.hpp" />
 		<Unit filename="graphics_api/objects/osd_device.cpp" />

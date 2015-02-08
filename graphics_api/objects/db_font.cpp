@@ -15,7 +15,7 @@ db_font::db_font(std::string const & name_in, size_type size_in, int begin)
     assert( m_begin >= 0 && __LINE__);
 }
 
-db_font::bitmap_ptr  db_font::get_char_at(int32_t i)const 
+quan::uav::osd::basic_bitmap const *  db_font::get_char_at(int32_t i)const 
 {
    int char_handle =-1;
    if ( !this->get_handle_at(i,char_handle)){

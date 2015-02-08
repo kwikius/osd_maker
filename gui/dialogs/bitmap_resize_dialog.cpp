@@ -24,6 +24,6 @@
       m_bottom_incr = new wxTextCtrl{this,idBottomIncr,wxT("0"),wxPoint{150,110},wxSize{150,20}};
 
       ok_button = new wxButton(this,wxID_OK,wxT("OK"),wxPoint{20,140});
-      cancel_button = new wxButton(this, wxID_CANCEL,wxT("Cancel"),wxPoint{150,120});
+      cancel_button = new wxButton(this, wxID_CANCEL,wxT("Cancel"),wxPoint{150,140});
 
    };

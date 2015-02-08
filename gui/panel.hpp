@@ -3,7 +3,8 @@
 
 #include <wx/scrolwin.h>
 #include <wx/treectrl.h>
-#include <map>
+#include <wx/arrstr.h>
+//#include <map>
 
 struct view;
 struct project_tree;
@@ -16,6 +17,7 @@ struct panel : wxWindow// wxPanel
   bool get_bitmap_handle(wxTreeEvent & event, int & result_out)const;
   bool get_font_handle(wxTreeEvent & event, int & result_out)const;
   void reset();
+  wxArrayString get_bitmap_names()const;
 private:
    enum class selection_type{ Unknown, Font, FontDir, Bitmap, BitmapDir, LayoutDir};
    selection_type get_selection_type(wxTreeEvent& event);
@@ -27,6 +29,8 @@ private:
    void OnTreeItemActivated(wxTreeEvent & event);
    void OnTreeItemRightClick(wxTreeEvent & event);
    void rename_bitmap(wxTreeEvent & event);
+
+   
    enum
    {
       idMenuQuit = 1000,

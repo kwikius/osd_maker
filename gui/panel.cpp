@@ -13,6 +13,8 @@
 using quan::gx::wxwidgets::from_wxString;
 using quan::gx::wxwidgets::to_wxString;
 
+
+
 namespace {
 struct osd_bitmap_handle : public wxTreeItemData {
    osd_bitmap_handle(int handle) : m_handle{handle}{}
@@ -30,6 +32,20 @@ struct osd_font_handle : public wxTreeItemData {
 
 } // namespace 
 
+wxArrayString panel::get_bitmap_names()const
+{
+   auto bmpid = m_project_tree->get_bitmaps_id();
+   wxTreeItemIdValue cookie;
+   
+   wxArrayString result;
+   auto child = m_project_tree->GetFirstChild(bmpid,cookie);
+   while ( child.IsOk()){
+      wxString str = m_project_tree->GetItemText(child);
+      result.Add(str);
+      child = m_project_tree->GetNextChild(bmpid,cookie);
+   }
+   return result;
+}
 
 void panel::reset()
 {
