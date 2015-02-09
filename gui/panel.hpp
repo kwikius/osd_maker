@@ -18,6 +18,7 @@ struct panel : wxWindow// wxPanel
   bool get_font_handle(wxTreeEvent & event, int & result_out)const;
   void reset();
   wxArrayString get_bitmap_names()const;
+  wxArrayString get_font_names()const;
 private:
    enum class selection_type{ Unknown, Font, FontDir, Bitmap, BitmapDir, LayoutDir};
    selection_type get_selection_type(wxTreeEvent& event);

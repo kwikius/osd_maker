@@ -42,7 +42,8 @@ class main_frame: public wxFrame
             idTimer,
             idCommitViewToTree,
             idResizeViewBitmap,
-            idCreateStaticBitmapFile
+            idCreateStaticBitmapFile,
+            idCreateStaticFontFile
         };
         void OnNewProject(wxCommandEvent & event);
         void OnOpenProject(wxCommandEvent & event);
@@ -57,6 +58,7 @@ class main_frame: public wxFrame
         void OnCommitViewToTree(wxCommandEvent & event);
         void OnResizeViewBitmap(wxCommandEvent & event);
         void OnCreateStaticBitmapFile(wxCommandEvent & event);
+        void OnCreateStaticFontFile(wxCommandEvent & event);
         void OnTimer(wxTimerEvent& event);
         
         DECLARE_EVENT_TABLE()

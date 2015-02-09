@@ -28,7 +28,7 @@ void main_frame::OnCreateStaticBitmapFile(wxCommandEvent & event)
 
      // todo : FileDialog  put all in one file
       std::string filename 
-      = "/home/andy/cpp/projects/test/dummy/bitmaps.cpp";
+      = "/home/andy/cpp/projects/osd_draw/bitmaps.cpp";
 
       wxArrayInt result = dlg.GetSelections();
       // check result ok

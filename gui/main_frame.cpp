@@ -65,6 +65,8 @@ BEGIN_EVENT_TABLE (main_frame, wxFrame)
    EVT_MENU (idCommitViewToTree, main_frame::OnCommitViewToTree)
    EVT_MENU (idResizeViewBitmap,main_frame::OnResizeViewBitmap)
    EVT_MENU (idCreateStaticBitmapFile,main_frame::OnCreateStaticBitmapFile)
+   EVT_MENU (idCreateStaticFontFile,main_frame::OnCreateStaticFontFile)
+
    EVT_TIMER (idTimer, main_frame::OnTimer)
 END_EVENT_TABLE()
 
@@ -140,11 +142,12 @@ void main_frame::create_menus()
    bitmapMenu->Append(idNewBitmap, _ ("&New..."), _ ("New Bitmap"));
    bitmapMenu->Append(idImportBitmap, _ ("&Import..."), _ ("Import Bitmap"));
    bitmapMenu->Append(idResizeViewBitmap,  _ ("Resize current bitmap..."));
-   bitmapMenu->Append(idCreateStaticBitmapFile,  _ ("Create Static Bitmap Files..."));
+   bitmapMenu->Append(idCreateStaticBitmapFile,  _ ("Create Bitmap Header..."));
 
    wxMenu* fontMenu = new wxMenu (_T (""));
    mbar->Append (fontMenu, _ ("&Font")); 
    fontMenu->Append (idImportFont, _ ("&Import..."), _ ("Import Font"));
+   bitmapMenu->Append(idCreateStaticFontFile,  _ ("Create Font Header..."));
    
    wxMenu* viewMenu = new wxMenu (_T (""));
    mbar->Append (viewMenu, _ ("&View"));

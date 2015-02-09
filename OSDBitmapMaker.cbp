@@ -75,6 +75,7 @@
 		<Unit filename="gui/main_frame.cpp" />
 		<Unit filename="gui/main_frame.hpp" />
 		<Unit filename="gui/main_frame/OnCreateStaticBitmapFile.cpp" />
+		<Unit filename="gui/main_frame/OnCreateStaticFontFile.cpp" />
 		<Unit filename="gui/main_frame_splitter.cpp" />
 		<Unit filename="gui/main_frame_splitter.hpp" />
 		<Unit filename="gui/panel.cpp" />

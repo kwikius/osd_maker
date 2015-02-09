@@ -3,8 +3,6 @@
 
 #ifndef OSD_BITMPAP_MAKER_FONT_HPP_INCLUDED
 #define OSD_BITMPAP_MAKER_FONT_HPP_INCLUDED
-
-
 #include <vector>
 #include <string>
 #include <quan/uav/osd/dynamic/bitmap.hpp>
@@ -29,6 +27,7 @@ struct db_font : quan::uav::osd::dynamic::font{
    quan::uav::osd::basic_bitmap const * get_char_at(int32_t i)const ;
    void set_char_size(size_type const & size);
    db_font(std::string const & name_in, size_type size_in, int begin);
+   void  output_header( std::string const & type_name, std::string const & object_name,std::ostream & out)const;
    ~db_font(){}
 private:
    db_font & operator = ( db_font const &) = delete;

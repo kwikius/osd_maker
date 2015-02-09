@@ -32,6 +32,20 @@ struct osd_font_handle : public wxTreeItemData {
 
 } // namespace 
 
+wxArrayString panel::get_font_names()const
+{
+   auto fontid = m_project_tree->get_fonts_id();
+   wxTreeItemIdValue cookie;
+   wxArrayString result;
+   auto child = m_project_tree->GetFirstChild(fontid,cookie);
+   while ( child.IsOk()){
+      wxString str = m_project_tree->GetItemText(child);
+      result.Add(str);
+      child = m_project_tree->GetNextChild(fontid,cookie);
+   }
+   return result;
+}
+
 wxArrayString panel::get_bitmap_names()const
 {
    auto bmpid = m_project_tree->get_bitmaps_id();
