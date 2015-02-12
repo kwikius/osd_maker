@@ -48,7 +48,8 @@ void view::setup_draw_fn()
 {
 #if 1
   dlerror();
-  void * handle = dlopen("/home/andy/cpp/projects/osd_draw/osd_draw.so",RTLD_LAZY);
+ // void * handle = dlopen("/home/andy/cpp/projects/osd_draw/osd_draw.so",RTLD_LAZY);
+    void * handle = dlopen("/home/andy/cpp/projects/quantracker/examples/osd_example1/pc_sim/osd_draw.so",RTLD_LAZY);
   if ( !handle){
       wxMessageBox(wxString::Format(wxT("load dll failed with %s"), dlerror()));
   }else{
