@@ -58,6 +58,8 @@ public:
   }
   
   wxCriticalSection m_sp_CS;
+  void OnInitCmdLine(wxCmdLineParser & parser);
+  bool OnCmdLineParsed(wxCmdLineParser & parser);
   
 private:
    main_frame* m_frame;

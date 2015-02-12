@@ -14,6 +14,7 @@
 #ifdef __BORLANDC__
 #pragma hdrstop
 #endif //__BORLANDC__
+#include <wx/cmdline.h>
 
 #include "osd_bmp_app.hpp"
 #include "document.hpp"
@@ -35,10 +36,28 @@ void OsdBmpApp::init_mainframe()
     m_frame->Show();
 }
 
+void OsdBmpApp::OnInitCmdLine(wxCmdLineParser & parser)
+{
+  //assert (false && __LINE__);
+  parser.AddOption(wxT("p"),wxT("project"),wxT("open a project"));
+}
+
+bool OsdBmpApp::OnCmdLineParsed(wxCmdLineParser & parser)
+{
+   // assert (false && __LINE__);
+    wxString path;
+    if ( parser.Found(wxT("p"),&path)){
+      return get_document()->open_project (path);
+    }
+    return true;
+    //WxApp::OnCmdLineParsed(parser);
+}
+
 bool OsdBmpApp::OnInit()
 {
     init_mainframe();
-    return true;
+    return wxApp::OnInit();
+    
 }
 
 view* OsdBmpApp::get_view()const 
