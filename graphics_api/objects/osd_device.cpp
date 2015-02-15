@@ -32,7 +32,7 @@ osd_device::pxp_type osd_device::transform_from_raw(pxp_type const & raw_pos)con
    return {raw_pos.x - ds.x/2 , ds.y /2 - raw_pos.y};
 }
 
-osd_device::osd_device() : quan::uav::osd::dynamic::display_device{}
+osd_device::osd_device() : quan::uav::osd::dynamic::display_device()
 {
 //   if (! m_image.HasAlpha()){
 //      m_image.SetAlpha();
@@ -60,7 +60,7 @@ osd_device::osd_device() : quan::uav::osd::dynamic::display_device{}
    m_display_rect.right = right_bottom.x;
    m_display_rect.bottom = right_bottom.y;
    m_clip.set_clipbox(m_display_rect);
-};
+}
 
 //void osd_device::set_origin(pxp_type const & p) { m_origin = p;}
 
