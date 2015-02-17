@@ -80,7 +80,7 @@ wxBitmap* ConvertTo_wxBitmap (quan::uav::osd::dynamic::bitmap const& in, wxColou
 //call delete to free
 wxImage* ConvertTo_wxImage (quan::uav::osd::dynamic::bitmap const& in)
 {
-   typedef quan::uav::osd::dynamic::bitmap bitmap;
+   //typedef quan::uav::osd::dynamic::bitmap bitmap;
    typedef quan::uav::osd::size_type size_type; 
    typedef quan::uav::osd::colour_type colour_type;
 
