@@ -12,8 +12,9 @@
 
 #include <wx/app.h>
 #include <wx/timer.h>
-
+#if 0
 #include <quan/serial_port.hpp>
+#endif
 #include <wx/thread.h>
 #include <wx/config.h>
 
@@ -35,9 +36,9 @@ public:
    panel* get_panel() const;
 
    font_preview* get_font_preview()const;
-    
-   wxConfig* get_config()const {return m_app_config;}
 
+   wxConfig* get_config()const {return m_app_config;}
+#if 0
    void set_sp(quan::serial_port* sp_in)
    {
       assert(! have_sp());
@@ -51,20 +52,20 @@ public:
    }
 
   bool have_sp()const { return m_sp != nullptr;}
-  quan::serial_port* get_sp()const 
+  quan::serial_port* get_sp()const
   {
        assert( have_sp());
        return m_sp;
   }
-  
+
   wxCriticalSection m_sp_CS;
-  void OnInitCmdLine(wxCmdLineParser & parser);
-  bool OnCmdLineParsed(wxCmdLineParser & parser);
-  
+  #endif
 private:
    main_frame* m_frame;
    document* m_document;
+   #if 0
    quan::serial_port* m_sp;
+   #endif
    wxConfig* m_app_config;
    void init_mainframe();
 };

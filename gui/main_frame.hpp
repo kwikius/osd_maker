@@ -43,7 +43,8 @@ class main_frame: public wxFrame
             idCommitViewToTree,
             idResizeViewBitmap,
             idCreateStaticBitmapFile,
-            idCreateStaticFontFile
+            idCreateStaticFontFile,
+            idDLLtest
         };
         void OnNewProject(wxCommandEvent & event);
         void OnOpenProject(wxCommandEvent & event);
@@ -59,15 +60,16 @@ class main_frame: public wxFrame
         void OnResizeViewBitmap(wxCommandEvent & event);
         void OnCreateStaticBitmapFile(wxCommandEvent & event);
         void OnCreateStaticFontFile(wxCommandEvent & event);
+        void OnDLLTest(wxCommandEvent & event);
         void OnTimer(wxTimerEvent& event);
-        
+
         DECLARE_EVENT_TABLE()
 
         main_frame_splitter* m_splitter;
         wxTimer * Timer;
         wxCriticalSection m_thread_CS;
         sp_in_thread* m_sp_in_thread;
-       
+
        void start_sp_thread();
        void create_menus();
        void create_statusbar();

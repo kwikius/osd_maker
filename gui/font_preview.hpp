@@ -17,6 +17,8 @@
       int get_font_handle()const{ return m_current_font_handle;}
       db_font * get_font() const;
       void reset();
+      bool Destroy();
+
    private:
       void OnGridCellLeftDblClick(wxGridEvent& event);
       void OnGridCellRightClick(wxGridEvent& event);

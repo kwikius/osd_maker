@@ -11,7 +11,8 @@ struct panel_splitter : wxSplitterWindow{
 
    panel* m_panel;
    font_preview * m_font_preview;
-   
+   bool Destroy();
+
 };
 
 #endif // OSD_BITMAP_MAKER_PANEL_SPLITTER_HPP_INCLUDED

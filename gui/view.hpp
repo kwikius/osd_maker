@@ -13,14 +13,21 @@
 #include <quan/gx/simple_device_window.hpp>
 #include <quan/uav/osd/dynamic/bitmap.hpp>
 #include <quan/uav/osd/dynamic/font.hpp>
+#include <quan/uav/osd/dynamic/object_database.hpp>
 #include "../osd_bmp_app.hpp"
 #include "../document.hpp"
 #include "view/drawing.hpp"
 #include "../graphics_api/osd_device.hpp"
 
+extern "C"{
+     typedef  void (*pfn_set_osd_on_draw_params) ( quan::uav::osd::dynamic::object_database const * db);
+
+      typedef  void (*pfn_osd_on_draw)(quan::uav::osd::dynamic::display_device & d);
+}
+
    struct view : wxWindow{
       view(wxWindow* parent);
-     
+
       void reset();
       document* get_document(){ return wxGetApp().get_document();}
       void set_scale(double const & v);
@@ -73,7 +80,7 @@
      // void set_bearing( quan::angle::deg const & angle){m_bearing = angle;}
      // quan::angle::deg get_home_bearing()const { return m_home_bearing;}
      // void set_home_bearing( quan::angle::deg const & angle){m_home_bearing = angle;}
-      
+      bool Destroy();
    private:
       void OnPaint(wxPaintEvent & event);
       void OnSize(wxSizeEvent & event);
@@ -97,24 +104,21 @@
       DECLARE_EVENT_TABLE()
 
       void setup_draw_fn();
-      
+
       dynamic_bitmap* m_current_image;
       int m_document_image_handle;
      // int m_last_font_handle;
       bool m_current_image_modified;
       view_mode m_view_mode;
-      
+
       osd_device m_osd_device;
 
-      typedef  void (*pfn_set_osd_on_draw_params) (
-      osd_object_database const * db);
-      
-      typedef  void (*pfn_osd_on_draw)( osd_device & d);
-      pfn_set_osd_on_draw_params m_pfn_set_osd_on_draw_params;    
+
+      pfn_set_osd_on_draw_params m_pfn_set_osd_on_draw_params;
       pfn_osd_on_draw m_pfn_osd_on_draw;
 
       wxDynamicLibrary m_dll;
-      
+
    };
 
 #endif // AEROFOIL_GRAPHICS_WINDOW_HPP_INCLUDED

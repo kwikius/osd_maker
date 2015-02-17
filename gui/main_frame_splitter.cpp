@@ -9,3 +9,10 @@ main_frame_splitter::main_frame_splitter(wxWindow* parent) : wxSplitterWindow(pa
    m_panel_splitter = new panel_splitter(this);
    SplitVertically(m_view,m_panel_splitter);
 }
+
+bool main_frame_splitter::Destroy()
+{
+   m_view->Destroy();
+   m_panel_splitter->Destroy();
+   return wxSplitterWindow::Destroy();
+}

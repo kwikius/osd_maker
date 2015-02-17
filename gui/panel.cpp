@@ -30,7 +30,7 @@ struct osd_font_handle : public wxTreeItemData {
    int const m_handle;
 };
 
-} // namespace 
+} // namespace
 
 wxArrayString panel::get_font_names()const
 {
@@ -50,7 +50,7 @@ wxArrayString panel::get_bitmap_names()const
 {
    auto bmpid = m_project_tree->get_bitmaps_id();
    wxTreeItemIdValue cookie;
-   
+
    wxArrayString result;
    auto child = m_project_tree->GetFirstChild(bmpid,cookie);
    while ( child.IsOk()){
@@ -66,7 +66,7 @@ void panel::reset()
    delete m_project_tree ;
    m_project_tree = new project_tree{this,idTreeControl};
    m_project_tree->Expand(m_project_tree->GetRootItem());
-   m_project_tree->SetSize(20,20,200,200); 
+   m_project_tree->SetSize(20,20,200,200);
 }
 
 void panel::set_project_name(wxString const & str)
@@ -133,7 +133,13 @@ panel::panel (wxWindow* parent)
 {
  m_project_tree->Expand(m_project_tree->GetRootItem());
  m_project_tree->SetSize(20,20,200,200);
+   this->Refresh();
+}
 
+bool panel::Destroy()
+{
+    m_project_tree->Destroy();
+    return wxWindow::Destroy();
 }
 
 BEGIN_EVENT_TABLE (panel, wxWindow)
@@ -183,8 +189,8 @@ void panel::OnTreeItemActivated(wxTreeEvent & event)
       case selection_type::Font:
          on_font_item_activated(event);
       break;
-      case selection_type::LayoutDir: 
-         on_layout_dir_activated(event); 
+      case selection_type::LayoutDir:
+         on_layout_dir_activated(event);
       break;
       case selection_type::FontDir:
          on_font_dir_activated(event);
@@ -289,13 +295,13 @@ void panel::OnTreeItemRightClick(wxTreeEvent & event)
      ,wxT("Delete")
   };
   int style = wxDEFAULT_DIALOG_STYLE | wxOK | wxCANCEL | wxCENTRE;
-  wxSingleChoiceDialog dlg{ 
+  wxSingleChoiceDialog dlg{
       this
       ,wxT("Tree Item Actions")
       ,wxT("Tree Item Actions")
       ,sizeof(choices) / sizeof(wxString)
-      ,choices
-      ,NULL
+      ,(wxString*)choices
+      ,(void**)NULL
       ,style
   };
 
@@ -312,7 +318,7 @@ void panel::OnTreeItemRightClick(wxTreeEvent & event)
          break;
 
       }
-      
+
   }
 }
 

@@ -1,6 +1,7 @@
 
 #include <wx/bitmap.h>
 #include <wx/rawbmp.h>
+#include <wx/colour.h>
 
 #include <quan/max.hpp>
 #include <quan/gx/wxwidgets/from_wxString.hpp>
@@ -18,6 +19,12 @@
 
 using quan::gx::wxwidgets::from_wxString;
 using quan::gx::wxwidgets::to_wxString;
+
+bool font_preview::Destroy()
+{
+  m_grid->Destroy();
+  return wxWindow::Destroy();
+}
 
 void font_preview::reset()
 {
@@ -47,12 +54,7 @@ END_EVENT_TABLE()
 
 void font_preview::export_font_element_as_bitmap(int handle)
 {
-   // get a name
-  document::dynamic_bitmap* image = wxGetApp().get_document()->get_bitmap(handle);
-  if ( image == nullptr){
-      return ;
-  }
-  document::dynamic_bitmap* bmp = dynamic_cast<document::dynamic_bitmap*> (image);
+  document::dynamic_bitmap* bmp = wxGetApp().get_document()->get_bitmap(handle);
   if(  bmp == nullptr){
       return;
   }
@@ -67,7 +69,7 @@ void font_preview::export_font_element_as_bitmap(int handle)
          wxMessageBox(wxT("Bitmap with that name already exists"));
          return;
       }
-      
+
       document::dynamic_bitmap* new_bitmap = bmp->clone();
       new_bitmap->set_name(name);
       wxGetApp().get_document()->add_bitmap(new_bitmap);
@@ -85,15 +87,21 @@ void font_preview::OnGridCellRightClick(wxGridEvent& event)
          wxT("Export as Bitmap")
      };
      int style = wxDEFAULT_DIALOG_STYLE | wxOK | wxCANCEL | wxCENTRE;
-     wxSingleChoiceDialog dlg{ 
+     wxSingleChoiceDialog dlg{
          this
          ,wxT("Font Element Actions")
          ,wxT("Font Element Actions")
          ,sizeof(choices) / sizeof(wxString)
-         ,choices
-         ,NULL
+         ,(wxString*)choices
+         ,(void**)NULL
          ,style
      };
+
+     /*
+     wxSingleChoice
+Dialog::wxSingleChoiceDialog(wxWindow*, const wxString&, const wxString&, int, c
+onst wxString*, char**, long int, const wxPoint&)
+     */
 
      if (dlg.ShowModal() == wxID_OK){
          switch (dlg.GetSelection()){
@@ -119,7 +127,7 @@ int font_preview::get_sel_font_element_handle(wxGridEvent & event)const
   int const y = event.GetRow();
   int const num_cols = m_grid->GetNumberCols();
   int const font_pos = num_cols * y + x;
-  int const ch = font_pos ; 
+  int const ch = font_pos ;
   int font_element_handle = -1;
   if ( selected_font->get_handle_at(ch, font_element_handle)){
       return font_element_handle;
@@ -139,7 +147,9 @@ void font_preview::OnGridCellLeftDblClick(wxGridEvent& event)
 font_preview::font_preview(wxWindow* parent)
      : wxWindow{parent, wxID_ANY},m_grid{nullptr},m_current_font_handle{-1}
 {
-  wxSize cell_size{14 *2,18 *2};
+  this->SetBackgroundColour(*wxWHITE);
+  this->ClearBackground();
+  wxSize cell_size{14 *2 +1,18 *2 +1};
   int num_elements = 256;
   int const num_rows = 8;
   int const rem = ((num_elements % num_rows)==0)?0:1;
@@ -163,6 +173,11 @@ font_preview::font_preview(wxWindow* parent)
             m_grid->SetReadOnly(y,x);
       }
     }
-  }  
-  this->Refresh();    
+  }
+//  wxPaintDC dc(this);
+//  dc.SetBackground(* wxWHITE_BRUSH);
+//  dc.Clear();
+   this->Refresh();
+
+  //m_grid->Refresh();
 }

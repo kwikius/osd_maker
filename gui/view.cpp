@@ -1,7 +1,8 @@
 
 #include <cctype>
+#if 0
 #include <dlfcn.h>
-
+#endif
 #include <quan/gx/primitives/simple_line.hpp>
 
 #include "../document.hpp"
@@ -26,15 +27,16 @@ BEGIN_EVENT_TABLE(view,wxWindow)
 END_EVENT_TABLE()
 
 view::view(wxWindow* parent)
-     : wxWindow(parent, wxID_ANY)
-     ,m_cur_mouse_pos {0,0}
+: wxWindow(parent, wxID_ANY)
+,m_cur_mouse_pos {0,0}
 ,m_mouse_is_down {false}
 ,m_current_image{nullptr}
 ,m_document_image_handle{-1}
 ,m_current_image_modified{false}
 ,m_view_mode{view_mode::inBitmaps}
 ,m_pfn_set_osd_on_draw_params{nullptr}
-,m_pfn_osd_on_draw{nullptr} {
+,m_pfn_osd_on_draw{nullptr}
+{
    //  window_ids::view = this->GetId();
      this->SetWindowStyle(wxVSCROLL | wxHSCROLL);
      this->SetScrollbar(wxVERTICAL,50,10,110);
@@ -44,30 +46,39 @@ view::view(wxWindow* parent)
      setup_draw_fn();
 }
 
+bool view::Destroy()
+{
+   delete m_current_image;
+   m_pfn_set_osd_on_draw_params= nullptr;
+   m_pfn_osd_on_draw = nullptr;
+   return wxWindow::Destroy();
+
+}
+
 namespace {
 
  // path without extension
-  wxString dll_path = wxT("/home/andy/cpp/projects/quantracker/examples/osd_example1/pc_sim/osd_draw");
-
+ // wxString dll_path = wxT("/home/andy/cpp/projects/quantracker/examples/osd_example1/pc_sim/osd_draw");
+   wxString dll_path = wxT("C:/cpp/lib/quantracker_lib/examples/osd_example1/pc_sim/osd_draw");
 }
 
 void view::setup_draw_fn()
 {
-#if 1
+#if 0
    if ( m_dll.Load(dll_path) ){
-        bool dll_good = m_dll.HasSymbol(wxT("osd_on_draw")) 
+        bool dll_good = m_dll.HasSymbol(wxT("osd_on_draw"))
                         && m_dll.HasSymbol(wxT("set_osd_on_draw_params"));
         if ( dll_good){
-            
+
             *(void**) (&m_pfn_osd_on_draw) = m_dll.GetSymbol(wxT("osd_on_draw"));
             *(void**) (&m_pfn_set_osd_on_draw_params) = m_dll.GetSymbol(wxT("set_osd_on_draw_params"));
 
             assert(m_pfn_osd_on_draw && m_pfn_set_osd_on_draw_params && __LINE__);
         }
-            
+
    }
 
-#else
+//#else
   dlerror();
   void * handle = dlopen("/home/andy/cpp/projects/quantracker/examples/osd_example1/pc_sim/osd_draw.so",RTLD_LAZY);
   if ( handle){
@@ -75,7 +86,7 @@ void view::setup_draw_fn()
       *(void**) (&m_pfn_osd_on_draw) = dlsym(handle,"osd_on_draw");
       char* error = dlerror();
       if (error == nullptr){
-         dlerror(); 
+         dlerror();
          *(void**) (&m_pfn_set_osd_on_draw_params) = dlsym(handle,"set_osd_on_draw_params");
          error = dlerror();
          if (error == nullptr){
@@ -98,7 +109,7 @@ view::dynamic_font* view::get_current_font()const
 }
 
 //TODO disable scrollbars or some other stuff with them
-void view::set_view_mode(view_mode mode) 
+void view::set_view_mode(view_mode mode)
 {m_view_mode = mode;}
 
 bool view::resize_image( quan::two_d::box<int> new_size)
@@ -146,7 +157,7 @@ void view::sync_to_document()
    auto doc = wxGetApp().get_document();
    dynamic_bitmap* image = this->clone_current_image();
    int image_handle = this->get_doc_image_handle();
-//## need to 
+//## need to
 //   dynamic_bitmap* bmp = dynamic_cast<dynamic_bitmap*> (image);
 //   assert( bmp);
    doc->set_image( image_handle, image );
@@ -177,7 +188,7 @@ bool view::sync_with_image_handle(int event_handle)
      this->Refresh();
    }
    int view_handle = this->get_doc_image_handle();
-   
+
    if ( view_handle == event_handle){
       if ( !this->is_modified()){
          return false;
@@ -253,14 +264,14 @@ void view::paint_bitmap_view(wxPaintEvent & event)
      wxPaintDC dc(this);
      dc.SetBackground(* wxWHITE_BRUSH); // sets background brush but doesnt clear
      dc.Clear(); //       need to invoke to clear using current background brush
- 
+
      quan::gx::wxwidgets::graphics_context wc {
           &dc,
           &this->m_drawing,
           &this->m_drawing_view,
           &this->m_device_window
      };
- 
+
      if( m_current_image != nullptr) {
           auto doc = wxGetApp().get_document();
           dynamic_bitmap::size_type num_pixels = m_current_image->get_size();
@@ -293,10 +304,10 @@ void view::paint_bitmap_view(wxPaintEvent & event)
                };
                wc.draw_line(line);
           }
- 
+
           mm border {1};
           for ( int32_t y = 0; y <num_pixels.y; ++y) {
- 
+
                for ( int32_t x = 0; x <num_pixels.x; ++x) {
                     // add color
                     dynamic_bitmap::colour colour
@@ -307,7 +318,7 @@ void view::paint_bitmap_view(wxPaintEvent & event)
                          cur_px_pos.x + pixel_size.x -border,
                          cur_px_pos.y - pixel_size.y +border
                     };
- 
+
                     quan::gx::primitives::box<mm> cur_px {cur_px_box,mm{0},get_colour(colour)};
                     wc.draw_filled_box( {cur_px});
                     cur_px_pos.x += pixel_size.x;
@@ -342,12 +353,12 @@ void view::paint_layout_view(wxPaintEvent & event)
 
      wxBitmap bitmap{m_osd_device.get_bitmap()};
      wxPaintDC dc(this);
-     dc.SetBackground(* wxBLACK_BRUSH); 
+     dc.SetBackground(* wxBLACK_BRUSH);
      dc.Clear();
      dc.DrawBitmap(bitmap,0,0);
 }
  #endif
- 
+
 void view::OnPaint(wxPaintEvent & event)
 {
      switch ( this->get_view_mode()){
@@ -356,12 +367,12 @@ void view::OnPaint(wxPaintEvent & event)
          break;
          case view_mode::inLayouts:
            paint_layout_view(event);
-         break;   
+         break;
          default:
          break;
      }
 }
- 
+
 // update device_window size data when size changes
 void view::OnSize(wxSizeEvent & event)
 {
@@ -369,24 +380,24 @@ void view::OnSize(wxSizeEvent & event)
           &this->m_device_window.m_size_px.x,
           &this->m_device_window.m_size_px.y
      );
- 
+
      // find window size in mm by getting size of pixel on display
      // may be an ondisplay change function so dont need to continaully update
      vect2_i display_size_in_px;
      wxDisplaySize(&display_size_in_px.x,&display_size_in_px.y);
- 
+
      wxSize detail_display_size_mm = wxGetDisplaySizeMM();
      vect2_mm display_size_in_mm {mm{detail_display_size_mm.x},mm{detail_display_size_mm.y}};
- 
+
      this->m_device_window.m_size_mm.x
      = (this->m_device_window.m_size_px.x * display_size_in_mm.x) / display_size_in_px.x;
      this->m_device_window.m_size_mm.y
      = (this->m_device_window.m_size_px.y * display_size_in_mm.y) / display_size_in_px.y;
- 
+
      this->Refresh();
- 
+
 }
- 
+
 void view::OnScroll(wxScrollWinEvent & event)
 {
      if (event.GetOrientation() == wxHORIZONTAL) {
@@ -396,17 +407,17 @@ void view::OnScroll(wxScrollWinEvent & event)
      }
      this->Refresh();
 }
- 
+
 void view::OnHScroll(wxScrollWinEvent & event)
 {
      this->m_drawing_view.set_x_scroll_ratio((event.GetPosition() - 50 )/100.0);
 }
- 
+
 void view::OnVScroll(wxScrollWinEvent & event)
 {
      this->m_drawing_view.set_y_scroll_ratio( -(event.GetPosition() - 50 )/100.0);
 }
- 
+
 /*
    if returns true then event_pos is over a valid image pixel
    The image pixel is put int result_pos
@@ -426,13 +437,13 @@ bool view::get_image_pixel(vect2_d const & event_pos, dynamic_bitmap::pos_type &
           &this->m_drawing_view,
           &this->m_device_window
      };
- 
+
      // in drawing
      auto drawing_pos = ic.device_to_drawing(event_pos);
      auto doc = wxGetApp().get_document();
- 
+
      dynamic_bitmap::size_type num_pixels = m_current_image->get_size();
-  
+
     // doc->get_bitmap_size(current_index,num_pixels);
      vect2_mm pixel_size = doc->get_pixel_size_mm();
      // bitmap always centered
@@ -453,7 +464,7 @@ bool view::get_image_pixel(vect2_d const & event_pos, dynamic_bitmap::pos_type &
      }
      return false;
 }
- 
+
 void view::OnMouseLeftDown(wxMouseEvent & event)
 {
      event.Skip();
@@ -489,7 +500,7 @@ void view::on_bitmaps_char(wxKeyEvent & event)
                (get_image_pixel(m_cur_mouse_pos,result_pos) == true)
         ) {
           int ch = toupper(event.GetKeyCode());
-          dynamic_bitmap::colour cur_colour 
+          dynamic_bitmap::colour cur_colour
             = m_current_image->get_pixel_colour(result_pos);
           dynamic_bitmap::colour new_colour = cur_colour;
           switch(ch) {
@@ -523,7 +534,7 @@ void view::on_bitmaps_char(wxKeyEvent & event)
                scale += 0.1;
                if (scale >1.0){
                   scale = 1.0;
-               }  
+               }
                this->set_scale(scale);
           }
           break;
@@ -532,7 +543,7 @@ void view::on_bitmaps_char(wxKeyEvent & event)
                scale -= 0.1;
                if (scale < 0.1){
                   scale = 0.1;
-               }  
+               }
                this->set_scale(scale);
            }
             break;
@@ -542,12 +553,12 @@ void view::on_bitmaps_char(wxKeyEvent & event)
           }
      }
 }
- 
+
 void view::OnMouseLeftUp(wxMouseEvent & event)
 {
      m_mouse_is_down=false;
 }
- 
+
 void view::OnMouseMove(wxMouseEvent & event)
 {
      m_cur_mouse_pos.x = event.GetX();

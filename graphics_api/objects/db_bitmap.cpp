@@ -2,16 +2,16 @@
 #include "db_bitmap.hpp"
 
 
-quan::uav::osd::dynamic::bitmap* 
+quan::uav::osd::dynamic::bitmap*
 ConvertTo_osd_bitmap (std::string const & name, wxImage const& image)
 {
    typedef quan::uav::osd::dynamic::bitmap bitmap;
-   typedef quan::uav::osd::size_type size_type; 
+   typedef quan::uav::osd::size_type size_type;
    typedef quan::uav::osd::colour_type colour_type;
 
    size_type bitmap_size {image.GetWidth(), image.GetHeight() };
    bitmap * bmp = new bitmap {name, bitmap_size};
-   
+
    for (int32_t y = 0; y < bitmap_size.y; ++y) {
          for (int32_t x = 0; x < bitmap_size.x; ++x) {
                colour_type  colour = colour_type::transparent;
@@ -48,13 +48,17 @@ ConvertTo_osd_bitmap (std::string const & name, wxImage const& image)
 wxBitmap* ConvertTo_wxBitmap (quan::uav::osd::dynamic::bitmap const& in, wxColour const* (&colours) [4])
 {
    typedef quan::uav::osd::dynamic::bitmap bitmap;
-   typedef quan::uav::osd::size_type size_type; 
+   typedef quan::uav::osd::size_type size_type;
    typedef quan::uav::osd::colour_type colour_type;
 
    size_type size = in.get_size();
-   auto bmp = new wxBitmap (size.x, size.y);
+   auto bmp = new wxBitmap (size.x, size.y,24);
    assert (bmp && __LINE__);
    wxNativePixelData pixels (*bmp);
+    if (!pixels){
+        return nullptr;
+    }
+   #if 1
    for (int32_t y = 0; y < size.y; ++y) {
       for (int32_t x = 0; x < size.x; ++x) {
          colour_type c =in.get_pixel_colour ({x, y});
@@ -70,18 +74,19 @@ wxBitmap* ConvertTo_wxBitmap (quan::uav::osd::dynamic::bitmap const& in, wxColou
       }
    }
    return bmp;
+   #endif
 }
 //  grey = 0b00,
 //    black = 0b01,
 //    white = 0b10,
 // transparent = 0b11
- 
+
 // caller owns the reulting imag
 //call delete to free
 wxImage* ConvertTo_wxImage (quan::uav::osd::dynamic::bitmap const& in)
 {
-   //typedef quan::uav::osd::dynamic::bitmap bitmap;
-   typedef quan::uav::osd::size_type size_type; 
+   typedef quan::uav::osd::dynamic::bitmap bitmap;
+   typedef quan::uav::osd::size_type size_type;
    typedef quan::uav::osd::colour_type colour_type;
 
    size_type size = in.get_size();
@@ -114,5 +119,5 @@ wxImage* ConvertTo_wxImage (quan::uav::osd::dynamic::bitmap const& in)
             }
       }
    return img;
-   
+
 }

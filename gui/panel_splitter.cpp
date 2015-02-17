@@ -8,6 +8,14 @@ panel_splitter::panel_splitter(wxWindow* parent) : wxSplitterWindow(parent, wxID
    m_panel = new panel(this);
 
    m_font_preview = new font_preview(this);
-   
+
    SplitHorizontally(m_panel, m_font_preview);
+   //this->Refresh();
+}
+
+bool panel_splitter::Destroy()
+{
+   m_panel->Destroy();
+   m_font_preview->Destroy();
+   return wxSplitterWindow::Destroy();
 }

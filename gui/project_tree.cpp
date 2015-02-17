@@ -3,11 +3,11 @@
 project_tree::project_tree( wxWindow* parent, int id)
    :wxTreeCtrl{
       parent,
-      id, 
-      wxDefaultPosition, 
+      id,
+      wxDefaultPosition,
       wxDefaultSize,
       wxTR_SINGLE | wxTR_HAS_BUTTONS | wxTR_EDIT_LABELS,
-      wxDefaultValidator, 
+      wxDefaultValidator,
      wxT("OSD Bitmap Tree")}
 {
   auto root = this->AddRoot(wxT("New Project"));
@@ -16,6 +16,11 @@ project_tree::project_tree( wxWindow* parent, int id)
   m_layouts = this->AppendItem(root,wxT("layouts"));
 }
 
+bool project_tree::Destroy()
+{
+    return wxTreeCtrl::Destroy();
+}
+
 //BEGIN_EVENT_TABLE(project_tree,wxTreeCtrl)
-//  
+//
 //END_EVENT_TABLE()

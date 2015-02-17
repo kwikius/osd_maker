@@ -4,7 +4,7 @@
 
 #include "../osd_device.hpp"
 
-bool   osd_device::set_clip_rect(osd_device::pxp_type const & minimums, 
+bool   osd_device::set_clip_rect(osd_device::pxp_type const & minimums,
                                        osd_device::pxp_type const & maximums)
 {
   return false;
@@ -32,7 +32,7 @@ osd_device::pxp_type osd_device::transform_from_raw(pxp_type const & raw_pos)con
    return {raw_pos.x - ds.x/2 , ds.y /2 - raw_pos.y};
 }
 
-osd_device::osd_device() : quan::uav::osd::dynamic::display_device()
+osd_device::osd_device() : quan::uav::osd::dynamic::display_device{}
 {
 //   if (! m_image.HasAlpha()){
 //      m_image.SetAlpha();
@@ -60,7 +60,7 @@ osd_device::osd_device() : quan::uav::osd::dynamic::display_device()
    m_display_rect.right = right_bottom.x;
    m_display_rect.bottom = right_bottom.y;
    m_clip.set_clipbox(m_display_rect);
-}
+};
 
 //void osd_device::set_origin(pxp_type const & p) { m_origin = p;}
 
@@ -79,26 +79,30 @@ void osd_device::clear()
 */
 void osd_device::set_pixel_raw(pxp_type const & px,colour_type c)
 {
-   switch (c) {
-      case colour_type::black:
-         m_image.SetRGB (px.x, px.y, 0, 0, 0);
-         m_image.SetAlpha (px.x, px.y, wxIMAGE_ALPHA_OPAQUE);
-         break;
-      case colour_type::white:
-         m_image.SetRGB (px.x, px.y, 255, 255, 255);
-         m_image.SetAlpha (px.x, px.y, wxIMAGE_ALPHA_OPAQUE);
-         break;
-      case colour_type::grey:
-         m_image.SetRGB (px.x, px.y, 127, 127, 127);
-         m_image.SetAlpha (px.x, px.y, wxIMAGE_ALPHA_OPAQUE);
-         break;
-      case colour_type::transparent:
-         m_image.SetRGB (px.x, px.y, 0, 0, 0);
-         m_image.SetAlpha (px.x, px.y, wxIMAGE_ALPHA_TRANSPARENT);
-         break;
-      default:
-        assert(false && __LINE__);
-         break;
+    auto dev_size = get_display_size();
+    if (( px.x >= 0 ) && (px.x < dev_size.x)
+         && (px.y >= 0) && (px.y < dev_size.y)){
+       switch (c) {
+          case colour_type::black:
+             m_image.SetRGB (px.x, px.y, 0, 0, 0);
+           //  m_image.SetAlpha (px.x, px.y, wxIMAGE_ALPHA_OPAQUE);
+             break;
+          case colour_type::white:
+             m_image.SetRGB (px.x, px.y, 255, 255, 255);
+           //  m_image.SetAlpha (px.x, px.y, wxIMAGE_ALPHA_OPAQUE);
+             break;
+          case colour_type::grey:
+             m_image.SetRGB (px.x, px.y, 127, 127, 127);
+           //  m_image.SetAlpha (px.x, px.y, wxIMAGE_ALPHA_OPAQUE);
+             break;
+          case colour_type::transparent:
+           //  m_image.SetRGB (px.x, px.y, 0, 0, 0);
+           //  m_image.SetAlpha (px.x, px.y, wxIMAGE_ALPHA_TRANSPARENT);
+             break;
+          default:
+            assert(false && __LINE__);
+             break;
+       }
    }
 }
 

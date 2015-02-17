@@ -12,7 +12,9 @@ struct main_frame_splitter : wxSplitterWindow{
 
    view * m_view;
    panel_splitter* m_panel_splitter;
-   
+
+   bool Destroy();
+
 };
 
 #endif // OSD_BITMAP_MAKER_MAIN_FRAME_SPLITTER_HPP_INCLUDED

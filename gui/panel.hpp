@@ -11,7 +11,7 @@ struct project_tree;
 struct panel : wxWindow// wxPanel
 {
   panel (wxWindow * parent);
-  void add_bitmap_handle(std::string const & name, int handle); 
+  void add_bitmap_handle(std::string const & name, int handle);
   void add_font_handle(std::string const & name, int handle);
   void set_project_name(wxString const & str);
   bool get_bitmap_handle(wxTreeEvent & event, int & result_out)const;
@@ -19,6 +19,7 @@ struct panel : wxWindow// wxPanel
   void reset();
   wxArrayString get_bitmap_names()const;
   wxArrayString get_font_names()const;
+  bool Destroy();
 private:
    enum class selection_type{ Unknown, Font, FontDir, Bitmap, BitmapDir, LayoutDir};
    selection_type get_selection_type(wxTreeEvent& event);
@@ -31,7 +32,7 @@ private:
    void OnTreeItemRightClick(wxTreeEvent & event);
    void rename_bitmap(wxTreeEvent & event);
 
-   
+
    enum
    {
       idMenuQuit = 1000,
@@ -39,9 +40,9 @@ private:
       idTreeControl
    };
    project_tree* m_project_tree;
-  
+
    DECLARE_EVENT_TABLE()
-   
+
 };
 
 #endif // QUANTRACKER_SIM_PANEL_HPP_INCLUDED

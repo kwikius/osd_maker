@@ -6,6 +6,7 @@
 #include "../font_preview.hpp"
 #include "../../graphics_api/objects/db_bitmap.hpp"
 #include "grid_cell_bmp_renderer.hpp"
+#include <wx/colour.h>
 
 grid_cell_bmp_renderer::grid_cell_bmp_renderer()
 {}
@@ -28,10 +29,10 @@ namespace {
 
 void grid_cell_bmp_renderer::Draw( wxGrid & grid,
       wxGridCellAttr& attr,
-      wxDC& dc, 
-      wxRect const & rect, 
-      int row, 
-      int col, 
+      wxDC& dc,
+      wxRect const & rect,
+      int row,
+      int col,
       bool is_selected
    )
 {
@@ -47,23 +48,26 @@ void grid_cell_bmp_renderer::Draw( wxGrid & grid,
          // get th bitmap at the handle
          document::dynamic_bitmap* image = wxGetApp().get_document()->get_bitmap(bmp_handle);
          if ( image){
-            
+           #if 1
             // convert to a bitmap
             auto bmp = ConvertTo_wxBitmap(*image, colour_array);
             wxImage image = bmp->ConvertToImage();
             wxSize is {image.GetWidth(),image.GetHeight()};
             image.Rescale(is.x * 2, is.y * 2);
-            delete bmp;
+
             wxBitmap  bmp1 (image);
             dc.DrawBitmap(bmp1,rect.x,rect.y);
-            
+            delete bmp;
+            #endif
             return;
          }
       }
+   }else {
+      dc.SetBrush(*wxWHITE_BRUSH);
+      dc.DrawRectangle(rect);
+      char ch = static_cast<char>(ascii_char);
+      dc.DrawText(wxString::Format(wxT("%c"),ch), rect.x,rect.y);
    }
-   // if here something not available so just draw the char text
-   char ch = static_cast<char>(ascii_char);
-   dc.DrawText(wxString::Format(wxT("%c"),ch), rect.x,rect.y);
 }
 
 

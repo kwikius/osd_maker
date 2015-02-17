@@ -14,7 +14,8 @@
 #ifdef __BORLANDC__
 #pragma hdrstop
 #endif //__BORLANDC__
-#include <wx/cmdline.h>
+
+#include <quan/uav/osd/dynamic/object_database.hpp>
 
 #include "osd_bmp_app.hpp"
 #include "document.hpp"
@@ -36,32 +37,14 @@ void OsdBmpApp::init_mainframe()
     m_frame->Show();
 }
 
-void OsdBmpApp::OnInitCmdLine(wxCmdLineParser & parser)
-{
-  //assert (false && __LINE__);
-  parser.AddOption(wxT("p"),wxT("project"),wxT("open a project"));
-}
-
-bool OsdBmpApp::OnCmdLineParsed(wxCmdLineParser & parser)
-{
-   // assert (false && __LINE__);
-    wxString path;
-    if ( parser.Found(wxT("p"),&path)){
-      return get_document()->open_project (path);
-    }
-    return true;
-    //WxApp::OnCmdLineParsed(parser);
-}
-
 bool OsdBmpApp::OnInit()
 {
     init_mainframe();
-    return wxApp::OnInit();
-    
+    return true;
 }
 
-view* OsdBmpApp::get_view()const 
-{ 
+view* OsdBmpApp::get_view()const
+{
    return m_frame->m_splitter->m_view;
 }
 
@@ -73,17 +56,17 @@ font_preview* OsdBmpApp::get_font_preview()const
 OsdBmpApp::OsdBmpApp()
 : m_frame{nullptr}
 , m_document{new document}
-, m_sp{nullptr}
+//, m_sp{nullptr}
 , m_app_config {new wxConfig(wxT("OSD BitmapMaker"))}
-{} 
+{}
 
 panel * OsdBmpApp::get_panel() const
 {
-   assert( 
-      (m_frame !=nullptr) && 
+   assert(
+      (m_frame !=nullptr) &&
       (m_frame->m_splitter != nullptr) &&
       (m_frame->m_splitter->m_panel_splitter != nullptr) &&
-      ( m_frame->m_splitter->m_panel_splitter->m_panel != nullptr) 
+      ( m_frame->m_splitter->m_panel_splitter->m_panel != nullptr)
    );
    return m_frame->m_splitter->m_panel_splitter->m_panel;
 }

@@ -7,6 +7,8 @@
  * License:
  **************************************************************/
 
+#include <wx/dynlib.h>
+
 #include <quan/gx/wxwidgets/from_wxString.hpp>
 #include <quan/gx/wxwidgets/to_wxString.hpp>
 
@@ -20,8 +22,15 @@
 #include "dialogs/new_bitmap_dialog.hpp"
 #include "dialogs/bitmap_resize_dialog.hpp"
 
+//#include "../../my_dll/main.h"
+#include <quan/uav/osd/dynamic/object_database.hpp>
+#include "../document/osd_object_database.hpp"
+
 using quan::gx::wxwidgets::from_wxString;
 using quan::gx::wxwidgets::to_wxString;
+
+
+
 
 //helper functions
 enum wxbuildinfoformat {
@@ -31,7 +40,7 @@ enum wxbuildinfoformat {
 wxString wxbuildinfo (wxbuildinfoformat format)
 {
    wxString wxbuild (wxVERSION_STRING);
-   
+
    if (format == long_f) {
 #if defined(__WXMSW__)
          wxbuild << _T ("-Windows");
@@ -40,14 +49,14 @@ wxString wxbuildinfo (wxbuildinfoformat format)
 #elif defined(__UNIX__)
          wxbuild << _T ("-Linux");
 #endif
-         
+
 #if wxUSE_UNICODE
          wxbuild << _T ("-Unicode build");
 #else
          wxbuild << _T ("-ANSI build");
 #endif // wxUSE_UNICODE
       }
-      
+
    return wxbuild;
 }
 
@@ -66,7 +75,7 @@ BEGIN_EVENT_TABLE (main_frame, wxFrame)
    EVT_MENU (idResizeViewBitmap,main_frame::OnResizeViewBitmap)
    EVT_MENU (idCreateStaticBitmapFile,main_frame::OnCreateStaticBitmapFile)
    EVT_MENU (idCreateStaticFontFile,main_frame::OnCreateStaticFontFile)
-
+   EVT_MENU (idDLLtest,main_frame::OnDLLTest)
    EVT_TIMER (idTimer, main_frame::OnTimer)
 END_EVENT_TABLE()
 
@@ -79,21 +88,41 @@ main_frame::main_frame (wxFrame *frame, const wxString& title, wxSize const & si
    this->m_splitter = new main_frame_splitter (this);
    create_menus();
    create_statusbar();
-   
+
 //#endif // wxUSE_STATUSBAR
 
      Timer= new wxTimer{this,idTimer};
 //    update rate of 1/50th sec
      Timer->Start(20,wxTIMER_CONTINUOUS);
-   
+
    // m_sp_in_thread = new sp_in_thread(this);
    //  m_sp_in_thread->Create();
    //  m_sp_in_thread->Run();
-   
+
 }
 
 main_frame::~main_frame()
 {}
+namespace {
+//wxString dll_path = wxT("C:/cpp/projects/my_dll/bin/Debug/my_dll");
+wxString dll_path = wxT("C:/cpp/lib/quantracker_lib/examples/osd_example1/pc_sim/osd_draw");
+}
+
+void main_frame::OnDLLTest(wxCommandEvent & event)
+{
+//     wxDynamicLibrary dll;
+//     if ( dll.Load(dll_path) ){
+//        bool dll_good = dll.HasSymbol(wxT("osd_on_draw"));
+//        if ( dll_good){
+//             void(*pfn)( quan::uav::osd::dynamic::display_device * d) = nullptr;
+//
+//            *(void**) (&pfn) = dll.GetSymbol(wxT("set_osd_on_draw_params"));
+//            auto const & db = wxGetApp().get_view;
+//            if ( pfn){ pfn(&db);}
+//
+//        }
+//     }
+}
 
 void main_frame::enable_menu_item (int id, bool b)
 {
@@ -128,7 +157,7 @@ void main_frame::create_menus()
 {
    wxMenuBar* mbar = new wxMenuBar();
    SetMenuBar (mbar);
-   
+
    wxMenu* projectMenu = new wxMenu (_T (""));
    mbar->Append (projectMenu, _ ("&File"));
    projectMenu->Append (wxID_NEW, _ ("&New Project...\tCtrl+N"), _ ("New Project"));
@@ -136,7 +165,7 @@ void main_frame::create_menus()
    projectMenu->Append (wxID_SAVE, _ ("&Save Project\tCtrl+S"), _ ("Save Project"));
    projectMenu->Append (wxID_SAVEAS, _ ("&Save Project As...\tShift+Ctrl+S"), _ ("Save Project As"));
    projectMenu->Append (idMenuQuit, _ ("&Quit\tCtrl+Q"), _ ("Quit the Application"));
-   
+
    wxMenu* bitmapMenu = new wxMenu (_T (""));
    mbar->Append (bitmapMenu, _ ("&Bitmap"));
    bitmapMenu->Append(idNewBitmap, _ ("&New..."), _ ("New Bitmap"));
@@ -145,18 +174,19 @@ void main_frame::create_menus()
    bitmapMenu->Append(idCreateStaticBitmapFile,  _ ("Create Bitmap Header..."));
 
    wxMenu* fontMenu = new wxMenu (_T (""));
-   mbar->Append (fontMenu, _ ("&Font")); 
+   mbar->Append (fontMenu, _ ("&Font"));
    fontMenu->Append (idImportFont, _ ("&Import..."), _ ("Import Font"));
    bitmapMenu->Append(idCreateStaticFontFile,  _ ("Create Font Header..."));
-   
+
    wxMenu* viewMenu = new wxMenu (_T (""));
    mbar->Append (viewMenu, _ ("&View"));
    viewMenu->Append (idCommitViewToTree, _ ("Commit view to live-tree"));
-  
+
    wxMenu* helpMenu = new wxMenu (_T (""));
    mbar->Append (helpMenu, _ ("&Help"));
    helpMenu->Append (idMenuAbout, _ ("&About"), _ ("Show info about this application"));
-   
+   helpMenu->Append(idDLLtest,_ ("DLL_test"),_("DLL_TEST"));
+
    enable_save_project (false);
    enable_save_project_as (false);
    enable_commit_view_to_tree (false);
@@ -182,7 +212,7 @@ bool main_frame::Destroy()
             m_sp_in_thread->Delete();
          };
    }
-   
+
    for (;;) {
          wxCriticalSectionLocker lock (m_thread_CS);
          if (m_sp_in_thread == nullptr) {
@@ -190,13 +220,15 @@ bool main_frame::Destroy()
             }
       }
 #endif
+   delete Timer;
+   m_splitter->Destroy();
    return wxFrame::Destroy();
 }
 
 void main_frame::OnResizeViewBitmap(wxCommandEvent & event)
 {
 //  {5,-5,-5,0};
-//  
+//
    auto view = wxGetApp().get_view();
    if (view->have_image() && (view->get_view_mode() == ::view::view_mode::inBitmaps)){
    bitmap_resize_dialog dlg(this);
@@ -215,7 +247,7 @@ void main_frame::OnResizeViewBitmap(wxCommandEvent & event)
       wxGetApp().get_view()->resize_image(new_size1);
    }
    }
-   
+
 }
 
 void main_frame::OnCommitViewToTree (wxCommandEvent & event)
@@ -237,7 +269,7 @@ void main_frame::OnCloseProject (wxCloseEvent &event)
    auto config = wxGetApp().get_config();
    config->Write (wxT ("/MainFrame/InitialWidth"), frame_size.x);
    config->Write (wxT ("/MainFrame/InitialHeight"), frame_size.y);
-   
+
    Destroy();
 }
 
@@ -278,7 +310,7 @@ void main_frame::OnNewBitmap (wxCommandEvent &event)
 {
    new_bitmap_dialog dlg(this);
    quan::two_d::vect<long> size;
-   
+
    if ( dlg.ShowModal() == wxID_OK){
       if (! dlg.m_x_text->GetValue().ToLong(&size.x)){
          wxMessageBox(wxT("invalid number in x"));
@@ -334,8 +366,8 @@ void main_frame::OnSaveProjectAs (wxCommandEvent &event)
 {
    wxFileDialog fd(
       this,
-      wxT("Save OSD Project File"), 
-      wxT(""), 
+      wxT("Save OSD Project File"),
+      wxT(""),
       wxT(""),
       wxT("ZIP files (*.zip)|*.zip"),
       wxFD_SAVE | wxFD_OVERWRITE_PROMPT
@@ -368,9 +400,9 @@ void main_frame::OnNewProject (wxCommandEvent &event)
       wxT ("New Project"),
       wxT ("OSDBitmaps1")
    };
-   
+
    if (dlg.ShowModal() == wxID_OK) {
-   
+
          // if have current project
          wxGetApp().get_document()->set_project_name (dlg.GetValue());
       }
@@ -405,8 +437,8 @@ void main_frame::OnTimer (wxTimerEvent &event)
 //      }
 //      the_aircraft.set_heading(bearing);
 
-       view->Refresh();
-    
+      // view->Refresh();
+
    }
 }
 
