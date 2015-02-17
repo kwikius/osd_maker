@@ -44,30 +44,47 @@ view::view(wxWindow* parent)
      setup_draw_fn();
 }
 
+namespace {
+
+ // path without extension
+  wxString dll_path = wxT("/home/andy/cpp/projects/quantracker/examples/osd_example1/pc_sim/osd_draw");
+
+}
+
 void view::setup_draw_fn()
 {
 #if 1
+   if ( m_dll.Load(dll_path) ){
+        bool dll_good = m_dll.HasSymbol(wxT("osd_on_draw")) 
+                        && m_dll.HasSymbol(wxT("set_osd_on_draw_params"));
+        if ( dll_good){
+            
+            *(void**) (&m_pfn_osd_on_draw) = m_dll.GetSymbol(wxT("osd_on_draw"));
+            *(void**) (&m_pfn_set_osd_on_draw_params) = m_dll.GetSymbol(wxT("set_osd_on_draw_params"));
+
+            assert(m_pfn_osd_on_draw && m_pfn_set_osd_on_draw_params && __LINE__);
+        }
+            
+   }
+
+#else
   dlerror();
- // void * handle = dlopen("/home/andy/cpp/projects/osd_draw/osd_draw.so",RTLD_LAZY);
-    void * handle = dlopen("/home/andy/cpp/projects/quantracker/examples/osd_example1/pc_sim/osd_draw.so",RTLD_LAZY);
-  if ( !handle){
-      wxMessageBox(wxString::Format(wxT("load dll failed with %s"), dlerror()));
-  }else{
-      
+  void * handle = dlopen("/home/andy/cpp/projects/quantracker/examples/osd_example1/pc_sim/osd_draw.so",RTLD_LAZY);
+  if ( handle){
       dlerror(); // osd_on_draw
       *(void**) (&m_pfn_osd_on_draw) = dlsym(handle,"osd_on_draw");
       char* error = dlerror();
-      if (error){
-         wxMessageBox(wxString::Format(wxT("load dll failed with %s"), error));
-      }else{
-         dlerror(); //set_osd_on_draw_params
+      if (error == nullptr){
+         dlerror(); 
          *(void**) (&m_pfn_set_osd_on_draw_params) = dlsym(handle,"set_osd_on_draw_params");
          error = dlerror();
-         if (error){
-            wxMessageBox(wxString::Format(wxT("load dll failed with %s"), error));
+         if (error == nullptr){
+           return;
          }
       }
-   }
+      // fail if here
+      //wxMessageBox(wxString::Format(wxT("load dll failed with %s"), dlerror()));
+  }
 #endif
 }
 

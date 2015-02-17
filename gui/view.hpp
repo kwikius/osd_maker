@@ -2,6 +2,7 @@
 #define AEROFOIL_GRAPHICS_WINDOW_HPP_INCLUDED
 
 #include <wx/wx.h>
+#include <wx/dynlib.h>
 #include <quan/two_d/vect.hpp>
 #include <quan/three_d/vect.hpp>
 #include <quan/length.hpp>
@@ -15,8 +16,6 @@
 #include "../osd_bmp_app.hpp"
 #include "../document.hpp"
 #include "view/drawing.hpp"
-
-
 #include "../graphics_api/osd_device.hpp"
 
    struct view : wxWindow{
@@ -113,6 +112,8 @@
       typedef  void (*pfn_osd_on_draw)( osd_device & d);
       pfn_set_osd_on_draw_params m_pfn_set_osd_on_draw_params;    
       pfn_osd_on_draw m_pfn_osd_on_draw;
+
+      wxDynamicLibrary m_dll;
       
    };
 
