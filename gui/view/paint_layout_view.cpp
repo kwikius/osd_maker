@@ -3,6 +3,12 @@
 #include "../view.hpp"
 #include "../../display1/display.hpp"
 
+/*
+operating systems
+   __LINUX__
+  __WINDOWS__
+*/
+
 void view::paint_layout_view(wxPaintEvent & event)
 {
 
