@@ -14,10 +14,17 @@ operating systems
 
 namespace {
 //wxString dll_path = wxT("C:/cpp/projects/my_dll/bin/Debug/my_dll");
+#if defined (__LINUX__)
+                         // home/andy/cpp/projects/quantracker/examples/osd_example1/pc_sim/osd_draw.so
+wxString dll_path = wxT("/home/andy/cpp/projects/quantracker/examples/osd_example1/pc_sim/osd_draw");
+#else
 wxString dll_path = wxT("C:/cpp/lib/quantracker_lib/examples/osd_example1/pc_sim/osd_draw");
+#endif
 }
 void view::paint_layout_view(wxPaintEvent & event)
 {
+
+
 
 
     m_osd_device.clear();
@@ -38,6 +45,8 @@ void view::paint_layout_view(wxPaintEvent & event)
 //static int count = 0;
    // if ( count ==0){
               //  ++count;
+    static bool failed = false;
+    if ( ! failed){
      wxDynamicLibrary dll;
      if ( dll.Load(dll_path) ){
         bool dll_good = dll.HasSymbol(wxT("osd_on_draw")) && dll.HasSymbol(wxT("set_osd_on_draw_params"));
@@ -51,8 +60,13 @@ void view::paint_layout_view(wxPaintEvent & event)
                 auto const & db = wxGetApp().get_document()->get_database();
                 pfn_par(&db);
                 pfn(&m_osd_device);
+            }else {
+               failed = true;
             }
+        }else{
+            failed = true;
         }
+     }
      }
     #endif
 

@@ -92,7 +92,11 @@ void font_preview::OnGridCellRightClick(wxGridEvent& event)
          ,wxT("Font Element Actions")
          ,sizeof(choices) / sizeof(wxString)
          ,(wxString*)choices
+#if wxCHECK_VERSION(3,0,0)
          ,(void**)NULL
+#else
+        , NULL
+#endif
          ,style
       };
 

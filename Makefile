@@ -35,7 +35,7 @@ C_INCLUDE_PATH =
 
 #########################################################
 else
-include Sample-Dependencies.mk
+include Dependencies.mk
 endif
 
 APPLICATION_NAME = osd_maker.exe
@@ -69,7 +69,7 @@ CFLAGS = -Wall -std=gnu++11 -Os
 
 # Current wxWidgets lib (3.0.0) gives loads of warning
 # about deprecated-declarations so use this to silence
-CFLAGS += -Wno-deprecated-declarations
+CFLAGS += -Wno-deprecated-declarations -Wno-unused-local-typedefs
 
 LFLAGS =
 
@@ -85,8 +85,8 @@ WX_LIBS = -L$(WX_LIB_PATH) -Wl,--subsystem,windows -lwxmsw30u_xrc \
 -lwxmsw30u_core -lwxbase30u_xml -lwxbase30u_net \
 -lwxbase30u -lwxpng -lwxzlib
 else
-WX_LIBS = 'wx-config --libs'
-WX_CPP_FLAGS = 'wx-config --cpp_flags'
+WX_LIBS = `wx-config --libs`
+WX_CPP_FLAGS = `wx-config --cppflags`
 # add WX_CONFIG_CPP_FLAGS
 endif
 

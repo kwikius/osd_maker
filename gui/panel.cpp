@@ -298,7 +298,11 @@ void panel::OnTreeItemRightClick(wxTreeEvent & event)
       ,wxT("Tree Item Actions")
       ,sizeof(choices) / sizeof(wxString)
       ,(wxString*)choices
-      ,(void**)NULL
+#if wxCHECK_VERSION(3,0,0)
+         ,(void**)NULL
+#else
+        , NULL
+#endif
       ,style
   };
 
