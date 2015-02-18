@@ -13,23 +13,20 @@
 using quan::gx::wxwidgets::from_wxString;
 using quan::gx::wxwidgets::to_wxString;
 
-
-
 namespace {
-struct osd_bitmap_handle : public wxTreeItemData {
-   osd_bitmap_handle(int handle) : m_handle{handle}{}
-   int get_handle()const{ return m_handle;}
-  private:
-   int const m_handle;
-};
+   struct osd_bitmap_handle : public wxTreeItemData {
+      osd_bitmap_handle(int handle) : m_handle{handle}{}
+      int get_handle()const{ return m_handle;}
+     private:
+      int const m_handle;
+   };
 
-struct osd_font_handle : public wxTreeItemData {
-   osd_font_handle(int handle) : m_handle{handle}{}
-   int get_handle()const{ return m_handle;}
-  private:
-   int const m_handle;
-};
-
+   struct osd_font_handle : public wxTreeItemData {
+      osd_font_handle(int handle) : m_handle{handle}{}
+      int get_handle()const{ return m_handle;}
+     private:
+      int const m_handle;
+   };
 } // namespace
 
 wxArrayString panel::get_font_names()const

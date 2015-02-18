@@ -11,6 +11,7 @@ quan::uav::osd::dynamic::bitmap * osd_object_database::get_bitmap_at(size_t i) c
       return nullptr;
    }
 }
+
 quan::uav::osd::dynamic::font * osd_object_database::get_font_at(size_t i) const
 {
    int handle = -1;
@@ -238,12 +239,9 @@ osd_object_database::move_font_element_by_handle(int handle)
    if(iter == m_osd_image_map.end()){
       return nullptr;
    };
-   dynamic_bitmap* image = iter->second;
-   m_osd_image_map.erase(iter);
-
-   dynamic_bitmap* bmp = dynamic_cast<dynamic_bitmap*>(image);
+   dynamic_bitmap* bmp = iter->second;
    assert(bmp && __LINE__);
-
+   m_osd_image_map.erase(iter);
    assert(free_handle(handle) && __LINE__);
    return bmp;
 }

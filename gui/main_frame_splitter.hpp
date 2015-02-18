@@ -3,7 +3,6 @@
 
 #include <wx/splitter.h>
 
-//#include "panel.hpp"
 #include "view.hpp"
 #include "panel_splitter.hpp"
 

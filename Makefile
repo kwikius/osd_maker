@@ -15,11 +15,9 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>
 ifeq (1,0)
-# modify to change your app name
-
-
+# NB This bit is for testing only
+# so ignore it
 ######################## #######################################
-# modify these to your compiler must be a C++11 gcc compiler
 
 CC = C:/cpp/tdm-gcc/bin/g++
 LD = C:/cpp/tdm-gcc/bin/g++
@@ -35,20 +33,15 @@ WX_LIB_PATH = C:/cpp/wxWidgets-3.0.0/lib/gcc481TDM_dll
 # The C_INCLUDE_PATH is required to get it to compile
 C_INCLUDE_PATH =
 
-
+#########################################################
 else
 include Sample-Dependencies.mk
 endif
 
 APPLICATION_NAME = osd_maker.exe
-INCLUDES = -I$(QUAN_INCLUDE_PATH) -I$(WX_INCLUDE_PATH)
+INCLUDES = $(QUAN_INCLUDE_PATH) $(WX_INCLUDE_PATH) $(C_INCLUDE_PATH)
+INCLUDE_ARGS = $(patsubst %,-I%,$(INCLUDES))
 
-ifeq ($(C_INCLUDE_PATH), )
-
-else
-INCLUDES += -I$(C_INCLUDE_PATH)
-endif
-#########################################################
 # local object files divided into directories
 local_objects = document.o osd_bmp_app.o
 local_document_objects = open_project.o mcm_file.o osd_object_database.o
@@ -72,7 +65,7 @@ $(local_gui_font_preview_objects) $(local_gui_main_frame_objects) \
 $(local_gui_view_objects) $(quan_gx_wxwidgets_objects) static_rgb_colours.o \
 writable_bitmap.o dynamic_bitmap.o
 # change std=c++11 to std=gnu++11 to satisfy wxWidgets
-CFLAGS = -Wall -std=gnu++11 -Os -D__WXMSW__
+CFLAGS = -Wall -std=gnu++11 -Os
 
 # Current wxWidgets lib (3.0.0) gives loads of warning
 # about deprecated-declarations so use this to silence
@@ -81,14 +74,16 @@ CFLAGS += -Wno-deprecated-declarations
 LFLAGS =
 
 ## NB The names of these seem to have changed
+# from wxWidgets 2.8 to 3.0
 # if necessary check the $(WX_LIB_PATH) directory
 # for likely loking names
+# or preferable use wx-config !
 ifeq ($(QUAN_PLATFORM),QUAN_ON_WINDOWS)
-WX_LIBS  = -Wl,--subsystem,windows -lwxmsw30u_xrc \
+WX_CPP_FLAGS = -D__WXMSW__
+WX_LIBS = -L$(WX_LIB_PATH) -Wl,--subsystem,windows -lwxmsw30u_xrc \
 -lwxmsw30u_webview -lwxmsw30u_html -lwxmsw30u_adv \
 -lwxmsw30u_core -lwxbase30u_xml -lwxbase30u_net \
 -lwxbase30u -lwxpng -lwxzlib
-WX_CPP_FLAGS =
 else
 WX_LIBS = 'wx-config --libs'
 WX_CPP_FLAGS = 'wx-config --cpp_flags'
@@ -100,46 +95,46 @@ endif
 all : $(APPLICATION_NAME)
 
 $(local_objects) : %.o : %.cpp
-	$(CC) -c $(CFLAGS) $(INCLUDES) $< -o $@ $(WX_CPP_FLAGS)
+	$(CC) -c $(CFLAGS) $(INCLUDE_ARGS) $< -o $@ $(WX_CPP_FLAGS)
 
 $(local_document_objects) : %.o : document/%.cpp
-	$(CC) -c $(CFLAGS) $(INCLUDES) $< -o $@  $(WX_CPP_FLAGS)
+	$(CC) -c $(CFLAGS) $(INCLUDE_ARGS) $< -o $@  $(WX_CPP_FLAGS)
 
 $(local_gui_objects) : %.o : gui/%.cpp
-	$(CC) -c $(CFLAGS) $(INCLUDES) $< -o $@ $(WX_CPP_FLAGS)
+	$(CC) -c $(CFLAGS) $(INCLUDE_ARGS) $< -o $@ $(WX_CPP_FLAGS)
 
 $(local_graphics_api_objects_objects) : %.o : graphics_api/objects/%.cpp
-	$(CC) -c $(CFLAGS) $(INCLUDES) $< -o $@ $(WX_CPP_FLAGS)
+	$(CC) -c $(CFLAGS) $(INCLUDE_ARGS) $< -o $@ $(WX_CPP_FLAGS)
 
 $(local_gui_dialogs_objects) : %.o : gui/dialogs/%.cpp
-	$(CC) -c $(CFLAGS) $(INCLUDES) $< -o $@ $(WX_CPP_FLAGS)
+	$(CC) -c $(CFLAGS) $(INCLUDE_ARGS) $< -o $@ $(WX_CPP_FLAGS)
 
 $(local_gui_font_preview_objects) : %.o : gui/font_preview/%.cpp
-	$(CC) -c $(CFLAGS) $(INCLUDES) $< -o $@ $(WX_CPP_FLAGS)
+	$(CC) -c $(CFLAGS) $(INCLUDE_ARGS) $< -o $@ $(WX_CPP_FLAGS)
 
 $(local_gui_main_frame_objects) : %.o : gui/main_frame/%.cpp
-	$(CC) -c $(CFLAGS) $(INCLUDES) $< -o $@ $(WX_CPP_FLAGS)
+	$(CC) -c $(CFLAGS) $(INCLUDE_ARGS) $< -o $@ $(WX_CPP_FLAGS)
 
 $(local_gui_view_objects) : %.o : gui/view/%.cpp
-	$(CC) -c $(CFLAGS) $(INCLUDES) $< -o $@ $(WX_CPP_FLAGS)
+	$(CC) -c $(CFLAGS) $(INCLUDE_ARGS) $< -o $@ $(WX_CPP_FLAGS)
 
 $(quan_gx_wxwidgets_objects) : %.o : $(QUAN_INCLUDE_PATH)quan_matters/src/wxwidgets/%.cpp
-	$(CC) -c $(CFLAGS) $(INCLUDES) $< -o $@ $(WX_CPP_FLAGS)
+	$(CC) -c $(CFLAGS) $(INCLUDE_ARGS) $< -o $@ $(WX_CPP_FLAGS)
 
 #serial_port.o : $(QUAN_INCLUDE_PATH)quan_matters/src/serial_port.cpp
-#	$(CC) -c $(CFLAGS) $(INCLUDES) $< -o $@
+#	$(CC) -c $(CFLAGS) $(INCLUDE_ARGS) $< -o $@
 
 static_rgb_colours.o : $(QUAN_INCLUDE_PATH)quan_matters/src/gx/static_rgb_colours.cpp
-	$(CC) -c $(CFLAGS) $(INCLUDES) $< -o $@ $(WX_CPP_FLAGS)
+	$(CC) -c $(CFLAGS) $(INCLUDE_ARGS) $< -o $@ $(WX_CPP_FLAGS)
 
 writable_bitmap.o : $(QUAN_INCLUDE_PATH)quan_matters/src/uav/osd/detail/writable_bitmap.cpp
-	$(CC) -c $(CFLAGS) $(INCLUDES) $< -o $@ $(WX_CPP_FLAGS)
+	$(CC) -c $(CFLAGS) $(INCLUDE_ARGS) $< -o $@ $(WX_CPP_FLAGS)
 
 dynamic_bitmap.o : $(QUAN_INCLUDE_PATH)quan_matters/src/uav/osd/dynamic/bitmap.cpp
-	$(CC) -c $(CFLAGS) $(INCLUDES) $< -o $@ $(WX_CPP_FLAGS)
+	$(CC) -c $(CFLAGS) $(INCLUDE_ARGS) $< -o $@ $(WX_CPP_FLAGS)
 
 $(APPLICATION_NAME) : $(objects)
-	$(LD)  $(CFLAGS) $(LFLAGS) -o $(APPLICATION_NAME) $(objects) -L$(WX_LIB_PATH) $(WX_LIBS)
+	$(LD)  $(CFLAGS) $(LFLAGS) -o $(APPLICATION_NAME) $(objects) $(WX_LIBS)
 
 clean:
 	-rm -rf *.o *.exe

@@ -1,8 +1,5 @@
 
 #include <cctype>
-#if 0
-#include <dlfcn.h>
-#endif
 #include <quan/gx/primitives/simple_line.hpp>
 
 #include "../document.hpp"
@@ -52,14 +49,17 @@ bool view::Destroy()
    m_pfn_set_osd_on_draw_params= nullptr;
    m_pfn_osd_on_draw = nullptr;
    return wxWindow::Destroy();
-
 }
 
 namespace {
-
+// need to sort next!!
  // path without extension
+#if defined(__UNIX__)
  // wxString dll_path = wxT("/home/andy/cpp/projects/quantracker/examples/osd_example1/pc_sim/osd_draw");
+#elif defined (__WXMSW__)
    wxString dll_path = wxT("C:/cpp/lib/quantracker_lib/examples/osd_example1/pc_sim/osd_draw");
+#else
+#endif
 }
 
 void view::setup_draw_fn()

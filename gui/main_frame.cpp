@@ -6,33 +6,27 @@
  * Copyright: Andy (http://www.softpainter.org)
  * License:
  **************************************************************/
-
+#include <fstream>
 #include <wx/dynlib.h>
 
 #include <quan/gx/wxwidgets/from_wxString.hpp>
 #include <quan/gx/wxwidgets/to_wxString.hpp>
 
-#include <fstream>
-
 #include "../document.hpp"
-
 #include "../osd_bmp_app.hpp"
+
 #include "main_frame.hpp"
 #include "main_frame_splitter.hpp"
+
 #include "dialogs/new_bitmap_dialog.hpp"
 #include "dialogs/bitmap_resize_dialog.hpp"
 
-//#include "../../my_dll/main.h"
 #include <quan/uav/osd/dynamic/object_database.hpp>
 #include "../document/osd_object_database.hpp"
 
 using quan::gx::wxwidgets::from_wxString;
 using quan::gx::wxwidgets::to_wxString;
 
-
-
-
-//helper functions
 enum wxbuildinfoformat {
    short_f, long_f
 };

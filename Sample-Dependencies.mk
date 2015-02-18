@@ -10,6 +10,7 @@ QUAN_INCLUDE_PATH = C:/cpp/lib/quan-trunk_lib/
 WX_INCLUDE_PATH = C:/cpp/wxWidgets-3.0.0/include/
 
 ## this can be blank if using wx-config
+# Uses wx-config currently if you are on Linux
 WX_LIB_PATH = C:/cpp/wxWidgets-3.0.0/lib/gcc481TDM_dll
 
 # can usually be left blank
