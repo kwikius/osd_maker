@@ -6,8 +6,8 @@
 #include "panel.hpp"
 #include "font_preview.hpp"
 
-struct panel_splitter : wxSplitterWindow{
-   panel_splitter(wxWindow* parent);
+struct tree_panel_splitter : wxSplitterWindow{
+   tree_panel_splitter(wxWindow* parent);
    panel* m_panel;
    font_preview * m_font_preview;
    bool Destroy();

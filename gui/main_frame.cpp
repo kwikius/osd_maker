@@ -87,7 +87,7 @@ main_frame::main_frame (wxFrame *frame, const wxString& title, wxSize const & si
 
      Timer= new wxTimer{this,idTimer};
 //    update rate of 1/50th sec
-     Timer->Start(20,wxTIMER_CONTINUOUS);
+   //  Timer->Start(20,wxTIMER_CONTINUOUS);
 
    // m_sp_in_thread = new sp_in_thread(this);
    //  m_sp_in_thread->Create();
@@ -99,7 +99,7 @@ main_frame::~main_frame()
 {}
 namespace {
 //wxString dll_path = wxT("C:/cpp/projects/my_dll/bin/Debug/my_dll");
-wxString dll_path = wxT("C:/cpp/lib/quantracker_lib/examples/osd_example1/pc_sim/osd_draw");
+//wxString dll_path = wxT("C:/cpp/lib/quantracker_lib/examples/osd_example1/pc_sim/osd_draw");
 }
 
 void main_frame::OnDLLTest(wxCommandEvent & event)
@@ -238,7 +238,12 @@ void main_frame::OnResizeViewBitmap(wxCommandEvent & event)
       new_size1.bottom =static_cast<int>(new_size.bottom *-1);
       new_size1.left  =static_cast<int>(new_size.left);
       new_size1.right =static_cast<int>(new_size.right);
-      wxGetApp().get_view()->resize_image(new_size1);
+      if (!wxGetApp().get_view()->resize_image(new_size1)){
+         wxMessageBox(wxT("resize failed"));
+      }else{
+           wxMessageBox(wxT("resize succeeded"));
+
+      }
    }
    }
 

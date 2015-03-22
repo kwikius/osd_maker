@@ -113,7 +113,6 @@ extern "C"{
 
       osd_device m_osd_device;
 
-
       pfn_set_osd_on_draw_params m_pfn_set_osd_on_draw_params;
       pfn_osd_on_draw m_pfn_osd_on_draw;
 

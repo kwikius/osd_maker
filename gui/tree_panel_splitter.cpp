@@ -1,6 +1,6 @@
-#include "panel_splitter.hpp"
+#include "tree_panel_splitter.hpp"
 
-panel_splitter::panel_splitter(wxWindow* parent) : wxSplitterWindow(parent, wxID_ANY)
+tree_panel_splitter::tree_panel_splitter(wxWindow* parent) : wxSplitterWindow(parent, wxID_ANY)
 {
    SetSashGravity(0.75);
    SetMinimumPaneSize(200);
@@ -9,7 +9,7 @@ panel_splitter::panel_splitter(wxWindow* parent) : wxSplitterWindow(parent, wxID
    SplitHorizontally(m_panel, m_font_preview);
 }
 
-bool panel_splitter::Destroy()
+bool tree_panel_splitter::Destroy()
 {
    m_panel->Destroy();
    m_font_preview->Destroy();

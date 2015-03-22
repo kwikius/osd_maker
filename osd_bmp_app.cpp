@@ -45,12 +45,12 @@ bool OsdBmpApp::OnInit()
 
 view* OsdBmpApp::get_view()const
 {
-   return m_frame->m_splitter->m_view;
+   return m_frame->m_splitter->get_view();
 }
 
 font_preview* OsdBmpApp::get_font_preview()const
 {
-   return m_frame->m_splitter->m_panel_splitter->m_font_preview;
+   return m_frame->m_splitter->get_tree_panel_splitter()->m_font_preview;
 }
 
 OsdBmpApp::OsdBmpApp()
@@ -65,10 +65,10 @@ panel * OsdBmpApp::get_panel() const
    assert(
       (m_frame !=nullptr) &&
       (m_frame->m_splitter != nullptr) &&
-      (m_frame->m_splitter->m_panel_splitter != nullptr) &&
-      ( m_frame->m_splitter->m_panel_splitter->m_panel != nullptr)
+      (m_frame->m_splitter->get_tree_panel_splitter() != nullptr) &&
+      ( m_frame->m_splitter->get_tree_panel_splitter()->m_panel != nullptr)
    );
-   return m_frame->m_splitter->m_panel_splitter->m_panel;
+   return m_frame->m_splitter->get_tree_panel_splitter()->m_panel;
 }
 
 

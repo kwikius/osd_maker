@@ -24,9 +24,6 @@ wxString dll_path = wxT("C:/cpp/lib/quantracker_lib/examples/osd_example1/pc_sim
 void view::paint_layout_view(wxPaintEvent & event)
 {
 
-
-
-
     m_osd_device.clear();
 
 
@@ -47,6 +44,7 @@ void view::paint_layout_view(wxPaintEvent & event)
               //  ++count;
     static bool failed = false;
     if ( ! failed){
+   // failed = true;
      wxDynamicLibrary dll;
      if ( dll.Load(dll_path) ){
         bool dll_good = dll.HasSymbol(wxT("osd_on_draw")) && dll.HasSymbol(wxT("set_osd_on_draw_params"));
@@ -66,6 +64,8 @@ void view::paint_layout_view(wxPaintEvent & event)
         }else{
             failed = true;
         }
+     }else{
+         failed = true;
      }
      }
     #endif
@@ -76,5 +76,4 @@ void view::paint_layout_view(wxPaintEvent & event)
      dc.Clear();
      dc.DrawBitmap(bitmap,0,0);
     //}
-
 }
