@@ -65,6 +65,7 @@ private:
 
    DECLARE_EVENT_TABLE()
 
+   bool open_project(wxString const & path);
    main_frame_splitter* m_splitter;
    wxTimer * Timer;
    wxCriticalSection m_thread_CS;

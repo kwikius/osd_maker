@@ -11,6 +11,7 @@
 
 #include <quan/gx/wxwidgets/from_wxString.hpp>
 #include <quan/gx/wxwidgets/to_wxString.hpp>
+#include <quan/fs/get_basename.hpp>
 
 #include "../document.hpp"
 #include "../osd_bmp_app.hpp"
@@ -165,12 +166,12 @@ void main_frame::create_menus()
    bitmapMenu->Append(idNewBitmap, _ ("&New..."), _ ("New Bitmap"));
    bitmapMenu->Append(idImportBitmap, _ ("&Import..."), _ ("Import Bitmap"));
    bitmapMenu->Append(idResizeViewBitmap,  _ ("Resize current bitmap..."));
-   bitmapMenu->Append(idCreateStaticBitmapFile,  _ ("Create Bitmap Header..."));
+   bitmapMenu->Append(idCreateStaticBitmapFile,  _ ("Export Bitmaps as  C++ Source/Header..."));
 
    wxMenu* fontMenu = new wxMenu (_T (""));
    mbar->Append (fontMenu, _ ("&Font"));
    fontMenu->Append (idImportFont, _ ("&Import..."), _ ("Import Font"));
-   fontMenu->Append(idCreateStaticFontFile,  _ ("Create Font Header..."));
+   fontMenu->Append(idCreateStaticFontFile,  _ ("Export Fonts as C++ Source/Header..."));
 
    wxMenu* viewMenu = new wxMenu (_T (""));
    mbar->Append (viewMenu, _ ("&View"));
@@ -363,11 +364,15 @@ void main_frame::OnSaveProject (wxCommandEvent &event)
 
 void main_frame::OnSaveProjectAs (wxCommandEvent &event)
 {
+
+   wxString dirname = wxGetApp().get_config()->Read(wxT("/CurrentProject/FileDir"),wxT(""));
+   wxString filename = wxGetApp().get_config()->Read(wxT("/CurrentProject/FileName"),wxT(""));
+
    wxFileDialog fd(
       this,
       wxT("Save OSD Project File"),
-      wxT(""),
-      wxT(""),
+      dirname,
+      filename,
       wxT("ZIP files (*.zip)|*.zip"),
       wxFD_SAVE | wxFD_OVERWRITE_PROMPT
    );
@@ -401,7 +406,6 @@ void main_frame::OnNewProject (wxCommandEvent &event)
    };
 
    if (dlg.ShowModal() == wxID_OK) {
-
          // if have current project
          wxGetApp().get_document()->set_project_name (dlg.GetValue());
       }
@@ -410,13 +414,39 @@ void main_frame::OnNewProject (wxCommandEvent &event)
 
 void main_frame::OnOpenProject (wxCommandEvent &event)
 {
-   wxFileDialog dlg (this, wxT ("Open Project"), wxT (""), wxT ("")
-                     , wxT ("zip files(*zip)|*.zip"), wxFD_OPEN | wxFD_FILE_MUST_EXIST);
+   wxString dirname =  wxGetApp().get_config()->Read(wxT("/CurrentProject/FileDir"),wxT(""));
+   wxString filename =  wxGetApp().get_config()->Read(wxT("/CurrentProject/FileName"),wxT(""));
+
+   wxFileDialog dlg (
+      this, wxT ("Open Project"),
+      dirname, 
+      filename
+      , wxT ("zip files(*zip)|*.zip"), wxFD_OPEN | wxFD_FILE_MUST_EXIST
+   );
    if (dlg.ShowModal() == wxID_CANCEL) {
-         return;
-      }
-   wxString path = dlg.GetPath();
-   wxGetApp().get_document()->open_project (path);
+      return;
+   }
+   this->open_project(dlg.GetPath());
+}
+
+/*
+   open doc project and if success
+   save to config
+*/
+bool main_frame::open_project(wxString const & path)
+{
+   if ( wxGetApp().get_document()->open_project (path)){
+
+     std::string str_path = from_wxString<char>(path);
+     std::string basename =  quan::fs::get_basename(str_path);
+     std::string dirname =  str_path.substr(0,str_path.rfind('/'));
+
+     wxGetApp().get_config()->Write(wxT("/CurrentProject/FileDir"),to_wxString(dirname));
+     wxGetApp().get_config()->Write(wxT("/CurrentProject/FileName"),to_wxString(basename));
+     return true;
+   }else{
+      return false;
+   }
 }
 
 /*

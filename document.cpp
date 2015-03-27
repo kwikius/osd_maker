@@ -92,10 +92,15 @@ bool document::save_project()
 
    wxString save_path = get_project_file_path() ;
    if (save_path == wxT ("")) {
+      // get current path and name
+
+     wxString dirname =  wxGetApp().get_config()->Read(wxT("/CurrentProject/FileDir"),wxT(""));
+     wxString filename =  wxGetApp().get_config()->Read(wxT("/CurrentProject/FileName"),wxT(""));
+
       wxFileDialog fd {wxGetApp().get_main_frame(),
          wxT ("Save Project"),
-         wxT (""),                    // default dir
-         wxT (""),                    // default file
+         dirname,                    // default dir
+         filename,                    // default file
          wxT ("osd lib files(*.zip)|*.zip"), // wildcard
          wxFD_SAVE | wxFD_OVERWRITE_PROMPT
       };
@@ -109,16 +114,23 @@ bool document::save_project()
 
 bool document::save_project_as(wxString const & path)
 {
+   
    if (ll_save_project(path) ){
       // TODO set project name, tree name etc
-
-   this->m_project_file_path = path;
+     this->m_project_file_path = path;
      wxGetApp().get_main_frame()->SetTitle(path);
+
+     std::string str_path = from_wxString<char>(path);
+     std::string basename =  quan::fs::get_basename(str_path);
+     std::string dirname =  str_path.substr(0,str_path.rfind('/'));
+
+     wxGetApp().get_config()->Write(wxT("/CurrentProject/FileDir"),to_wxString(dirname));
+     wxGetApp().get_config()->Write(wxT("/CurrentProject/FileName"),to_wxString(basename));
+
      std::string std_path
       = quan::fs::strip_file_extension(
             quan::fs::get_basename(from_wxString<char>(path))
       );
-
      wxGetApp().get_panel()->set_project_name(to_wxString(std_path));
      return true;
    }else{

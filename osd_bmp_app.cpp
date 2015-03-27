@@ -14,12 +14,11 @@
 #ifdef __BORLANDC__
 #pragma hdrstop
 #endif //__BORLANDC__
+#include <wx/cmdline.h>
 
 #include <quan/uav/osd/dynamic/object_database.hpp>
-
 #include "osd_bmp_app.hpp"
 #include "document.hpp"
-
 #include "gui/main_frame.hpp"
 #include "gui/panel.hpp"
 #include "gui/view.hpp"
@@ -37,10 +36,25 @@ void OsdBmpApp::init_mainframe()
     m_frame->Show();
 }
 
+void OsdBmpApp::OnInitCmdLine(wxCmdLineParser & parser)
+{
+  //assert (false && __LINE__);
+  parser.AddOption(wxT("p"),wxT("project"),wxT("open a project"));
+}
+
+bool OsdBmpApp::OnCmdLineParsed(wxCmdLineParser & parser)
+{
+    wxString path;
+    if ( parser.Found(wxT("p"),&path)){
+      return this->get_main_frame()->open_project (path);
+    }
+    return true;
+}
+
 bool OsdBmpApp::OnInit()
 {
     init_mainframe();
-    return true;
+    return wxApp::OnInit();
 }
 
 view* OsdBmpApp::get_view()const
