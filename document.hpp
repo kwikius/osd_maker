@@ -12,6 +12,12 @@
 #include <quan/two_d/vect.hpp>
 #include <quan/length.hpp>
 
+/*
+ To id which os
+  #if defined (__gnu_linux__)
+  #if (defined (_WIN16) || defined (_WIN32))
+*/
+
 #include <quan/uav/osd/dynamic/bitmap.hpp>
 #include "graphics_api/objects/db_font.hpp"
 

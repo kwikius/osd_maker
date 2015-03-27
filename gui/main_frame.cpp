@@ -170,7 +170,7 @@ void main_frame::create_menus()
    wxMenu* fontMenu = new wxMenu (_T (""));
    mbar->Append (fontMenu, _ ("&Font"));
    fontMenu->Append (idImportFont, _ ("&Import..."), _ ("Import Font"));
-   bitmapMenu->Append(idCreateStaticFontFile,  _ ("Create Font Header..."));
+   fontMenu->Append(idCreateStaticFontFile,  _ ("Create Font Header..."));
 
    wxMenu* viewMenu = new wxMenu (_T (""));
    mbar->Append (viewMenu, _ ("&View"));
