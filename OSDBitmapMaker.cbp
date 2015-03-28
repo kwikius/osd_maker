@@ -51,8 +51,10 @@
 			<Add option="`wx-config --libs`" />
 			<Add library="dl" />
 		</Linker>
+		<Unit filename="ChangeLog" />
 		<Unit filename="Makefile" />
 		<Unit filename="constants.hpp" />
+		<Unit filename="doc/index.rst" />
 		<Unit filename="document.cpp" />
 		<Unit filename="document.hpp" />
 		<Unit filename="document/mcm_file.cpp" />

@@ -1,3 +1,9 @@
+Fri Mar 27 19:03:36 GMT 2015
+Added FileDialogs for saving fonts and bitmaps as C++ source and headers
+Added config state so Open Saveas take you to last directory and filname.
+TODO next. Enable being able to set character range of font that is used
+to savee memeory and enabel more fonts to be loaded
+
 Wed Feb 18 11:20:26 GMTST 2015
 Devel now working in Windows and Linux. However will prob need some hackery until I get a bit more done.
 And docs.
