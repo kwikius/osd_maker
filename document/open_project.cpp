@@ -218,7 +218,8 @@ bool document::open_project (wxString const & path)
       wxGetApp().get_panel()->add_font_handle(new_font->get_name(),new_font_handle);
 
    }
-   // TODO delete temp_resources;
+
+   delete temp_resources;
 
    this->m_project_file_path = path;
    wxGetApp().get_main_frame()->SetTitle(path);
