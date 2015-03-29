@@ -228,5 +228,6 @@ bool document::open_project (wxString const & path)
         );
 
    wxGetApp().get_panel()->set_project_name(to_wxString(std_path));
+   this->set_modified(false);
    return true;
 }

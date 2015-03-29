@@ -73,6 +73,7 @@ bool document::delete_font_element( int handle)
       = this->m_database->move_font_element_by_handle(handle);
    if (bmp){
       delete bmp;
+      this->set_modified(true);
       return true;
    }else{
       return false;
