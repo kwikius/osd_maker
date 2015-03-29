@@ -124,7 +124,7 @@ void db_font::output_header( std::string const & type_name, std::string const & 
              char buf[sizeof(int)*8+2];
              std::string element_name = "font_" + font_name + std::string{"_"} + quan::itoasc(i,buf,10);
              dynbmp->output_header(element_name + "_type",element_name,out);
-             if ( i ==0){
+             if ( i == begin){
                font_array_elements += "      ";
              }else{
                font_array_elements += "\n      ,";
