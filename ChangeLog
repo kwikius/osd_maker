@@ -1,3 +1,8 @@
+Sun Mar 29 10:59:27 BST 2015
+Implement offsets so fonts can now be cropped, e.g just to the standard displayable
+ascci characters, though where cropped is arbitrary. This does save a lot of memory
+in th mcu and so means you can have more different fonts.
+
 Fri Mar 27 19:03:36 GMT 2015
 Added FileDialogs for saving fonts and bitmaps as C++ source and headers
 Added config state so Open Saveas take you to last directory and filname.
