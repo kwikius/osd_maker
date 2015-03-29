@@ -6,6 +6,7 @@
 #include <wx/filedlg.h>
 #include <wx/textfile.h>
 #include <fstream>
+#include <map>
 
 #include <quan/fs/get_basename.hpp>
 #include <quan/fs/strip_file_extension.hpp>
@@ -51,6 +52,7 @@ bool document::open_project (wxString const & path)
    int num_entries = zipin.GetTotalEntries();
 
    auto temp_resources = new osd_object_database;
+
    for ( int i = 0; i < num_entries; ++i) {
       wxZipEntry* entry = zipin.GetNextEntry();
       assert(entry && __LINE__);
@@ -115,7 +117,6 @@ bool document::open_project (wxString const & path)
                db_font * home_font = temp_resources->find_font_by_name(font_name);
                bool new_font = false;
                if ( home_font == nullptr) {
-                  // need to sort size
                   home_font = new db_font {font_name,dynamic_bitmap::size_type{0,0},0};
                   new_font = true;
                   temp_resources->add_font(home_font);
@@ -140,7 +141,6 @@ bool document::open_project (wxString const & path)
                char font_element_name[] = {'\'', static_cast<char>(font_element_pos),'\'','\0'};
                wxImage font_elem_image(zipin,wxBITMAP_TYPE_PNG);
 
-
                dynamic_bitmap * elem_bmp = ConvertTo_osd_bitmap(font_element_name,font_elem_image);
                int font_elem_handle = temp_resources->add_font_element(elem_bmp);
                home_font->set_handle_at(font_element_pos, font_elem_handle);
@@ -149,6 +149,7 @@ bool document::open_project (wxString const & path)
                   new_font = false;
                }
                //TODO else check that all elements are same size
+               // Check that 
             }
          }
       }
@@ -182,11 +183,31 @@ bool document::open_project (wxString const & path)
       assert (( temp_font_handle != -1) && __LINE__);
       db_font* new_font = temp_resources->move_font_by_handle(temp_font_handle);
       assert ((new_font != nullptr) && __LINE__);
+      // adjust the first char of the font based on the characters found
+      int first_element =0;
+      int result_handle = -1;
+      
+       for(;;){
+         if (new_font->get_num_elements() < 1){
+            break;
+         }
+         if (!new_font->get_handle_at(first_element, result_handle)){
+           assert (false && __LINE__);
+         }
+         if (result_handle != -1){
+            break;
+         }
+         new_font->pop_front();
+         ++first_element;
+      }
       for ( size_t j = new_font->get_begin();
             j < (new_font->get_num_elements() + static_cast<size_t>(new_font->get_begin()));
             ++j) {
+         
          int temp_image_handle = -1;
-         assert(new_font->get_handle_at( j, temp_image_handle) && __LINE__);
+         bool result = new_font->get_handle_at( j, temp_image_handle);
+         assert( result && __LINE__);
+         assert(temp_image_handle != -1);
          dynamic_bitmap* font_elem
             = temp_resources->move_font_element_by_handle(temp_image_handle);
          assert (( font_elem != nullptr && __LINE__));

@@ -280,46 +280,100 @@ void panel::rename_bitmap(wxTreeEvent & event)
   }
 }
 
-void panel::OnTreeItemRightClick(wxTreeEvent & event)
+void panel::on_bitmap_right_click(wxTreeEvent & event, int handle)
 {
-  int handle = -1;
-  if ( !get_bitmap_handle( event,handle)){
-      return;
-  }
-  wxString choices[] =
-  {
+   wxString choices[] =
+   {
       wxT("Rename")
      ,wxT("Delete")
-  };
-  int style = wxDEFAULT_DIALOG_STYLE | wxOK | wxCANCEL | wxCENTRE;
-  wxSingleChoiceDialog dlg{
+   };
+   int style = wxDEFAULT_DIALOG_STYLE | wxOK | wxCANCEL | wxCENTRE;
+   wxSingleChoiceDialog dlg{
       this
-      ,wxT("Tree Item Actions")
-      ,wxT("Tree Item Actions")
+      ,wxT("Bitmap Tree Item Actions")
+      ,wxT("Bitmap- Tree Item Actions")
       ,sizeof(choices) / sizeof(wxString)
       ,(wxString*)choices
 #if wxCHECK_VERSION(3,0,0)
-         ,(void**)NULL
+      ,(void**)NULL
 #else
-        , NULL
+      , NULL
 #endif
       ,style
-  };
-
-  if (dlg.ShowModal() == wxID_OK){
+   };
+   if (dlg.ShowModal() == wxID_OK){
       int result = dlg.GetSelection();
 
       switch (result){
          case 0:
             rename_bitmap(event);
-
          break;
          case 1:
         //  delete
          break;
-
       }
+   }
+}
 
+void panel::trim_font(int font_handle)
+{
+   // show dialog
+   // with start and end chars
+
+   
+}
+
+
+
+void panel::on_font_right_click(wxTreeEvent & event, int handle)
+{
+    wxString choices[] =
+   {
+      wxT("Rename")
+     ,wxT("Delete")
+     ,wxT("Set Start/End Index")
+   };
+   int style = wxDEFAULT_DIALOG_STYLE | wxOK | wxCANCEL | wxCENTRE;
+   wxSingleChoiceDialog dlg{
+      this
+      ,wxT("Font Tree Item Actions")
+      ,wxT("Font Tree Item Actions")
+      ,sizeof(choices) / sizeof(wxString)
+      ,(wxString*)choices
+#if wxCHECK_VERSION(3,0,0)
+      ,(void**)NULL
+#else
+      , NULL
+#endif
+      ,style
+   };
+
+   if (dlg.ShowModal() == wxID_OK){
+      int result = dlg.GetSelection();
+      switch (result){
+         case 0:
+            // rename
+         break;
+         case 1:
+        //  delete font
+         break;
+         case 2:
+          trim_font(handle);
+         break;
+      }
+   } 
+}
+void panel::OnTreeItemRightClick(wxTreeEvent & event)
+{
+  int handle = -1;
+  if ( get_bitmap_handle( event,handle)){
+     on_bitmap_right_click(event,handle);
+  }else{
+    if (get_font_handle(event,handle)){
+      on_font_right_click(event,handle);
+    }else{
+      return;
+    }
   }
 }
 

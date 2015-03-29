@@ -213,10 +213,9 @@ osd_object_database::move_bitmap_by_handle(int handle)
    if(iter == m_osd_image_map.end()){
       return nullptr;
    };
-   dynamic_bitmap* image = iter->second;
+   dynamic_bitmap* bmp = iter->second;
    m_osd_image_map.erase(iter);
 
-   dynamic_bitmap* bmp = dynamic_cast<dynamic_bitmap*>(image);
    assert(bmp && __LINE__);
    bool handle_invalidated = false;
    for ( auto iter = m_bitmaps.begin(), end = m_bitmaps.end(); iter != end; ++iter){
@@ -231,6 +230,8 @@ osd_object_database::move_bitmap_by_handle(int handle)
    return bmp;
 }
 
+// removes font element handle from db 
+// but element not in bitmaps vector
 osd_object_database::dynamic_bitmap*
 osd_object_database::move_font_element_by_handle(int handle)
 {

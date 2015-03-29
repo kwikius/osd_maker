@@ -11,7 +11,6 @@
 				<Option object_output="obj/Debug/" />
 				<Option type="0" />
 				<Option compiler="gcc" />
-				<Option parameters="-p  /home/andy/cpp/projects/OSDBitmapMaker/test/rotating_compass1.zip" />
 				<Option projectLinkerOptionsRelation="2" />
 				<Compiler>
 					<Add option="-g" />

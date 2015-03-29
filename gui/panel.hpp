@@ -31,8 +31,9 @@ private:
    void OnTreeItemActivated(wxTreeEvent & event);
    void OnTreeItemRightClick(wxTreeEvent & event);
    void rename_bitmap(wxTreeEvent & event);
-
-
+   void on_bitmap_right_click(wxTreeEvent & event, int handle);
+   void on_font_right_click(wxTreeEvent & event, int handle);
+   void trim_font(int handle);
    enum
    {
       idMenuQuit = 1000,

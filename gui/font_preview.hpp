@@ -27,6 +27,10 @@
       wxGrid* m_grid;
       int m_current_font_handle;
       void export_font_element_as_bitmap(int handle);
+      void set_font_first_element(int handle);
+      void set_font_last_element(int handle);
+      void insert_font_element(int handle);
+      void delete_font_element(int handle);
    };
 
 #endif // OSD_BITMAP_MAKER_BITMAP_PREVIEW_HPP_INCLUDED

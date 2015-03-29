@@ -45,11 +45,8 @@ void grid_cell_bmp_renderer::Draw( wxGrid & grid,
    if (selected_font){
       int bmp_handle = -1;
       if (selected_font->get_handle_at(ascii_char, bmp_handle)){
-         // get th bitmap at the handle
          document::dynamic_bitmap* image = wxGetApp().get_document()->get_bitmap(bmp_handle);
          if ( image){
-           #if 1
-            // convert to a bitmap
             auto bmp = ConvertTo_wxBitmap(*image, colour_array);
             wxImage image = bmp->ConvertToImage();
             wxSize is {image.GetWidth(),image.GetHeight()};
@@ -58,16 +55,16 @@ void grid_cell_bmp_renderer::Draw( wxGrid & grid,
             wxBitmap  bmp1 (image);
             dc.DrawBitmap(bmp1,rect.x,rect.y);
             delete bmp;
-            #endif
             return;
          }
       }
-   }else {
-      dc.SetBrush(*wxWHITE_BRUSH);
-      dc.DrawRectangle(rect);
-      char ch = static_cast<char>(ascii_char);
-      dc.DrawText(wxString::Format(wxT("%c"),ch), rect.x,rect.y);
    }
+   // no font or no such font element
+   dc.SetBrush(*wxWHITE_BRUSH);
+   dc.DrawRectangle(rect);
+   int ch = static_cast<int>(ascii_char);
+   dc.DrawText(wxString::Format(wxT("\\%i"),ch), rect.x,rect.y);
+   
 }
 
 

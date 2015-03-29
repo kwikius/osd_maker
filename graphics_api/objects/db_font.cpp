@@ -5,6 +5,42 @@
 #include <quan/conversion/itoa.hpp>
 
 int32_t db_font::get_begin()const{return m_begin;}
+bool db_font::set_begin(int32_t pos)
+{
+   if ( pos < m_begin){
+      return false;
+   }
+   while ( m_begin < pos){
+      if ( pop_front() == -1){
+         return false;
+      }
+   }
+   return true;
+}
+
+int db_font::pop_front()
+{
+   int result = -1;
+   if (m_elements.size() > 1){
+      result = m_elements[0];
+      m_elements.erase(m_elements.begin());
+      ++m_begin;
+      return result;
+   }else{
+      return -1;
+   }
+}
+int db_font::pop_back()
+{
+   int result = -1;
+   if (m_elements.size() > 1){
+      result = m_elements.back();
+      m_elements.pop_back();
+      return result;
+   }else{
+      return -1;
+   }
+}
 int32_t db_font::get_num_elements()const {return m_elements.size();}
 int32_t db_font::get_char_height()const { return m_size.y;}
 int32_t db_font::get_char_width() const {return m_size.x;}
@@ -28,6 +64,7 @@ quan::uav::osd::basic_bitmap const *  db_font::get_char_at(int32_t i)const
 
 bool db_font::get_handle_at( int i, int& out)const
 {
+  // assert( m_begin >= 0 && __LINE__);
    if ((i < m_begin) || ( i >= (m_begin + static_cast<int>(m_elements.size())))){
       return false;
    }
@@ -36,6 +73,7 @@ bool db_font::get_handle_at( int i, int& out)const
 }
 
 bool db_font::set_handle_at(int i, int val){ 
+     // assert( m_begin >= 0 && __LINE__);
       int pos = i - m_begin;
       if ( pos < 0){
          return false;
@@ -70,6 +108,7 @@ namespace {
 
 void db_font::output_header( std::string const & type_name, std::string const & object_name,std::ostream & out)const
 {
+   assert( m_begin >= 0 && __LINE__);
    int32_t const begin = get_begin();
    int32_t end = begin + get_num_elements();
    std::string font_name = this->get_name();

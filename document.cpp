@@ -50,7 +50,9 @@ bool document::add_new_bitmap(std::string const & name, dynamic_bitmap::size_typ
       return false;
    }
 }
-
+/*
+-p  /home/andy/cpp/projects/OSDBitmapMaker/test/rotating_compass1.zip
+*/
 void document::add_bitmap(dynamic_bitmap* bmp)
 {
    assert((bmp != nullptr) && __LINE__);
@@ -58,12 +60,23 @@ void document::add_bitmap(dynamic_bitmap* bmp)
    int handle = m_database->add_bitmap(bmp);
    wxGetApp().get_panel()->add_bitmap_handle(bmp->get_name(), handle);
    auto view = wxGetApp().get_view();
-   auto frame = wxGetApp().get_main_frame();
+  // auto frame = wxGetApp().get_main_frame();
    if (! view->have_image()) {
       view->copy_to_current_image (handle);
    }
-   frame->enable_save_project (true);
-   frame->enable_save_project_as (true);
+   this->set_modified(true);
+}
+
+bool document::delete_font_element( int handle)
+{
+   osd_object_database::dynamic_bitmap * bmp 
+      = this->m_database->move_font_element_by_handle(handle);
+   if (bmp){
+      delete bmp;
+      return true;
+   }else{
+      return false;
+   }
 }
 
 void document::set_image(int handle, dynamic_bitmap* image)
@@ -81,7 +94,9 @@ bool document::is_modified() const
 void document::set_modified (bool val)
 {
    this->m_is_modified = val;
-   wxGetApp().get_main_frame()->enable_save_project(true);
+   auto * frame = wxGetApp().get_main_frame();
+   frame->enable_save_project(val);
+   frame->enable_save_project_as (val);
 }
 
 // ret false if doc was not saved
@@ -188,7 +203,7 @@ bool document::ll_save_project (wxString const & path)
       }
 
    this->set_modified (false);
-   wxGetApp().get_main_frame()->enable_save_project (false);
+   
    return true;
 }
 

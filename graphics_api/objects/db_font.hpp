@@ -14,6 +14,9 @@ struct db_font : quan::uav::osd::dynamic::font{
     typedef quan::uav::osd::dynamic::bitmap * dynamic_bitmap_ptr;
   // satisfy basic_font abc
    int32_t get_begin()const ;
+   bool set_begin(int32_t pos);
+   int pop_front();
+   int pop_back();
    int32_t get_num_elements()const;
    int32_t get_char_height()const ;
    int32_t get_char_width() const ;

@@ -46,6 +46,7 @@ struct document {
      bool add_new_bitmap(std::string const & name, dynamic_bitmap::size_type size);
      wxString get_project_file_path(){ return m_project_file_path;}
      osd_object_database const & get_database() { return *m_database;}
+     bool delete_font_element( int handle);
      // doc doesnt relinquish ownership of image
      dynamic_bitmap* get_bitmap( int handle)const ;
      dynamic_bitmap* get_bitmap( std::string const & name)const ;

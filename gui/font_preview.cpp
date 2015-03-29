@@ -68,12 +68,82 @@ void font_preview::export_font_element_as_bitmap(int handle)
          wxMessageBox(wxT("Bitmap with that name already exists"));
          return;
       }
-
       document::dynamic_bitmap* new_bitmap = bmp->clone();
       new_bitmap->set_name(name);
       wxGetApp().get_document()->add_bitmap(new_bitmap);
-      wxGetApp().get_document()->set_modified(true);
    }
+}
+/*
+   TODO add check that elements to be deleted not
+   in modify view
+*/
+void font_preview::set_font_first_element(int handle)
+{
+   auto* font = this->get_font();
+   if (font){
+      int const font_begin = font->get_begin();
+      int const font_end = font_begin + font->get_num_elements();
+      for ( int i = font_begin; i < font_end ; ++i){
+         int cur_handle =-1;
+         if ( font->get_handle_at(i,cur_handle)){
+            if ( cur_handle == handle){
+               int const new_start = i;
+               for ( int j = font_begin; j < new_start; ++j){
+                  int const deleted_handle = font->pop_front();
+                 // ++font_begin;
+                 // --end;
+                  if (deleted_handle != -1){
+                     wxGetApp().get_document()->delete_font_element(deleted_handle);
+                  }
+               }
+               break;
+            }
+         }
+      }
+   }
+   this->Refresh();
+}
+
+void font_preview::set_font_last_element(int handle)
+{
+   auto* font = this->get_font();
+   if (font){
+      int const font_begin = font->get_begin();
+      int const end = font_begin + font->get_num_elements();
+      for ( int i =font_begin; i < end ; ++i){
+         int cur_handle =-1;
+         if ( font->get_handle_at(i,cur_handle)){
+             
+            assert ((cur_handle != -1) && __LINE__);
+            if ( cur_handle == handle){
+              // wxMessageBox(wxT("Got it"));
+               int new_end = i;
+               for ( int j = end -1; j > new_end; --j){
+                  int deleted_handle = font->pop_back();
+                  if (deleted_handle != -1){
+                     wxGetApp().get_document()->delete_font_element(deleted_handle);
+                  }else{
+                     // error
+                     return;
+                  }
+               }
+               break;
+            }
+         }else{
+            assert(false && __LINE__);
+         }
+      }
+   }
+   this->Refresh();
+}
+
+void font_preview::insert_font_element(int handle)
+{
+   assert(false && __LINE__);
+}
+void font_preview::delete_font_element(int handle)
+{
+   assert(false && __LINE__);
 }
 
 void font_preview::OnGridCellRightClick(wxGridEvent& event)
@@ -83,7 +153,13 @@ void font_preview::OnGridCellRightClick(wxGridEvent& event)
    if ( font_elem_handle != -1) {
       wxString choices[] =
       {
-         wxT("Export as Bitmap")
+          wxT("Export as Bitmap")
+         ,wxT("Set First Element")
+         ,wxT("Set Last Element")
+         ,wxT("Insert Element")
+         ,wxT("Delete Element")
+         // cut element
+         // paste element
       };
       int style = wxDEFAULT_DIALOG_STYLE | wxOK | wxCANCEL | wxCENTRE;
       wxSingleChoiceDialog dlg {
@@ -105,15 +181,22 @@ void font_preview::OnGridCellRightClick(wxGridEvent& event)
       Dialog::wxSingleChoiceDialog(wxWindow*, const wxString&, const wxString&, int, c
       onst wxString*, char**, long int, const wxPoint&)
       */
-
       if (dlg.ShowModal() == wxID_OK) {
          switch (dlg.GetSelection()) {
          case 0:
             export_font_element_as_bitmap(font_elem_handle);
             break;
          case 1:
-            //  delete
+            set_font_first_element(font_elem_handle);
             break;
+         case 2:
+            set_font_last_element(font_elem_handle);
+            break;
+         case 3:
+            insert_font_element(font_elem_handle);
+            break;
+         case 4:
+            delete_font_element(font_elem_handle);
          }
       }
    }
