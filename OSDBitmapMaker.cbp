@@ -109,7 +109,10 @@
 		<Unit filename="../../../website/quan-trunk/quan/uav/attitude.hpp" />
 		<Unit filename="../../../website/quan-trunk/quan/uav/battery.hpp" />
 		<Unit filename="../../../website/quan-trunk/quan/uav/fletcher16.hpp" />
+		<Unit filename="../../../website/quan-trunk/quan/uav/osd/dynamic/bitmap.hpp" />
 		<Unit filename="../../../website/quan-trunk/quan/uav/osd/dynamic/display_device.hpp" />
+		<Unit filename="../../../website/quan-trunk/quan/uav/osd/dynamic/font.hpp" />
+		<Unit filename="../../../website/quan-trunk/quan/uav/osd/dynamic/object_database.hpp" />
 		<Unit filename="../../../website/quan-trunk/quan_matters/src/gx/static_rgb_colours.cpp" />
 		<Unit filename="../../../website/quan-trunk/quan_matters/src/serial_port.cpp" />
 		<Unit filename="../../../website/quan-trunk/quan_matters/src/uav/osd/detail/writable_bitmap.cpp" />
