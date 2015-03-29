@@ -222,8 +222,6 @@ bool main_frame::Destroy()
 
 void main_frame::OnResizeViewBitmap(wxCommandEvent & event)
 {
-//  {5,-5,-5,0};
-//
    auto view = wxGetApp().get_view();
    if (view->have_image() && (view->get_view_mode() == ::view::view_mode::inBitmaps)){
    bitmap_resize_dialog dlg(this);
