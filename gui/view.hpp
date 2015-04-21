@@ -51,7 +51,7 @@ extern "C"{
       void sync_to_document();
       //see panel and
       bool sync_with_image_handle(int handle);
-      // copy image refeed by handle to view for display
+      // copy image referred by handle to view for display
       void copy_to_current_image(int handle);
       // make a heap copy of current view image
       dynamic_bitmap* clone_current_image()const
@@ -105,7 +105,10 @@ extern "C"{
 
       void setup_draw_fn();
 
+      // a clone of the bitmap whose handle is in 
+      // m_document_image_handle
       dynamic_bitmap* m_current_image;
+      // handle of the bitmap that the view represents
       int m_document_image_handle;
      // int m_last_font_handle;
       bool m_current_image_modified;

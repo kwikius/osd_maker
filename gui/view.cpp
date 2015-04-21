@@ -157,9 +157,6 @@ void view::sync_to_document()
    auto doc = wxGetApp().get_document();
    dynamic_bitmap* image = this->clone_current_image();
    int image_handle = this->get_doc_image_handle();
-//## need to
-//   dynamic_bitmap* bmp = dynamic_cast<dynamic_bitmap*> (image);
-//   assert( bmp);
    doc->set_image( image_handle, image );
    doc->set_modified (true);
    this->set_modified (false);

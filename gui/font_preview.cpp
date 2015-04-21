@@ -89,10 +89,16 @@ void font_preview::set_font_first_element(int handle)
             if ( cur_handle == handle){
                int const new_start = i;
                for ( int j = font_begin; j < new_start; ++j){
+         
                   int const deleted_handle = font->pop_front();
-                 // ++font_begin;
-                 // --end;
+                   
                   if (deleted_handle != -1){
+                     //remove deleted from view too
+                     if ( (wxGetApp().get_view()->have_image()) 
+                        && (wxGetApp().get_view()->get_doc_image_handle() == deleted_handle)){
+                          wxGetApp().get_view()->reset(); 
+                          wxGetApp().get_view()->Refresh();
+                     }
                      wxGetApp().get_document()->delete_font_element(deleted_handle);
                   }
                }
@@ -121,6 +127,11 @@ void font_preview::set_font_last_element(int handle)
                for ( int j = end -1; j > new_end; --j){
                   int deleted_handle = font->pop_back();
                   if (deleted_handle != -1){
+                     if ( (wxGetApp().get_view()->have_image()) 
+                        && (wxGetApp().get_view()->get_doc_image_handle() == deleted_handle)){
+                          wxGetApp().get_view()->reset(); 
+                          wxGetApp().get_view()->Refresh();
+                     }
                      wxGetApp().get_document()->delete_font_element(deleted_handle);
                   }else{
                      // error

@@ -341,6 +341,11 @@ void panel::resize_font(int font_handle)
      assert(font && __LINE__);
      // for each bitmap in the font
      // resize the bitmap
+     auto view = wxGetApp().get_view();
+     bool view_image_not_done = view->have_image();
+     // TODO
+      // 1 Check that size is >= 2 in any direction
+      // 
      for ( size_t i = font->get_begin();
             i < (font->get_num_elements() + static_cast<size_t>(font->get_begin()));
             ++i) {
@@ -351,14 +356,18 @@ void panel::resize_font(int font_handle)
          quan::uav::osd::dynamic::bitmap* font_elem = pdoc->get_bitmap(image_handle);
          assert(font_elem && __LINE__);
          font_elem->resize(new_size1);
-        // now check if its in the view
-       
          
+         if ( (view_image_not_done == true)  && (view->get_doc_image_handle() == image_handle)){
+            view->resize_image(new_size1);
+            view_image_not_done = false;
+           // view->Refresh();
+         }
      }
       auto font_preview = wxGetApp().get_font_preview();
       if ( font_preview->get_font() == font){
         font_preview->Refresh();
       }
+      
    }
 }
 
