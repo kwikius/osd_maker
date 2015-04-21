@@ -139,11 +139,12 @@ void font_preview::set_font_last_element(int handle)
 
 void font_preview::insert_font_element(int handle)
 {
-   assert(false && __LINE__);
+     wxMessageBox(wxT("TODO ..This operation isnt implemented yet"));
 }
 void font_preview::delete_font_element(int handle)
 {
-   assert(false && __LINE__);
+   //assert(false && __LINE__);
+   wxMessageBox(wxT("TODO ..This operation isnt implemented yet"));
 }
 
 void font_preview::OnGridCellRightClick(wxGridEvent& event)
@@ -176,11 +177,6 @@ void font_preview::OnGridCellRightClick(wxGridEvent& event)
          ,style
       };
 
-      /*
-      wxSingleChoice
-      Dialog::wxSingleChoiceDialog(wxWindow*, const wxString&, const wxString&, int, c
-      onst wxString*, char**, long int, const wxPoint&)
-      */
       if (dlg.ShowModal() == wxID_OK) {
          switch (dlg.GetSelection()) {
          case 0:

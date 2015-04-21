@@ -7,9 +7,9 @@
  * License:
  **************************************************************/
 
-#ifdef WX_PRECOMP
-#include "wx_pch.h"
-#endif
+//#ifdef WX_PRECOMP
+//#include "wx_pch.h"
+//#endif
 
 #ifdef __BORLANDC__
 #pragma hdrstop

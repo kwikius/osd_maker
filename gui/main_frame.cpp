@@ -224,7 +224,7 @@ void main_frame::OnResizeViewBitmap(wxCommandEvent & event)
 {
    auto view = wxGetApp().get_view();
    if (view->have_image() && (view->get_view_mode() == ::view::view_mode::inBitmaps)){
-   bitmap_resize_dialog dlg(this);
+   bitmap_resize_dialog dlg{this, wxT("Resize Bitmap Dialog")};
    if ( dlg.ShowModal() == wxID_OK){
       quan::two_d::box<long> new_size;
       dlg.m_left_incr->GetValue().ToLong(&new_size.left);

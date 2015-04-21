@@ -101,6 +101,7 @@
 			<Option target="&lt;{~None~}&gt;" />
 		</Unit>
 		<Unit filename="../../../website/quan-trunk/quan/gx/wxwidgets/graphics_context.hpp" />
+		<Unit filename="../../../website/quan-trunk/quan/stm32/flash/flash_type_tags.hpp" />
 		<Unit filename="../../../website/quan-trunk/quan/tracker/zapp3_decode.hpp" />
 		<Unit filename="../../../website/quan-trunk/quan/tracker/zapp3_encode.hpp" />
 		<Unit filename="../../../website/quan-trunk/quan/two_d/rotation.hpp">

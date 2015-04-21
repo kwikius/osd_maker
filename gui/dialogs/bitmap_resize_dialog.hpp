@@ -25,7 +25,7 @@ struct bitmap_resize_dialog : wxDialog{
    wxButton* ok_button;
    wxButton* cancel_button;
    
-   bitmap_resize_dialog(wxWindow * parent);
+   bitmap_resize_dialog(wxWindow * parent, wxString const & text);
 };
 
 #endif // OSD_BITMAP_MAKER_BITMAP_RESIZE_DIALOG_HPP_INCLUDED

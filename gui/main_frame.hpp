@@ -10,9 +10,9 @@
 #ifndef QUANTRACKER_SIMMAIN_H
 #define QUANTRACKER_SIMMAIN_H
 
-#ifndef WX_PRECOMP
+//#ifndef WX_PRECOMP
 #include <wx/wx.h>
-#endif
+//#endif
 
 class sp_in_thread;
 class main_frame_splitter;
@@ -29,6 +29,7 @@ public:
    void enable_import_image(bool b);
    void enable_import_font(bool b);
    void enable_commit_view_to_tree(bool b);
+   // TODO add others here
    void clear();
 private:
    void enable_menu_item(int id, bool b);

@@ -9,6 +9,7 @@
 #include "panel.hpp"
 #include "project_tree.hpp"
 #include "font_preview.hpp"
+#include "dialogs/bitmap_resize_dialog.hpp"
 
 using quan::gx::wxwidgets::from_wxString;
 using quan::gx::wxwidgets::to_wxString;
@@ -269,7 +270,8 @@ void panel::rename_bitmap(wxTreeEvent & event)
   }
   wxString old_name = to_wxString(bmp->get_name());
   // do a text dialog to get name
-  wxTextEntryDialog dlg(this,wxT("Rename Bitmap"),wxT("Enter new name for bitmap"),old_name);
+  wxTextEntryDialog dlg(this,wxT("Rename Bitmap"),
+      wxT("Enter new name for bitmap"),old_name);
 
   if ( dlg.ShowModal() == wxID_OK){
     wxString wx_new_text = dlg.GetValue();
@@ -315,15 +317,50 @@ void panel::on_bitmap_right_click(wxTreeEvent & event, int handle)
    }
 }
 
-void panel::trim_font(int font_handle)
+void panel::resize_font(int font_handle)
 {
-   // show dialog
-   // with start and end chars
 
-   
+   bitmap_resize_dialog dlg{this, wxT("Resize Font Dialog")};
+
+    if ( dlg.ShowModal() == wxID_OK){
+      quan::two_d::box<long> new_size;
+      dlg.m_left_incr->GetValue().ToLong(&new_size.left);
+      dlg.m_top_incr->GetValue().ToLong(&new_size.top);
+      dlg.m_right_incr->GetValue().ToLong(&new_size.right);
+      dlg.m_bottom_incr->GetValue().ToLong(&new_size.bottom);
+
+      quan::two_d::box<int> new_size1;
+      new_size1.top  =static_cast<int>(new_size.top *-1);
+      new_size1.bottom =static_cast<int>(new_size.bottom *-1);
+      new_size1.left  =static_cast<int>(new_size.left);
+      new_size1.right =static_cast<int>(new_size.right);
+
+     // wxMessageBox(wxT("dummy resize"));
+     auto pdoc = wxGetApp().get_document();
+     db_font* font = pdoc->get_font(font_handle);
+     assert(font && __LINE__);
+     // for each bitmap in the font
+     // resize the bitmap
+     for ( size_t i = font->get_begin();
+            i < (font->get_num_elements() + static_cast<size_t>(font->get_begin()));
+            ++i) {
+         int image_handle = -1;
+         bool result = font->get_handle_at( i, image_handle);
+         assert( result && __LINE__);
+         assert(image_handle != -1);
+         quan::uav::osd::dynamic::bitmap* font_elem = pdoc->get_bitmap(image_handle);
+         assert(font_elem && __LINE__);
+         font_elem->resize(new_size1);
+        // now check if its in the view
+       
+         
+     }
+      auto font_preview = wxGetApp().get_font_preview();
+      if ( font_preview->get_font() == font){
+        font_preview->Refresh();
+      }
+   }
 }
-
-
 
 void panel::on_font_right_click(wxTreeEvent & event, int handle)
 {
@@ -331,7 +368,7 @@ void panel::on_font_right_click(wxTreeEvent & event, int handle)
    {
       wxT("Rename")
      ,wxT("Delete")
-     ,wxT("Set Start/End Index")
+     ,wxT("Resize")
    };
    int style = wxDEFAULT_DIALOG_STYLE | wxOK | wxCANCEL | wxCENTRE;
    wxSingleChoiceDialog dlg{
@@ -358,7 +395,9 @@ void panel::on_font_right_click(wxTreeEvent & event, int handle)
         //  delete font
          break;
          case 2:
-          trim_font(handle);
+          resize_font(handle);
+         break;
+         default:
          break;
       }
    } 

@@ -133,7 +133,7 @@ bool view::resize_image( quan::two_d::box<int> new_size)
 //      return false;
 //   }
    if (! m_current_image->resize(new_size)){
-       wxMessageBox(wxT("5"));
+      // wxMessageBox(wxT("5"));
       return false;
    }
    this->set_modified (true);

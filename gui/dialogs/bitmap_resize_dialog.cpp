@@ -1,11 +1,12 @@
 
 #include "bitmap_resize_dialog.hpp"
 
-   bitmap_resize_dialog::bitmap_resize_dialog(wxWindow * parent) 
+   bitmap_resize_dialog::bitmap_resize_dialog(wxWindow * parent, 
+      wxString const & text) 
    : wxDialog{
       parent, 
       idResizeBitmapDialog,
-      wxT(" New Bitmap Dialog"),
+      text,
       wxDefaultPosition,
       wxSize{400,200}
    }
