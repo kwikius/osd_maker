@@ -29,9 +29,14 @@ public:
    void enable_import_image(bool b);
    void enable_import_font(bool b);
    void enable_commit_view_to_tree(bool b);
+   void enable_resize_view_bitmap(bool b);
+   void enable_export_bitmaps_as_cpp(bool b);
+   void enable_export_fonts_as_cpp(bool b);
    // TODO add others here
    void clear();
+   void clear_layouts();
 private:
+
    void enable_menu_item(int id, bool b);
    enum
    {
@@ -46,6 +51,7 @@ private:
       idCreateStaticBitmapFile,
       idCreateStaticFontFile,
       idDLLtest
+      ,idImportLayout
    };
    void OnNewProject(wxCommandEvent & event);
    void OnOpenProject(wxCommandEvent & event);
@@ -55,6 +61,7 @@ private:
    void OnNewBitmap(wxCommandEvent & event);
    void OnImportBitmap(wxCommandEvent & event);
    void OnImportFont(wxCommandEvent & event);
+   void OnImportLayout(wxCommandEvent & event);
    void OnSaveProject(wxCommandEvent & event);
    void OnSaveProjectAs(wxCommandEvent & event);
    void OnCommitViewToTree(wxCommandEvent & event);

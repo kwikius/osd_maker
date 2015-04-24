@@ -31,8 +31,8 @@ view::view(wxWindow* parent)
 ,m_document_image_handle{-1}
 ,m_current_image_modified{false}
 ,m_view_mode{view_mode::inBitmaps}
-,m_pfn_set_osd_on_draw_params{nullptr}
-,m_pfn_osd_on_draw{nullptr}
+//,m_pfn_set_osd_on_draw_params{nullptr}
+//,m_pfn_osd_on_draw{nullptr}
 {
    //  window_ids::view = this->GetId();
      this->SetWindowStyle(wxVSCROLL | wxHSCROLL);
@@ -40,14 +40,14 @@ view::view(wxWindow* parent)
      this->SetScrollbar(wxHORIZONTAL,50,10,110);
      this->m_drawing_view.set_scale(1);
      this->SetFocus();
-     setup_draw_fn();
+    // setup_draw_fn();
 }
 
 bool view::Destroy()
 {
    delete m_current_image;
-   m_pfn_set_osd_on_draw_params= nullptr;
-   m_pfn_osd_on_draw = nullptr;
+  // m_pfn_set_osd_on_draw_params= nullptr;
+  // m_pfn_osd_on_draw = nullptr;
    return wxWindow::Destroy();
 }
 
@@ -57,46 +57,14 @@ namespace {
 #if defined(__UNIX__)
  // wxString dll_path = wxT("/home/andy/cpp/projects/quantracker/examples/osd_example1/pc_sim/osd_draw");
 #elif defined (__WXMSW__)
-   wxString dll_path = wxT("C:/cpp/lib/quantracker_lib/examples/osd_example1/pc_sim/osd_draw");
+   //wxString dll_path = wxT("C:/cpp/lib/quantracker_lib/examples/osd_ac/pc_sim/osd_draw");
 #else
 #endif
 }
 
-void view::setup_draw_fn()
+void view::set_layout(wxString const & layout_file)
 {
-#if 0
-   if ( m_dll.Load(dll_path) ){
-        bool dll_good = m_dll.HasSymbol(wxT("osd_on_draw"))
-                        && m_dll.HasSymbol(wxT("set_osd_on_draw_params"));
-        if ( dll_good){
-
-            *(void**) (&m_pfn_osd_on_draw) = m_dll.GetSymbol(wxT("osd_on_draw"));
-            *(void**) (&m_pfn_set_osd_on_draw_params) = m_dll.GetSymbol(wxT("set_osd_on_draw_params"));
-
-            assert(m_pfn_osd_on_draw && m_pfn_set_osd_on_draw_params && __LINE__);
-        }
-
-   }
-
-//#else
-  dlerror();
-  void * handle = dlopen("/home/andy/cpp/projects/quantracker/examples/osd_example1/pc_sim/osd_draw.so",RTLD_LAZY);
-  if ( handle){
-      dlerror(); // osd_on_draw
-      *(void**) (&m_pfn_osd_on_draw) = dlsym(handle,"osd_on_draw");
-      char* error = dlerror();
-      if (error == nullptr){
-         dlerror();
-         *(void**) (&m_pfn_set_osd_on_draw_params) = dlsym(handle,"set_osd_on_draw_params");
-         error = dlerror();
-         if (error == nullptr){
-           return;
-         }
-      }
-      // fail if here
-      //wxMessageBox(wxString::Format(wxT("load dll failed with %s"), dlerror()));
-  }
-#endif
+   m_layout_filename = layout_file;
 }
 
 view::dynamic_font* view::get_current_font()const
@@ -150,6 +118,12 @@ void view::reset()
   }
   m_document_image_handle = -1;
   m_current_image_modified = false;
+  auto mf = wxGetApp().get_main_frame();
+   mf->enable_commit_view_to_tree (false);
+   mf->enable_resize_view_bitmap(false);
+   mf->enable_import_image (true);
+   mf->enable_export_bitmaps_as_cpp(false);
+   mf->enable_export_fonts_as_cpp(false);
 }
 
 void view::sync_to_document()
@@ -185,7 +159,6 @@ bool view::sync_with_image_handle(int event_handle)
      this->Refresh();
    }
    int view_handle = this->get_doc_image_handle();
-
    if ( view_handle == event_handle){
       if ( !this->is_modified()){
          return false;

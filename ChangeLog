@@ -1,3 +1,10 @@
+Fri Apr 24 22:13:34 BST 2015
+ Adding layout files (dlls/ *.so files) to project, can be saved in zip. 
+Pretty early and prob buggy but can show custom layouts
+
+Wed Apr 22 12:29:57 BST 2015
+Add utility to resize fonts.
+
 Sun Mar 29 10:59:27 BST 2015
 Implement offsets so fonts can now be cropped, e.g just to the standard displayable
 ascci characters, though where cropped is arbitrary. This does save a lot of memory

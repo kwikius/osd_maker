@@ -59,6 +59,7 @@ extern "C"{
          assert(have_image()&& __LINE__);
          return m_current_image->clone();
       }
+      void set_layout(wxString const & layout_file);
       bool have_image()const
       {
             return m_current_image != nullptr;
@@ -103,7 +104,7 @@ extern "C"{
 
       DECLARE_EVENT_TABLE()
 
-      void setup_draw_fn();
+    //  void setup_draw_fn();
 
       // a clone of the bitmap whose handle is in 
       // m_document_image_handle
@@ -116,10 +117,12 @@ extern "C"{
 
       osd_device m_osd_device;
 
-      pfn_set_osd_on_draw_params m_pfn_set_osd_on_draw_params;
-      pfn_osd_on_draw m_pfn_osd_on_draw;
+//      pfn_set_osd_on_draw_params m_pfn_set_osd_on_draw_params;
+//      pfn_osd_on_draw m_pfn_osd_on_draw;
+      
+  //    wxDynamicLibrary m_dll;
 
-      wxDynamicLibrary m_dll;
+      wxString m_layout_filename;
 
    };
 

@@ -8,6 +8,11 @@
  **************************************************************/
 #include <fstream>
 #include <wx/dynlib.h>
+#include <wx/file.h>
+#include <wx/filefn.h>
+#include <wx/filename.h>
+#include <wx/stdpaths.h>
+#include <wx/dir.h>
 
 #include <quan/gx/wxwidgets/from_wxString.hpp>
 #include <quan/gx/wxwidgets/to_wxString.hpp>
@@ -66,6 +71,7 @@ BEGIN_EVENT_TABLE (main_frame, wxFrame)
    EVT_MENU (idImportBitmap, main_frame::OnImportBitmap)
    EVT_MENU (idNewBitmap, main_frame::OnNewBitmap)
    EVT_MENU (idImportFont, main_frame::OnImportFont)
+   EVT_MENU (idImportLayout, main_frame::OnImportLayout)
    EVT_MENU (idCommitViewToTree, main_frame::OnCommitViewToTree)
    EVT_MENU (idResizeViewBitmap,main_frame::OnResizeViewBitmap)
    EVT_MENU (idCreateStaticBitmapFile,main_frame::OnCreateStaticBitmapFile)
@@ -97,7 +103,7 @@ main_frame::main_frame (wxFrame *frame, const wxString& title, wxSize const & si
 }
 
 main_frame::~main_frame()
-{}
+{clear_layouts();}
 namespace {
 //wxString dll_path = wxT("C:/cpp/projects/my_dll/bin/Debug/my_dll");
 //wxString dll_path = wxT("C:/cpp/lib/quantracker_lib/examples/osd_example1/pc_sim/osd_draw");
@@ -148,6 +154,20 @@ void main_frame::enable_commit_view_to_tree (bool b)
    enable_menu_item (idCommitViewToTree, b);
 }
 
+void main_frame::enable_resize_view_bitmap(bool b)
+{
+   enable_menu_item (idResizeViewBitmap, b);
+}
+
+void main_frame::enable_export_bitmaps_as_cpp(bool b)
+{ 
+   enable_menu_item (idCreateStaticBitmapFile, b);
+}
+void main_frame::enable_export_fonts_as_cpp(bool b)
+{ 
+    enable_menu_item (idCreateStaticFontFile, b);
+}
+
 void main_frame::create_menus()
 {
    wxMenuBar* mbar = new wxMenuBar();
@@ -173,6 +193,10 @@ void main_frame::create_menus()
    fontMenu->Append (idImportFont, _ ("&Import..."), _ ("Import Font"));
    fontMenu->Append(idCreateStaticFontFile,  _ ("Export Fonts as C++ Source/Header..."));
 
+   wxMenu* layoutMenu = new wxMenu (_T (""));
+   mbar->Append (layoutMenu, _ ("&Layout"));
+   layoutMenu->Append (idImportLayout, _ ("&Import..."), _ ("Import Layout"));
+
    wxMenu* viewMenu = new wxMenu (_T (""));
    mbar->Append (viewMenu, _ ("&View"));
    viewMenu->Append (idCommitViewToTree, _ ("Commit view to live-tree"));
@@ -185,9 +209,12 @@ void main_frame::create_menus()
    enable_save_project (false);
    enable_save_project_as (false);
    enable_commit_view_to_tree (false);
+   enable_resize_view_bitmap(false);
    //   enable_import_image(false);
    //  enable_import_font(false);
    enable_import_image (true);
+   enable_export_bitmaps_as_cpp(false);
+   enable_export_fonts_as_cpp(false);
 }
 
 
@@ -251,6 +278,7 @@ void main_frame::OnResizeViewBitmap(wxCommandEvent & event)
 void main_frame::OnCommitViewToTree (wxCommandEvent & event)
 {
    wxGetApp().get_view()->sync_to_document();
+   wxGetApp().get_font_preview()->Refresh();
 }
 
 void main_frame::OnCloseProject (wxCloseEvent &event)
@@ -355,6 +383,75 @@ void main_frame::OnImportBitmap (wxCommandEvent &event)
       }
 }
 
+void main_frame::OnImportLayout(wxCommandEvent & event)
+{
+   // we want .so for Linux and .dll for windows
+
+    wxFileDialog fd {
+      this,
+      wxT ("Import Layout File"), // message
+      wxT (""),                    // default dir
+      wxT (""),                    // default file
+      wxT ("Linux shared library (*.so)|*.so|Windows DLL (*.dll)|*.dll"), // wildcard
+      wxFD_OPEN | wxFD_FILE_MUST_EXIST | wxFD_CHANGE_DIR
+   };
+
+    if ( (fd.ShowModal() == wxID_OK)) {
+
+      // get file_ext
+
+      if ( fd.GetFilterIndex() == 0){
+
+         wxString input_path = fd.GetPath();
+         wxString output_filename = wxFileNameFromPath(input_path);
+         wxString output_path = wxGetApp().get_app_dir() 
+            + wxT("/resources/layouts_checkout/linux/") + output_filename;
+   
+         bool already_exists = false;
+         if (wxFileExists(output_path)){
+            already_exists = true;
+            wxMessageDialog overwrite_dlg{
+               this,
+               wxT("File exists.. overwrite?"),
+               wxT("Overwrite shared lib"),
+               wxYES_NO | wxCANCEL
+            };
+
+            if (overwrite_dlg.ShowModal() != wxYES){
+               return;
+            };
+         }else{
+            wxFileName ff;
+            if ( ! ff.DirExists(wxGetApp().get_app_dir() 
+            + wxT("/resources"))){
+               ff.Mkdir(
+                  wxGetApp().get_app_dir() + wxT("/resources")
+                  );
+            }
+            if ( ! ff.DirExists(wxGetApp().get_app_dir() 
+            + wxT("/resources/layouts_checkout"))){
+               ff.Mkdir(
+                  wxGetApp().get_app_dir() + wxT("/resources/layouts_checkout")
+                  );
+            }
+
+            if ( ! ff.DirExists(wxGetApp().get_app_dir() 
+            + wxT("/resources/layouts_checkout/linux"))){
+               ff.Mkdir(
+                  wxGetApp().get_app_dir() + wxT("/resources/layouts_checkout/linux")
+                  );
+            }
+         }
+         wxCopyFile(input_path, output_path);
+         
+         if (! already_exists){
+            wxGetApp().get_panel()->add_layout(output_filename);
+         }
+         wxGetApp().get_document()->set_modified(true);
+      }
+   }
+}
+
 void main_frame::OnSaveProject (wxCommandEvent &event)
 {
    wxGetApp().get_document()->save_project();
@@ -380,8 +477,28 @@ void main_frame::OnSaveProjectAs (wxCommandEvent &event)
    }
 }
 
+void main_frame::clear_layouts()
+{
+   wxString layouts_dir = wxGetApp().get_app_dir() + wxT("/resources/layouts_checkout");
+   wxString layouts_linux_dir = layouts_dir + wxT("/linux");
+   wxFileName ff;
+   if (ff.DirExists(layouts_linux_dir)){
+      wxDir d(layouts_linux_dir);
+      //check d.IsOpened()
+      wxString filename;
+      bool cont = d.GetFirst(&filename,wxT("*.so"),wxDIR_FILES);
+      while ( cont){
+         wxRemoveFile(layouts_linux_dir + wxT("/") + filename);
+         cont = d.GetNext(&filename);
+      }
+      ff.Rmdir(layouts_linux_dir);
+   }
+   
+}
+
 void main_frame::clear()
 {
+   //clear_layouts();
    wxGetApp().get_panel()->reset();
    wxGetApp().get_font_preview()->reset();
    wxGetApp().get_view()->reset();
@@ -393,6 +510,7 @@ void main_frame::OnNewProject (wxCommandEvent &event)
    //TODO if current project modified then save
 
    this->clear();
+   this->clear_layouts();
    this->Refresh();
 #if 0
    // dialog with project name

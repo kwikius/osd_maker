@@ -5,6 +5,7 @@
 #include <quan/gx/wxwidgets/from_wxString.hpp>
 #include <quan/gx/wxwidgets/to_wxString.hpp>
 
+#include "main_frame.hpp"
 #include "view.hpp"
 #include "panel.hpp"
 #include "project_tree.hpp"
@@ -59,12 +60,28 @@ wxArrayString panel::get_bitmap_names()const
    return result;
 }
 
+wxArrayString panel::get_layout_names()const
+{
+   auto layoutid = m_project_tree->get_layouts_id();
+   wxTreeItemIdValue cookie;
+
+   wxArrayString result;
+   auto child = m_project_tree->GetFirstChild(layoutid,cookie);
+   while ( child.IsOk()){
+      wxString str = m_project_tree->GetItemText(child);
+      result.Add(str);
+      child = m_project_tree->GetNextChild(layoutid,cookie);
+   }
+   return result;
+}
+
 void panel::reset()
 {
    delete m_project_tree ;
+   
    m_project_tree = new project_tree{this,idTreeControl};
    m_project_tree->Expand(m_project_tree->GetRootItem());
-   m_project_tree->SetSize(20,20,200,200);
+   m_project_tree->SetSize(20,20,400,300);
 }
 
 void panel::set_project_name(wxString const & str)
@@ -85,6 +102,9 @@ panel::selection_type panel::get_selection_type( wxTreeEvent & event)
     if(parent_id == m_project_tree->get_fonts_id()){
          return selection_type::Font;
     }
+    if(parent_id == m_project_tree->get_layouts_id()){
+         return selection_type::Layout;
+    }
 
     if(id == m_project_tree->get_layouts_id()){
             return selection_type::LayoutDir;
@@ -95,6 +115,7 @@ panel::selection_type panel::get_selection_type( wxTreeEvent & event)
     if ( id == m_project_tree->get_bitmaps_id()){
            return selection_type::BitmapDir;
     }
+    
     return selection_type::Unknown;
 }
 
@@ -108,6 +129,7 @@ void panel::add_bitmap_handle(std::string const & name, int handle)
       ,new osd_bitmap_handle{handle}
    );
 }
+
 void panel::add_font_handle(std::string const & name, int handle)
 {
    m_project_tree->AppendItem(
@@ -124,13 +146,22 @@ void panel::add_font_handle(std::string const & name, int handle)
    }
 }
 
+void panel::add_layout(wxString const & name)
+{
+   m_project_tree->AppendItem(
+      m_project_tree->get_layouts_id(),
+      name
+      ,-1
+      ,-1
+   );
+}
+
 panel::panel (wxWindow* parent)
-//:  wxScrolledWindow{parent},
  : wxWindow{parent,wxID_ANY},
   m_project_tree{new project_tree{this,idTreeControl}}
 {
  m_project_tree->Expand(m_project_tree->GetRootItem());
- m_project_tree->SetSize(20,20,200,200);
+ m_project_tree->SetSize(20,20,400,300);
    this->Refresh();
 }
 
@@ -187,6 +218,9 @@ void panel::OnTreeItemActivated(wxTreeEvent & event)
       case selection_type::Font:
          on_font_item_activated(event);
       break;
+      case selection_type::Layout:
+         on_layout_item_activated(event);
+      break;
       case selection_type::LayoutDir:
          on_layout_dir_activated(event);
       break;
@@ -204,10 +238,6 @@ void panel::OnTreeItemActivated(wxTreeEvent & event)
 
 void panel::on_font_item_activated(wxTreeEvent & event)
 {
-   // then we need to select the selected font into the preview
-   // whatever is in the view can stay until a new item is selected into the view
-   // so its previews job to sort it
-   // put its handle to font_preview
    int font_handle  = -1;
    if ( ! get_font_handle(event, font_handle)){
       return ;
@@ -226,6 +256,7 @@ void panel::on_bitmap_item_activated(wxTreeEvent & event)
       return;
    }
    wxGetApp().get_view()->sync_with_image_handle(event_handle);
+   wxGetApp().get_main_frame()->enable_resize_view_bitmap(true);
 }
 
 void panel::on_bitmap_dir_activated(wxTreeEvent & event)
@@ -248,12 +279,16 @@ void panel::on_font_dir_activated(wxTreeEvent & event)
 
 void panel::on_layout_dir_activated(wxTreeEvent & event)
 {
-    auto view = wxGetApp().get_view();
-    if ( view->get_view_mode() != view::view_mode::inLayouts){
-       view->set_view_mode(view::view_mode::inLayouts);
-       view->Refresh();
-    }
    //wxMessageBox(wxT("layouts"));
+}
+
+void panel::on_layout_item_activated(wxTreeEvent & event)
+{
+    wxTreeItemId id = event.GetItem();
+    auto view = wxGetApp().get_view();
+    view->set_layout(m_project_tree->GetItemText(id));
+    view->set_view_mode(view::view_mode::inLayouts);
+    view->Refresh();
 }
 
 void panel::rename_bitmap(wxTreeEvent & event)
@@ -319,7 +354,6 @@ void panel::on_bitmap_right_click(wxTreeEvent & event, int handle)
 
 void panel::resize_font(int font_handle)
 {
-
    bitmap_resize_dialog dlg{this, wxT("Resize Font Dialog")};
 
     if ( dlg.ShowModal() == wxID_OK){
@@ -367,7 +401,6 @@ void panel::resize_font(int font_handle)
       if ( font_preview->get_font() == font){
         font_preview->Refresh();
       }
-      
    }
 }
 
@@ -411,6 +444,7 @@ void panel::on_font_right_click(wxTreeEvent & event, int handle)
       }
    } 
 }
+
 void panel::OnTreeItemRightClick(wxTreeEvent & event)
 {
   int handle = -1;
@@ -424,7 +458,3 @@ void panel::OnTreeItemRightClick(wxTreeEvent & event)
     }
   }
 }
-
-
-
-

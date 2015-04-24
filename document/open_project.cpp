@@ -3,6 +3,9 @@
 #include <cctype>
 #include <wx/zipstrm.h>
 #include <wx/wfstream.h>
+#include <wx/file.h>
+#include <wx/filefn.h>
+#include <wx/filename.h>
 #include <wx/filedlg.h>
 #include <wx/textfile.h>
 #include <fstream>
@@ -24,6 +27,11 @@
 
 using quan::gx::wxwidgets::from_wxString;
 using quan::gx::wxwidgets::to_wxString;
+
+namespace {
+
+
+}
 
 bool document::open_project (wxString const & path)
 {
@@ -49,10 +57,12 @@ bool document::open_project (wxString const & path)
       wxMessageBox (wxT ("Create zip input stream failed\n"));
       return false;
    }
+   wxGetApp().get_main_frame()->clear_layouts();
    int num_entries = zipin.GetTotalEntries();
 
    auto temp_resources = new osd_object_database;
 
+   wxArrayString layout_names;
    for ( int i = 0; i < num_entries; ++i) {
       wxZipEntry* entry = zipin.GetNextEntry();
       assert(entry && __LINE__);
@@ -60,49 +70,41 @@ bool document::open_project (wxString const & path)
 // sort dirseps
          std::string full_name = from_wxString<char>(entry->GetName());
 #if defined( __WXMSW__)
-         if ( ( full_name.find("bitmaps\\") != std::string::npos) &&
+         const char* bitmaps_str = "bitmaps\\";
 #else
-         if ( ( full_name.find("bitmaps/") != std::string::npos) &&
+         const char* bitmaps_str = "bitmaps/";
 #endif
+         size_t const bitmaps_pos = full_name.find(bitmaps_str,0,8);
+         if ( ( bitmaps_pos != std::string::npos) &&
                (full_name.find(".png",full_name.length()-4,4) != std::string::npos)
             ) {
-
-#if defined( __WXMSW__)
-            size_t const bitmaps_pos = full_name.find("bitmaps\\");
-#else
-            size_t const bitmaps_pos = full_name.find("bitmaps/");
-#endif
+            // got a bitmap ....................................
             std::string const name_png = full_name.substr(bitmaps_pos + 8,std::string::npos);
             std::string const name = name_png.substr(0,name_png.length()-4);
-            //############
+
             if (temp_resources->find_bitmap_by_name(name) != nullptr) {
                wxMessageBox(wxT("Invalid file, multiple bitmaps of same name"));
                delete temp_resources;
                delete entry;
                return false;
             }
+            
             wxImage image(zipin,wxBITMAP_TYPE_PNG);
             dynamic_bitmap * bmp = ConvertTo_osd_bitmap(name,image);
             temp_resources->add_bitmap(bmp);
          } else {
+            
 #if defined( __WXMSW__)
-            if ( ( full_name.find("fonts\\",0,6) != std::string::npos) &&
+            const char* fonts_str = "fonts\\";
 #else
-            if ( ( full_name.find("fonts/",0,6) != std::string::npos) &&
+            const char* fonts_str = "fonts/";
 #endif
+            size_t const fonts_pos = full_name.find(fonts_str,0,6);
+            if ( ( fonts_pos != std::string::npos) &&
                   (full_name.find(".png",full_name.length()-4,4) != std::string::npos)
                ) {
-#if defined( __WXMSW__)
-               size_t dirsep1 = full_name.find("fonts\\");
-#else
-               size_t dirsep1 = full_name.find("fonts/");
-#endif
-               if (dirsep1 == std::string::npos) {
-                  wxMessageBox(wxT("Invalid file"));
-                  //TODO clean up
-                  return false;
-               }
-               full_name = full_name.substr(dirsep1,std::string::npos);
+
+               full_name = full_name.substr(fonts_pos,std::string::npos);
 #if defined( __WXMSW__)
                size_t dirsep = full_name.find_first_of('\\',6);
 #else
@@ -150,6 +152,51 @@ bool document::open_project (wxString const & path)
                }
                //TODO else check that all elements are same size
                // Check that 
+            } else{
+#if defined( __WXMSW__)
+               const char* layouts_str = "layouts\\";
+#else
+               const char* layouts_str = "layouts/";
+#endif
+               size_t const layouts_pos = full_name.find(layouts_str,0,8);
+               if (layouts_pos != std::string::npos){
+
+                  full_name = full_name.substr(8,std::string::npos);
+                   auto pos = full_name.rfind (".so");
+                   if (pos == full_name.length() - 3) {
+                     // .so file
+                     wxString name = to_wxString(full_name);
+                     wxString out_path = wxGetApp().get_app_dir() 
+                        + wxT ("/resources/layouts_checkout/linux/") + name;
+//##########################
+
+    wxFileName ff;
+    if ( ! ff.DirExists(wxGetApp().get_app_dir() 
+   + wxT("/resources"))){
+      ff.Mkdir(
+         wxGetApp().get_app_dir() + wxT("/resources")
+         );
+   }
+   if ( ! ff.DirExists(wxGetApp().get_app_dir() 
+   + wxT("/resources/layouts_checkout"))){
+      ff.Mkdir(
+         wxGetApp().get_app_dir() + wxT("/resources/layouts_checkout")
+         );
+   }
+
+   if ( ! ff.DirExists(wxGetApp().get_app_dir() 
+   + wxT("/resources/layouts_checkout/linux"))){
+      ff.Mkdir(
+         wxGetApp().get_app_dir() + wxT("/resources/layouts_checkout/linux")
+         );
+   }
+
+//######################
+                     wxFileOutputStream out(out_path);
+                     out.Write(zipin);
+                     layout_names.Add(name);
+                   }
+               }
             }
          }
       }
@@ -216,10 +263,17 @@ bool document::open_project (wxString const & path)
       }
       int new_font_handle = this->m_database->add_font(new_font);
       wxGetApp().get_panel()->add_font_handle(new_font->get_name(),new_font_handle);
+      wxGetApp().get_main_frame()->enable_export_fonts_as_cpp(true);
 
    }
 
    delete temp_resources;
+
+
+
+   for( auto name:   layout_names){
+                     wxGetApp().get_panel()->add_layout(name);
+   }
 
    this->m_project_file_path = path;
    wxGetApp().get_main_frame()->SetTitle(path);

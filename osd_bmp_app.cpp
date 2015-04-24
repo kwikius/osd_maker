@@ -15,6 +15,8 @@
 #pragma hdrstop
 #endif //__BORLANDC__
 #include <wx/cmdline.h>
+#include <wx/filefn.h>
+#include <wx/stdpaths.h>
 
 #include <quan/uav/osd/dynamic/object_database.hpp>
 #include "osd_bmp_app.hpp"
@@ -34,6 +36,11 @@ void OsdBmpApp::init_mainframe()
     m_app_config->Read(wxT("/MainFrame/InitialHeight"),&frame_size.y);
     m_frame = new main_frame(0L, wxT("OSD BitmapMaker"),frame_size);
     m_frame->Show();
+}
+
+wxString OsdBmpApp::get_app_dir() const
+{
+  return wxPathOnly(wxStandardPaths::Get().GetExecutablePath());
 }
 
 void OsdBmpApp::OnInitCmdLine(wxCmdLineParser & parser)

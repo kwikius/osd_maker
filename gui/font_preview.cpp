@@ -12,6 +12,7 @@
 #include "../osd_bmp_app.hpp"
 #include "../document.hpp"
 
+#include "main_frame.hpp"
 #include "view.hpp"
 #include "font_preview.hpp"
 #include "font_preview/grid_cell_bmp_renderer.hpp"
@@ -71,6 +72,7 @@ void font_preview::export_font_element_as_bitmap(int handle)
       document::dynamic_bitmap* new_bitmap = bmp->clone();
       new_bitmap->set_name(name);
       wxGetApp().get_document()->add_bitmap(new_bitmap);
+      
    }
 }
 /*
@@ -89,9 +91,7 @@ void font_preview::set_font_first_element(int handle)
             if ( cur_handle == handle){
                int const new_start = i;
                for ( int j = font_begin; j < new_start; ++j){
-         
-                  int const deleted_handle = font->pop_front();
-                   
+                  int const deleted_handle = font->pop_front(); 
                   if (deleted_handle != -1){
                      //remove deleted from view too
                      if ( (wxGetApp().get_view()->have_image()) 
@@ -106,12 +106,15 @@ void font_preview::set_font_first_element(int handle)
             }
          }
       }
+      wxGetApp().get_document()->set_modified(true);
+      this->Refresh();
    }
-   this->Refresh();
 }
 
 void font_preview::set_font_last_element(int handle)
 {
+   // Add warnings that any elements in view
+   // will be deleted too
    auto* font = this->get_font();
    if (font){
       int const font_begin = font->get_begin();
@@ -144,8 +147,9 @@ void font_preview::set_font_last_element(int handle)
             assert(false && __LINE__);
          }
       }
+      wxGetApp().get_document()->set_modified(true);
+      this->Refresh();
    }
-   this->Refresh();
 }
 
 void font_preview::insert_font_element(int handle)
@@ -234,6 +238,7 @@ void font_preview::OnGridCellLeftDblClick(wxGridEvent& event)
    int font_elem_handle = get_sel_font_element_handle(event);
    if ( font_elem_handle != -1) {
       wxGetApp().get_view()->sync_with_image_handle(font_elem_handle);
+      wxGetApp().get_main_frame()->enable_resize_view_bitmap(false);
    }
 }
 

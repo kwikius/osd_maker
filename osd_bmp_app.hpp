@@ -32,10 +32,12 @@ public:
    ~OsdBmpApp();
    document* get_document()const {assert(m_document);return m_document;}
    main_frame* get_main_frame()const{assert(m_frame); return m_frame;}
+   wxString get_app_dir() const;
    view * get_view()const;
    panel* get_panel() const;
 
    font_preview* get_font_preview()const;
+   
 
    wxConfig* get_config()const {return m_app_config;}
 #if 0
