@@ -262,6 +262,7 @@ font_preview::font_preview(wxWindow* parent)
    m_grid->DisableDragGridSize();
    auto renderer = new grid_cell_bmp_renderer{};
    m_grid->SetDefaultRenderer(renderer);
+/*
    for ( int y = 0; y < num_rows; ++y) {
       for ( int x = 0; x < num_cols; ++x) {
          int ar_pos = y * num_cols + x;
@@ -272,5 +273,6 @@ font_preview::font_preview(wxWindow* parent)
          }
       }
    }
+*/
    this->Refresh();
 }

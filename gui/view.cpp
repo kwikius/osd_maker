@@ -22,9 +22,9 @@ BEGIN_EVENT_TABLE(view,wxWindow)
      EVT_CHAR(view::OnChar)
 
 END_EVENT_TABLE()
-
+// 
 view::view(wxWindow* parent)
-: wxWindow(parent, wxID_ANY)
+: wxWindow(parent, wxID_ANY, wxDefaultPosition, wxDefaultSize,wxVSCROLL | wxHSCROLL)
 ,m_cur_mouse_pos {0,0}
 ,m_mouse_is_down {false}
 ,m_current_image{nullptr}
