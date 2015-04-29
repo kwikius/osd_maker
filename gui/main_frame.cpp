@@ -309,6 +309,9 @@ void main_frame::OnImportFont (wxCommandEvent &event)
 {
    auto & app = wxGetApp();
    auto doc = app.get_document();
+ //todo
+//   wxString dirname =  wxGetApp().get_config()->Read (wxT ("/ImportFont/FileDir"), wxT (""));
+//   wxString filename =  wxGetApp().get_config()->Read (wxT ("/ImportFont/FileName"), wxT (""));
    wxFileDialog fd {
       this,
       wxT ("Import Image"), // message
@@ -386,12 +389,14 @@ void main_frame::OnImportBitmap (wxCommandEvent &event)
 void main_frame::OnImportLayout(wxCommandEvent & event)
 {
    // we want .so for Linux and .dll for windows
+    wxString def_input_dirname =  wxGetApp().get_config()->Read (wxT ("/ImportLayout/FileDir"), wxT (""));
+    wxString def_input_filename =  wxGetApp().get_config()->Read (wxT ("/ImportLayout/FileName"), wxT (""));
 
     wxFileDialog fd {
       this,
       wxT ("Import Layout File"), // message
-      wxT (""),                    // default dir
-      wxT (""),                    // default file
+      def_input_dirname,                    // default dir
+      def_input_filename,                    // default file
       wxT ("Linux shared library (*.so)|*.so|Windows DLL (*.dll)|*.dll"), // wildcard
       wxFD_OPEN | wxFD_FILE_MUST_EXIST | wxFD_CHANGE_DIR
    };
@@ -403,6 +408,7 @@ void main_frame::OnImportLayout(wxCommandEvent & event)
       if ( fd.GetFilterIndex() == 0){
 
          wxString input_path = fd.GetPath();
+         wxString input_dirname = wxPathOnly(input_path);
          wxString output_filename = wxFileNameFromPath(input_path);
          wxString output_path = wxGetApp().get_app_dir() 
             + wxT("/resources/layouts_checkout/linux/") + output_filename;
@@ -420,33 +426,38 @@ void main_frame::OnImportLayout(wxCommandEvent & event)
             if (overwrite_dlg.ShowModal() != wxYES){
                return;
             };
-         }else{
-            wxFileName ff;
-            if ( ! ff.DirExists(wxGetApp().get_app_dir() 
-            + wxT("/resources"))){
-               ff.Mkdir(
-                  wxGetApp().get_app_dir() + wxT("/resources")
-                  );
-            }
-            if ( ! ff.DirExists(wxGetApp().get_app_dir() 
-            + wxT("/resources/layouts_checkout"))){
-               ff.Mkdir(
-                  wxGetApp().get_app_dir() + wxT("/resources/layouts_checkout")
-                  );
-            }
-
-            if ( ! ff.DirExists(wxGetApp().get_app_dir() 
-            + wxT("/resources/layouts_checkout/linux"))){
-               ff.Mkdir(
-                  wxGetApp().get_app_dir() + wxT("/resources/layouts_checkout/linux")
-                  );
-            }
          }
+
+         wxFileName ff;
+         if ( ! ff.DirExists(wxGetApp().get_app_dir() 
+         + wxT("/resources"))){
+            ff.Mkdir(
+               wxGetApp().get_app_dir() + wxT("/resources")
+               );
+         }
+         if ( ! ff.DirExists(wxGetApp().get_app_dir() 
+         + wxT("/resources/layouts_checkout"))){
+            ff.Mkdir(
+               wxGetApp().get_app_dir() + wxT("/resources/layouts_checkout")
+               );
+         }
+
+         if ( ! ff.DirExists(wxGetApp().get_app_dir() 
+         + wxT("/resources/layouts_checkout/linux"))){
+            ff.Mkdir(
+               wxGetApp().get_app_dir() + wxT("/resources/layouts_checkout/linux")
+               );
+         }
+
+          
+         
          wxCopyFile(input_path, output_path);
          
          if (! already_exists){
             wxGetApp().get_panel()->add_layout(output_filename);
          }
+        wxGetApp().get_config()->Write (wxT ("/ImportLayout/FileDir"),input_dirname);
+        wxGetApp().get_config()->Write (wxT ("/ImportLayout/FileName"), output_filename);
          wxGetApp().get_document()->set_modified(true);
       }
    }
