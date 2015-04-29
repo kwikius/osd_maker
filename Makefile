@@ -44,14 +44,13 @@ INCLUDE_ARGS = $(patsubst %,-I%,$(INCLUDES))
 
 # local object files divided into directories
 local_objects = document.o osd_bmp_app.o
-local_document_objects = open_project.o mcm_file.o osd_object_database.o
+local_document_objects = open_project.o save_project.o mcm_file.o osd_object_database.o
 local_gui_objects = font_preview.o main_frame.o main_frame_splitter.o panel.o \
-panel_splitter.o project_tree.o view.o
+tree_panel_splitter.o project_tree.o view.o
 local_graphics_api_objects_objects = db_bitmap.o db_font.o osd_device.o
 local_gui_dialogs_objects = bitmap_resize_dialog.o new_bitmap_dialog.o
 local_gui_font_preview_objects = grid_cell_bmp_renderer.o
-local_gui_main_frame_objects = OnCreateStaticBitmapFile.o \
-OnCreateStaticFontFile.o
+local_gui_main_frame_objects = OnCreateStaticBitmapFile.o OnCreateStaticFontFile.o
 local_gui_view_objects = drawing.o paint_layout_view.o
 
 #object files in the quan_matters dir
