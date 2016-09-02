@@ -96,6 +96,11 @@ void osd_device::set_pixel_raw(pxp_type const & px,colour_type c)
    }
 }
 
+// hope unnecesssary!
+void osd_device::set_display_buffer(uint32_t offset32,uint32_t mask,colour_type c)
+{
+}
+
 osd_device::colour_type osd_device::get_pixel_raw(pxp_type const & p)const
 {
    unsigned int ch =  m_image.GetRed(p.x,p.y);

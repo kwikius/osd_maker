@@ -21,6 +21,7 @@ struct osd_device : quan::uav::osd::dynamic::display_device{
    void rescale(size_type const & new_size);
    void clear();
    wxImage const & get_bitmap()const;
+   void set_display_buffer(uint32_t offset32,uint32_t mask,colour_type c);
    ~osd_device(){}
    private:
    wxImage m_background_image;
@@ -28,6 +29,7 @@ struct osd_device : quan::uav::osd::dynamic::display_device{
    quan::two_d::box<int> m_display_rect;
    quan::two_d::clip<int> m_clip;
    typedef quan::two_d::clip<int>::result_type clip_result_type;
+  
    
 };
 
