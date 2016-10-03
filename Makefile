@@ -22,7 +22,7 @@ ifeq (1,0)
 CC = C:/cpp/tdm-gcc/bin/g++
 LD = C:/cpp/tdm-gcc/bin/g++
 # Modify this to your quan include path
-QUAN_INCLUDE_PATH = C:/cpp/lib/quan-trunk_lib/
+QUAN_INCLUDE_PATH = C:/cpp/projects/quan-trunk/
 WX_INCLUDE_PATH = C:/cpp/wxWidgets-3.0.0/include/
 WX_LIB_PATH = C:/cpp/wxWidgets-3.0.0/lib/gcc481TDM_dll
 # try comment this ...

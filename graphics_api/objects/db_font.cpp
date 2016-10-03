@@ -104,9 +104,16 @@ namespace {
 //     }
 //  }
 
+
+// quantracker_colour_type{ grey = 0, white = 1, black = 2, transparent = 3};
+// aerflite               { grey = 1, white = 0, black = 2, transparent = 3};
+
+
 }
 
-void db_font::output_header( std::string const & type_name, std::string const & object_name,std::ostream & out)const
+void db_font::output_header( std::string const & type_name, std::string const & object_name,
+      std::ostream & out,uint8_t (*pfn_remap)(uint8_t color_in)
+)const
 {
    assert( m_begin >= 0 && __LINE__);
    int32_t const begin = get_begin();
@@ -123,7 +130,14 @@ void db_font::output_header( std::string const & type_name, std::string const & 
          if ( dynbmp){
              char buf[sizeof(int)*8+2];
              std::string element_name = "font_" + font_name + std::string{"_"} + quan::itoasc(i,buf,10);
-             dynbmp->output_header(element_name + "_type",element_name,out);
+             if ( pfn_remap != nullptr){
+               auto * cloned = dynbmp->clone();
+               cloned->pixel_remap(pfn_remap);
+               cloned -> output_header(element_name + "_type",element_name,out);
+               delete cloned;
+             }else{
+               dynbmp->output_header(element_name + "_type",element_name,out);
+             }
              if ( i == begin){
                font_array_elements += "      ";
              }else{
